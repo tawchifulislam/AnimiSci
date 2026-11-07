@@ -1,69 +1,114 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ContinueCard } from "@/components/progress/ContinueCard";
+import { HeroArt } from "@/components/site/HeroArt";
+import { SubjectCard } from "@/components/site/SubjectCard";
+import { subjectIcon } from "@/components/site/subject-icons";
+import { ListChecksIcon, PencilSimpleIcon, PlayIcon, SlidersHorizontalIcon } from "@/components/ui/icons";
+import type { IconType } from "@/components/ui/icons";
+import { subjects } from "@/data/subjects";
+import { isSubjectLive } from "@/data/chapters";
+import { bn } from "@/lib/vec";
+
+const loop: { icon: IconType; title: string; text: string }[] = [
+  { icon: PlayIcon, title: "দেখো", text: "প্রতিটি ধারণা কীভাবে তৈরি হয়, তা চোখের সামনে এক ধাপ করে আঁকা হয়।" },
+  { icon: SlidersHorizontalIcon, title: "বদলাও", text: "স্লাইডার টেনে সংখ্যা বদলাও, ফল কীভাবে বদলায় নিজের চোখে দেখো।" },
+  { icon: PencilSimpleIcon, title: "অঙ্ক করো", text: "কঠিন শব্দ ছাড়া, রোজকার উদাহরণ দিয়ে ধাপে ধাপে অঙ্ক বোঝানো।" },
+  { icon: ListChecksIcon, title: "যাচাই করো", text: "ছোট কুইজ দিয়ে বুঝলে কি না তখনই জেনে নাও।" },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <section className="hero">
+        <div className="hero-bg" aria-hidden />
+        <div className="shell hero-grid">
+          <div className="hero-copy">
+            <span className="pill">এইচএসসি · বিজ্ঞান ও গণিত</span>
+            <h1 className="h1">
+              বিজ্ঞান ও গণিত,
+              <br />
+              <span className="accent">চোখে দেখে শেখো</span>
+            </h1>
+            <p className="lead">পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান ও উচ্চতর গণিতের প্রতিটি ধারণা অ্যানিমেশনে, ধাপে ধাপে, সহজ বাংলায়।</p>
+            <div className="cta-row">
+              <Link href="#subjects" className="btn btn-primary">
+                বিষয় দেখো
+              </Link>
+              <Link href="#how" className="btn btn-ghost">
+                কীভাবে শেখো
+              </Link>
+            </div>
+            <ContinueCard />
+            <p className="hero-links">
+              <span>ধাপে ধাপে অ্যানিমেশন</span>
+              <span>নিজে বদলে দেখা</span>
+              <span>ছোট কুইজ</span>
+            </p>
+          </div>
+          <HeroArt />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section id="subjects" className="shell section">
+        <div className="section-head">
+          <p className="eyebrow">বিষয়সমূহ</p>
+          <h2 className="h2">চারটি বিষয়, একই পদ্ধতিতে</h2>
         </div>
-      </main>
-    </div>
+        <div className="subject-grid">
+          {subjects.map((s) => {
+            const live = isSubjectLive(s.slug);
+            return (
+              <div key={s.slug} className="reveal">
+                <SubjectCard
+                  href={`/${s.slug}`}
+                  title={s.name}
+                  sub={s.en}
+                  blurb={s.blurb}
+                  color={s.color}
+                  icon={subjectIcon(s.icon)}
+                  status={live ? "চালু" : "শীঘ্রই"}
+                  live={live}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section id="how" className="shell section">
+        <div className="section-head">
+          <p className="eyebrow">শেখার পদ্ধতি</p>
+          <h2 className="h2">প্রতিটি পাঠ চার ধাপে</h2>
+        </div>
+        <ol className="loop-grid">
+          {loop.map((f, i) => (
+            <li key={f.title} className="loop-card reveal">
+              <span className="loop-num" aria-hidden>
+                {bn(i + 1)}
+              </span>
+              <span className="loop-icon">
+                <f.icon size={24} weight="duotone" />
+              </span>
+              <div>
+                <h3 className="loop-title">{f.title}</h3>
+                <p className="loop-text">{f.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="shell section" style={{ paddingTop: 0 }}>
+        <div className="cta-panel reveal">
+          <div className="cta-inner">
+            <h2 className="h2">বুঝে শেখার যাত্রা শুরু করো</h2>
+            <p>একটা বিষয় বেছে নাও, অ্যানিমেশন দেখো, নিজে সংখ্যা বদলাও। সূত্র আর মুখস্থ করতে হবে না।</p>
+            <Link href="#subjects" className="btn btn-light">
+              বিষয় দেখো
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
