@@ -1,58 +1,50 @@
 import Link from "next/link";
 import { ContinueCard } from "@/components/progress/ContinueCard";
-import { HeroArt } from "@/components/site/HeroArt";
+import { HeroDemo } from "@/components/site/HeroDemo";
+import { LearningMap } from "@/components/site/LearningMap";
 import { SubjectCard } from "@/components/site/SubjectCard";
 import { subjectIcon } from "@/components/site/subject-icons";
-import { ListChecksIcon, PencilSimpleIcon, PlayIcon, SlidersHorizontalIcon } from "@/components/ui/icons";
-import type { IconType } from "@/components/ui/icons";
-import { subjects } from "@/data/subjects";
 import { isSubjectLive } from "@/data/chapters";
-import { bn } from "@/lib/vec";
-
-const loop: { icon: IconType; title: string; text: string }[] = [
-  { icon: PlayIcon, title: "দেখো", text: "প্রতিটি ধারণা কীভাবে তৈরি হয়, তা চোখের সামনে এক ধাপ করে আঁকা হয়।" },
-  { icon: SlidersHorizontalIcon, title: "বদলাও", text: "স্লাইডার টেনে সংখ্যা বদলাও, ফল কীভাবে বদলায় নিজের চোখে দেখো।" },
-  { icon: PencilSimpleIcon, title: "অঙ্ক করো", text: "কঠিন শব্দ ছাড়া, রোজকার উদাহরণ দিয়ে ধাপে ধাপে অঙ্ক বোঝানো।" },
-  { icon: ListChecksIcon, title: "যাচাই করো", text: "ছোট কুইজ দিয়ে বুঝলে কি না তখনই জেনে নাও।" },
-];
+import { subjects } from "@/data/subjects";
 
 export default function Home() {
   return (
     <>
       <section className="hero">
-        <div className="hero-bg" aria-hidden />
         <div className="shell hero-grid">
           <div className="hero-copy">
-            <span className="pill">এইচএসসি · বিজ্ঞান ও গণিত</span>
+            <span className="pill">এইচএসসি বিজ্ঞান</span>
             <h1 className="h1">
-              বিজ্ঞান ও গণিত,
+              নেড়ে দেখো,
               <br />
-              <span className="accent">চোখে দেখে শেখো</span>
+              <span className="accent">বুঝে</span> যাবে।
             </h1>
-            <p className="lead">পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান ও উচ্চতর গণিতের প্রতিটি ধারণা অ্যানিমেশনে, ধাপে ধাপে, সহজ বাংলায়।</p>
+            <p className="lead">
+              পদার্থ, রসায়ন, জীব ও উচ্চতর গণিতের প্রতিটি সূত্র একেকটা জীবন্ত ছবি। স্লাইডার টানো, ছবি বদলাবে, সূত্র নিজেই বেরিয়ে আসবে।
+            </p>
             <div className="cta-row">
-              <Link href="#subjects" className="btn btn-primary">
-                বিষয় দেখো
+              <Link href="/physics" className="btn btn-primary">
+                পদার্থবিজ্ঞান শুরু করো
               </Link>
-              <Link href="#how" className="btn btn-ghost">
-                কীভাবে শেখো
+              <Link href="#subjects" className="btn btn-ghost">
+                সব বিষয় দেখো
               </Link>
             </div>
             <ContinueCard />
             <p className="hero-links">
-              <span>ধাপে ধাপে অ্যানিমেশন</span>
-              <span>নিজে বদলে দেখা</span>
+              <span>ধাপে ধাপে ছবি</span>
+              <span>নিজে নেড়ে দেখা</span>
               <span>ছোট কুইজ</span>
             </p>
           </div>
-          <HeroArt />
+          <HeroDemo />
         </div>
       </section>
 
       <section id="subjects" className="shell section">
         <div className="section-head">
           <p className="eyebrow">বিষয়সমূহ</p>
-          <h2 className="h2">চারটি বিষয়, একই পদ্ধতিতে</h2>
+          <h2 className="h2">চার বিষয়, একই ঢঙে</h2>
         </div>
         <div className="subject-grid">
           {subjects.map((s) => {
@@ -77,34 +69,19 @@ export default function Home() {
 
       <section id="how" className="shell section">
         <div className="section-head">
-          <p className="eyebrow">শেখার পদ্ধতি</p>
-          <h2 className="h2">প্রতিটি পাঠ চার ধাপে</h2>
+          <p className="eyebrow">যাত্রাপথ</p>
+          <h2 className="h2">প্রতিটি পাঠ এই পথ ধরে চলে</h2>
         </div>
-        <ol className="loop-grid">
-          {loop.map((f, i) => (
-            <li key={f.title} className="loop-card reveal">
-              <span className="loop-num" aria-hidden>
-                {bn(i + 1)}
-              </span>
-              <span className="loop-icon">
-                <f.icon size={24} weight="duotone" />
-              </span>
-              <div>
-                <h3 className="loop-title">{f.title}</h3>
-                <p className="loop-text">{f.text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <LearningMap />
       </section>
 
       <section className="shell section" style={{ paddingTop: 0 }}>
-        <div className="cta-panel reveal">
+        <div className="cta-panel">
           <div className="cta-inner">
-            <h2 className="h2">বুঝে শেখার যাত্রা শুরু করো</h2>
-            <p>একটা বিষয় বেছে নাও, অ্যানিমেশন দেখো, নিজে সংখ্যা বদলাও। সূত্র আর মুখস্থ করতে হবে না।</p>
-            <Link href="#subjects" className="btn btn-light">
-              বিষয় দেখো
+            <h2 className="h2">প্রথম সূত্রটা নেড়ে দেখো</h2>
+            <p>এক মিনিট লাগবে। একটা স্লাইডার টানলেই বুঝবে, মুখস্থ করার দরকার ছিল না।</p>
+            <Link href="/physics/first/vector/addition" className="btn btn-light">
+              ভেক্টরের যোগ দিয়ে শুরু
             </Link>
           </div>
         </div>
