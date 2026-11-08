@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { ContinueCard } from "@/components/progress/ContinueCard";
 import { subjectIcon } from "@/components/site/subject-icons";
 import { ArrowRightIcon, MenuIcon, XIcon } from "@/components/ui/icons";
@@ -13,27 +13,29 @@ export function Navbar() {
   const close = () => setOpen(false);
 
   return (
-    <header className="nav">
-      <div className="shell nav-inner">
-        <Link href="/" aria-label="AnimiSci হোম" onClick={close}>
-          <Logo />
-        </Link>
-
-        <nav aria-label="প্রধান মেনু" className="nav-links">
-          {subjects.map((s) => (
-            <Link key={s.slug} href={`/${s.slug}`} className="nav-link">
-              {s.name}
-            </Link>
-          ))}
-          <Link href="/#how" className="nav-link">
-            যাত্রাপথ
+    <>
+      <header className="nav">
+        <div className="shell nav-inner">
+          <Link href="/" aria-label="AnimiSci হোম" onClick={close}>
+            <Logo />
           </Link>
-        </nav>
 
-        <button type="button" className="menu-btn" aria-label={open ? "মেনু বন্ধ করো" : "মেনু খোলো"} aria-expanded={open} aria-controls="sheet" onClick={() => setOpen((v) => !v)}>
-          {open ? <XIcon size={24} weight="bold" /> : <MenuIcon size={24} weight="bold" />}
-        </button>
-      </div>
+          <nav aria-label="প্রধান মেনু" className="nav-links">
+            {subjects.map((s) => (
+              <Link key={s.slug} href={`/${s.slug}`} className="nav-link">
+                {s.name}
+              </Link>
+            ))}
+            <Link href="/#how" className="nav-link">
+              এক নজরে
+            </Link>
+          </nav>
+
+          <button type="button" className="menu-btn" aria-label={open ? "মেনু বন্ধ করো" : "মেনু খোলো"} aria-expanded={open} aria-controls="sheet" onClick={() => setOpen((v) => !v)}>
+            {open ? <XIcon size={24} weight="bold" /> : <MenuIcon size={24} weight="bold" />}
+          </button>
+        </div>
+      </header>
 
       {open ? (
         <nav id="sheet" aria-label="মোবাইল মেনু" className="sheet">
@@ -43,7 +45,7 @@ export function Navbar() {
           {subjects.map((s) => {
             const Icon = subjectIcon(s.icon);
             return (
-              <Link key={s.slug} href={`/${s.slug}`} className="sheet-link" style={{ "--sc": s.color } as React.CSSProperties} onClick={close}>
+              <Link key={s.slug} href={`/${s.slug}`} className="sheet-link" style={{ "--sc": s.color } as CSSProperties} onClick={close}>
                 <span className="ico">
                   <Icon size={22} weight="duotone" />
                 </span>
@@ -56,10 +58,10 @@ export function Navbar() {
             <span className="ico">
               <ArrowRightIcon size={22} weight="bold" />
             </span>
-            যাত্রাপথ
+            এক নজরে
           </Link>
         </nav>
       ) : null}
-    </header>
+    </>
   );
 }

@@ -1739,3 +1739,115 @@
     scroll-behavior: auto !important;
   }
 }
+
+.logo-word {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
+  font-family: var(--font-logo), var(--font-latin), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.logo-sci {
+  display: inline-block;
+  padding: 0.24rem 0.4rem 0.2rem;
+  border: 2px solid var(--edge);
+  border-radius: 0.5rem;
+  background: var(--spark);
+  color: #171a2c;
+  box-shadow: var(--sh-sm);
+  font-weight: 800;
+  transform: rotate(-4deg);
+}
+
+.reel {
+  max-width: 46rem;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 2px solid var(--edge);
+  border-radius: 1.4rem;
+  background: var(--surface);
+  box-shadow: var(--sh-lg);
+}
+
+.reel-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 2px solid var(--edge);
+  background: var(--surface-2);
+}
+
+.reel-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink-3);
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+.reel-chip em {
+  display: none;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-style: normal;
+}
+
+.reel-chip.on {
+  background: var(--spark);
+  color: #171a2c;
+}
+
+.reel-line {
+  height: 4px;
+  background: var(--line);
+}
+
+.reel-line span {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+  transform-origin: left;
+}
+
+.reel-stage {
+  padding: 0.4rem;
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+.reel-cap {
+  display: grid;
+  align-content: center;
+  min-height: 3.5rem;
+  padding: 0.7rem 1rem;
+  border-top: 2px solid var(--edge);
+  text-align: center;
+  font-weight: 500;
+}
+
+.reel-cap p {
+  animation: cap-in 0.4s ease both;
+}
+
+.reel-cap ul {
+  display: grid;
+  gap: 0.3rem;
+  text-align: left;
+}
+
+@media (min-width: 40rem) {
+  .reel-chip em {
+    display: grid;
+  }
+}

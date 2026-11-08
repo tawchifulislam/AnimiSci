@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ContinueCard } from "@/components/progress/ContinueCard";
 import { HeroDemo } from "@/components/site/HeroDemo";
-import { LearningMap } from "@/components/site/LearningMap";
+import { LessonReel } from "@/components/site/LessonReel";
 import { SubjectCard } from "@/components/site/SubjectCard";
 import { subjectIcon } from "@/components/site/subject-icons";
 import { isSubjectLive } from "@/data/chapters";
@@ -31,14 +31,18 @@ export default function Home() {
               </Link>
             </div>
             <ContinueCard />
-            <p className="hero-links">
-              <span>ধাপে ধাপে ছবি</span>
-              <span>নিজে নেড়ে দেখা</span>
-              <span>ছোট কুইজ</span>
-            </p>
           </div>
           <HeroDemo />
         </div>
+      </section>
+
+      <section id="how" className="shell section">
+        <div className="section-head">
+          <p className="eyebrow">এক নজরে</p>
+          <h2 className="h2">ছবি দেখো, সূত্র নিজেই বেরোবে</h2>
+          <p className="lead">একটা পাঠ এভাবেই চলে। দেখা, নাড়ানো, সূত্র, তারপর কুইজ।</p>
+        </div>
+        <LessonReel />
       </section>
 
       <section id="subjects" className="shell section">
@@ -65,14 +69,6 @@ export default function Home() {
             );
           })}
         </div>
-      </section>
-
-      <section id="how" className="shell section">
-        <div className="section-head">
-          <p className="eyebrow">যাত্রাপথ</p>
-          <h2 className="h2">প্রতিটি পাঠ এই পথ ধরে চলে</h2>
-        </div>
-        <LearningMap />
       </section>
 
       <section className="shell section" style={{ paddingTop: 0 }}>

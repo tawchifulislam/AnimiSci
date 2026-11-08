@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Anek_Bangla, Baloo_Da_2, Bricolage_Grotesque } from "next/font/google";
+import { Anek_Bangla, Baloo_Da_2, Bricolage_Grotesque, Unbounded } from "next/font/google";
 import { Footer } from "@/components/site/Footer";
 import { MotionProvider } from "@/components/site/MotionProvider";
 import { Navbar } from "@/components/site/Navbar";
@@ -21,6 +21,12 @@ const display = Baloo_Da_2({
 
 const latin = Bricolage_Grotesque({
   variable: "--font-latin",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const logo = Unbounded({
+  variable: "--font-logo",
   subsets: ["latin"],
   display: "swap",
 });
@@ -56,7 +62,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="bn" className={`${body.variable} ${display.variable} ${latin.variable}`}>
+    <html lang="bn" className={`${body.variable} ${display.variable} ${latin.variable} ${logo.variable}`}>
       <body style={{ display: "flex", minHeight: "100dvh", flexDirection: "column" }}>
         <MotionProvider>
           <a href="#main" className="sr-only">

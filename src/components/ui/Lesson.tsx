@@ -151,13 +151,6 @@ export function Lesson({
         <div className="player-main">
           <div className="player-stage">
             {figure(step)}
-            {!wide && !active ? (
-              <button type="button" className="stage-play" aria-label="অ্যানিমেশন চালাও" onClick={toggle}>
-                <span>
-                  <PlayIcon size={20} weight="fill" /> {step > 0 && step >= last ? "আবার চালাও" : "চালাও"}
-                </span>
-              </button>
-            ) : null}
           </div>
 
           <div className="player-bar">

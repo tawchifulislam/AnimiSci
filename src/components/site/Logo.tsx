@@ -14,7 +14,7 @@ export function Logo({ size = 38 }: { size?: number }) {
     <span className="logo">
       <LogoMark size={size} />
       <span className="logo-word">
-        Animi<b>Sci</b>
+        animi<span className="logo-sci">sci</span>
       </span>
     </span>
   );
