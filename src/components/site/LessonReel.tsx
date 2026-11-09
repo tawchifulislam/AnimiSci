@@ -7,13 +7,13 @@ import { useReducedMotionPref } from "@/lib/motion-pref";
 import { useInView } from "@/lib/use-in-view";
 import { arcPath, bn, rad } from "@/lib/vec";
 
-const O = { x: 70, y: 200 };
+const O = { x: 70, y: 190 };
 const PL = 130;
 const QL = 104;
 
 const beats = [
   { name: "দেখো", note: "দুটি ঠেলা আঁকা হয়, মিলিত ফল লাল তীরে।" },
-  { name: "নাড়াও", note: "কোণ বদলাও, লাল তীর সাথে সাথে বদলায়।" },
+  { name: "বদলাও", note: "স্লাইডার টানো, লাল তীর সাথে সাথে বাঁকে।" },
   { name: "সূত্র", note: "ছবি থেকেই সূত্র বেরিয়ে আসে।" },
   { name: "যাচাই", note: "কুইজে মিলিয়ে নাও, বুঝে গেছ।" },
 ];
@@ -22,29 +22,72 @@ function useMix(inputs: MotionValue<number>[], fn: (v: number[]) => number): Mot
   return useTransform(inputs, fn);
 }
 
+function useBeat(t: MotionValue<number>) {
+  const [beat, setBeat] = useState(2);
+  useMotionValueEvent(t, "change", (v) => setBeat(Math.min(3, Math.floor(v * 4))));
+  return beat;
+}
+
+function BeatBar({ t, reduce }: { t: MotionValue<number>; reduce: boolean }) {
+  const beat = useBeat(t);
+  return (
+    <div className="reel-bar">
+      {beats.map((b, i) => (
+        <span key={b.name} className={`reel-chip${!reduce && i === beat ? " on" : ""}`}>
+          <em>{bn(i + 1)}</em>
+          {b.name}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function BeatCap({ t, reduce }: { t: MotionValue<number>; reduce: boolean }) {
+  const beat = useBeat(t);
+  return (
+    <div className="reel-cap">
+      {reduce ? (
+        <ul>
+          {beats.map((b, i) => (
+            <li key={b.name}>
+              <b>
+                {bn(i + 1)}. {b.name}:
+              </b>{" "}
+              {b.note}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p key={beat}>
+          <b>{beats[beat].name}.</b> {beats[beat].note}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function AlphaNum({ alpha }: { alpha: MotionValue<number> }) {
   const [v, setV] = useState(Math.round(alpha.get()));
-  useMotionValueEvent(alpha, "change", (a) => setV(Math.round(a)));
+  useMotionValueEvent(alpha, "change", (a) => {
+    queueMicrotask(() => setV(Math.round(a)));
+  });
   return (
-    <text x={290} y={246} textAnchor="end" fontSize={13} fontWeight={700} style={{ fill: col.f }}>
-      α = {bn(v)}°
+    <text x={290} y={236} textAnchor="end" fontSize={13} fontWeight={700} style={{ fill: col.f }}>
+      α = {v}°
     </text>
   );
 }
 
 export function LessonReel() {
   const t = useMotionValue(0.6);
-  const [beat, setBeat] = useState(2);
   const ref = useRef<HTMLDivElement>(null);
   const seen = useInView(ref, 0.3);
   const reduce = useReducedMotionPref();
 
-  useMotionValueEvent(t, "change", (v) => setBeat(Math.min(3, Math.floor(v * 4))));
-
   useEffect(() => {
     if (!seen || reduce) return;
     t.set(0);
-    const c = animate(t, 1, { duration: 14, ease: "linear", repeat: Infinity });
+    const c = animate(t, 1, { duration: 26, ease: "linear", repeat: Infinity });
     return () => {
       c.stop();
       t.set(0.6);
@@ -96,21 +139,14 @@ export function LessonReel() {
 
   return (
     <div className="reel" ref={ref}>
-      <div className="reel-bar">
-        {beats.map((b, i) => (
-          <span key={b.name} className={`reel-chip${!reduce && i === beat ? " on" : ""}`}>
-            <em>{bn(i + 1)}</em>
-            {b.name}
-          </span>
-        ))}
-      </div>
+      <BeatBar t={t} reduce={reduce} />
       {reduce ? null : (
         <div className="reel-line" aria-hidden>
           <motion.span style={{ scaleX: t }} />
         </div>
       )}
       <div className="reel-stage">
-        <Stage w={480} h={290} label="ছবি দেখা থেকে সূত্র ও কুইজ পর্যন্ত একটি পাঠের সংক্ষিপ্ত রূপ">
+        <Stage w={480} h={262} label="ছবি দেখা থেকে সূত্র ও কুইজ পর্যন্ত একটি পাঠের সংক্ষিপ্ত রূপ">
           <motion.g style={{ opacity: fade }}>
             <line x1={30} y1={O.y} x2={300} y2={O.y} strokeWidth={1.5} style={{ stroke: col.l }} />
 
@@ -137,11 +173,11 @@ export function LessonReel() {
             </motion.text>
 
             <motion.g style={{ opacity: sliderO }}>
-              <rect x={50} y={256} width={240} height={8} rx={4} style={{ fill: col.l }} />
-              <motion.rect x={50} y={256} height={8} rx={4} width={fillW} style={{ fill: col.r }} />
-              <motion.circle cy={260} r={11} cx={knobX} strokeWidth={2.5} style={{ fill: "var(--brand)", stroke: "var(--edge)" }} />
-              <text x={50} y={246} fontSize={13} fontWeight={700} style={{ fill: col.m }}>
-                কোণ α নাড়াও
+              <rect x={50} y={244} width={240} height={8} rx={4} style={{ fill: col.l }} />
+              <motion.rect x={50} y={244} height={8} rx={4} width={fillW} style={{ fill: col.r }} />
+              <motion.circle cy={248} r={11} cx={knobX} strokeWidth={2.5} style={{ fill: "var(--brand)", stroke: "var(--edge)" }} />
+              <text x={50} y={236} fontSize={13} fontWeight={700} style={{ fill: col.m }}>
+                কোণ α বদলাও
               </text>
               <AlphaNum alpha={alpha} />
             </motion.g>
@@ -159,10 +195,10 @@ export function LessonReel() {
               </text>
               <line x1={338} y1={126} x2={448} y2={126} strokeWidth={1.5} style={{ stroke: col.l }} />
               <text x={393} y={148} textAnchor="middle" fontSize={12} style={{ fill: col.m }}>
-                P = ৫, Q = ৪, α = ৭০°
+                P = 5, Q = 4, α = 70°
               </text>
               <text x={393} y={186} textAnchor="middle" fontSize={24} fontWeight={800} style={{ fill: col.r }}>
-                R = ৭.৪
+                R = 7.4
               </text>
             </motion.g>
 
@@ -172,7 +208,7 @@ export function LessonReel() {
                 যাচাই
               </text>
               <text x={393} y={76} textAnchor="middle" fontSize={13} fontWeight={600} style={{ fill: col.f }}>
-                α = ০° হলে R = ?
+                α = 0° হলে R = ?
               </text>
               <rect x={332} y={88} width={122} height={24} rx={8} strokeWidth={1.5} style={{ fill: "var(--surface-2)", stroke: col.l }} />
               <text x={393} y={105} textAnchor="middle" fontSize={13} style={{ fill: col.f }}>
@@ -198,21 +234,7 @@ export function LessonReel() {
           </motion.g>
         </Stage>
       </div>
-      <div className="reel-cap">
-        {reduce ? (
-          <ul>
-            {beats.map((b, i) => (
-              <li key={b.name}>
-                <b>{bn(i + 1)}. {b.name}:</b> {b.note}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p key={beat}>
-            <b>{beats[beat].name}.</b> {beats[beat].note}
-          </p>
-        )}
-      </div>
+      <BeatCap t={t} reduce={reduce} />
     </div>
   );
 }

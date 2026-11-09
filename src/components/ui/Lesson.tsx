@@ -12,7 +12,7 @@ export type LessonStep = { title: string; text: string; tex?: string[]; note?: s
 
 type View = "player" | "list";
 
-const HOLD = 6000;
+const HOLD = 8500;
 
 export function Lesson({
   steps,

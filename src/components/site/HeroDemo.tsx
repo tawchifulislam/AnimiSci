@@ -38,7 +38,7 @@ export function HeroDemo() {
 
   useEffect(() => {
     if (!running) return;
-    const c = animate(alpha, [alpha.get(), 160, 20, 70], { duration: 11, ease: "easeInOut", repeat: Infinity });
+    const c = animate(alpha, [alpha.get(), 160, 20, 70], { duration: 20, ease: "easeInOut", repeat: Infinity });
     return () => c.stop();
   }, [running, alpha]);
 

@@ -37,14 +37,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   applicationName: "AnimiSci",
   title: {
-    default: "AnimiSci | দেখো। নাড়াও। বোঝো।",
+    default: "AnimiSci | দেখো। বদলাও। বোঝো।",
     template: "%s | AnimiSci",
   },
-  description: "এইচএসসি পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান ও উচ্চতর গণিতের সূত্র জীবন্ত ছবিতে। স্লাইডার নাড়াও, নিজেই বুঝে যাও।",
+  description: "এইচএসসি পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান ও উচ্চতর গণিতের সূত্র জীবন্ত ছবিতে। স্লাইডার টানো, নিজেই বুঝে নাও।",
   openGraph: {
     siteName: "AnimiSci",
-    title: "AnimiSci | দেখো। নাড়াও। বোঝো।",
-    description: "সূত্র মুখস্থ নয়, নেড়ে দেখে বোঝার জীবন্ত পাঠ",
+    title: "AnimiSci | দেখো। বদলাও। বোঝো।",
+    description: "সূত্র মুখস্থ নয়, দেখে বোঝার জীবন্ত পাঠ",
     locale: "bn_BD",
     type: "website",
   },

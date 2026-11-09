@@ -8,7 +8,7 @@ export function Footer() {
       <div className="shell footer-grid">
         <div className="footer-col footer-brand">
           <Logo />
-          <p className="footer-slogan">দেখো। নাড়াও। বোঝো।</p>
+          <p className="footer-slogan">দেখো। বদলাও। বোঝো।</p>
           <p className="muted" style={{ marginTop: "0.3rem", maxWidth: "24rem", fontSize: "0.95rem" }}>
             এইচএসসি বিজ্ঞান ও গণিতের সূত্র, জীবন্ত ছবিতে।
           </p>
@@ -39,7 +39,7 @@ export function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <div className="shell">AnimiSci · দেখো, নাড়াও, বোঝো</div>
+        <div className="shell">AnimiSci · দেখো, বদলাও, বোঝো</div>
       </div>
     </footer>
   );

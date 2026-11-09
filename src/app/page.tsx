@@ -15,9 +15,9 @@ export default function Home() {
           <div className="hero-copy">
             <span className="pill">এইচএসসি বিজ্ঞান</span>
             <h1 className="h1">
-              নেড়ে দেখো,
+              মুখস্থ নয়,
               <br />
-              <span className="accent">বুঝে</span> যাবে।
+              <span className="accent">দেখে বোঝো।</span>
             </h1>
             <p className="lead">
               পদার্থ, রসায়ন, জীব ও উচ্চতর গণিতের প্রতিটি সূত্র একেকটা জীবন্ত ছবি। স্লাইডার টানো, ছবি বদলাবে, সূত্র নিজেই বেরিয়ে আসবে।
@@ -40,7 +40,6 @@ export default function Home() {
         <div className="section-head">
           <p className="eyebrow">এক নজরে</p>
           <h2 className="h2">ছবি দেখো, সূত্র নিজেই বেরোবে</h2>
-          <p className="lead">একটা পাঠ এভাবেই চলে। দেখা, নাড়ানো, সূত্র, তারপর কুইজ।</p>
         </div>
         <LessonReel />
       </section>
@@ -74,7 +73,7 @@ export default function Home() {
       <section className="shell section" style={{ paddingTop: 0 }}>
         <div className="cta-panel">
           <div className="cta-inner">
-            <h2 className="h2">প্রথম সূত্রটা নেড়ে দেখো</h2>
+            <h2 className="h2">প্রথম সূত্রটা নিজের চোখে দেখো</h2>
             <p>এক মিনিট লাগবে। একটা স্লাইডার টানলেই বুঝবে, মুখস্থ করার দরকার ছিল না।</p>
             <Link href="/physics/first/vector/addition" className="btn btn-light">
               ভেক্টরের যোগ দিয়ে শুরু
