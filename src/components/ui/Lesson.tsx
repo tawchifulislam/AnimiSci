@@ -149,40 +149,47 @@ export function Lesson({
     <div className="player-wrap" ref={rootRef}>
       <div className="player" role="group" aria-label="ধাপে ধাপে অ্যানিমেশন" tabIndex={0} onKeyDown={onKey}>
         <div className="player-main">
-          <div className="player-stage">
-            {figure(step)}
-          </div>
+          <div className="player-stage">{figure(step)}</div>
 
           <div className="player-bar">
-            <button type="button" className="ctl" aria-label="আগের ধাপ" disabled={step === 0} onClick={() => pick(step - 1)}>
-              <SkipBackIcon size={18} weight="fill" />
+            <button type="button" className="ctl-text" aria-label="আগের ধাপ" disabled={step === 0} onClick={() => pick(step - 1)}>
+              <SkipBackIcon size={16} weight="fill" />
+              <span>আগে</span>
             </button>
-            <button type="button" className="ctl main" aria-label={active ? "থামাও" : "চালাও"} onClick={toggle}>
-              {active ? <PauseIcon size={20} weight="fill" /> : <PlayIcon size={20} weight="fill" />}
+            <button type="button" className="ctl-text main" onClick={toggle}>
+              {active ? <PauseIcon size={18} weight="fill" /> : <PlayIcon size={18} weight="fill" />}
+              <span>{active ? "থামাও" : step >= last ? "আবার চালাও" : "নিজে নিজে চালাও"}</span>
             </button>
-            <button type="button" className="ctl" aria-label="পরের ধাপ" disabled={step === last} onClick={() => pick(step + 1)}>
-              <SkipForwardIcon size={18} weight="fill" />
+            <button type="button" className="ctl-text" aria-label="পরের ধাপ" disabled={step === last} onClick={() => pick(step + 1)}>
+              <span>পরে</span>
+              <SkipForwardIcon size={16} weight="fill" />
             </button>
-            <div className="segs">
-              {steps.map((s, i) => (
-                <button
-                  key={s.title}
-                  type="button"
-                  aria-label={`ধাপ ${bn(i + 1)}`}
-                  aria-current={i === step}
-                  onClick={() => pick(i)}
-                  className={`seg${i === step ? " on" : i < step ? " past" : ""}`}
-                />
-              ))}
+            <div className="segs-row">
+              <div className="segs">
+                {steps.map((s, i) => (
+                  <button
+                    key={s.title}
+                    type="button"
+                    aria-label={`ধাপ ${bn(i + 1)}`}
+                    aria-current={i === step}
+                    onClick={() => pick(i)}
+                    className={`seg${i === step ? " on" : i < step ? " past" : ""}`}
+                  />
+                ))}
+              </div>
+              <span className="step-count">
+                {bn(step + 1)}/{bn(steps.length)}
+              </span>
             </div>
-            <span className="step-count">
-              {bn(step + 1)}/{bn(steps.length)}
-            </span>
           </div>
 
-          {extra ? (
-            <div onPointerDownCapture={halt}>{extra}</div>
-          ) : null}
+          <p className="player-help">
+            {active
+              ? "ধাপগুলো নিজে নিজে বদলাচ্ছে। নিজের গতিতে এগোতে 'থামাও' চাপো।"
+              : "'নিজে নিজে চালাও' চাপলে ধাপগুলো একটার পর একটা চলবে। চাইলে 'আগে' ও 'পরে' দিয়ে হাতে এগোও।"}
+          </p>
+
+          {extra ? <div onPointerDownCapture={halt}>{extra}</div> : null}
 
           <button type="button" className="link-btn" onClick={() => choose("list")}>
             <ListIcon size={16} weight="bold" /> সব ধাপ একসাথে পড়ো

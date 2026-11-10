@@ -77,8 +77,9 @@ export function HeroDemo() {
       <div className="demo-bar">
         <b>ভেক্টরের যোগ</b>
         {reduce ? null : (
-          <button type="button" className="tiny-btn" aria-label={active ? "থামাও" : "চালাও"} onClick={toggle}>
+          <button type="button" className="demo-play" onClick={toggle}>
             {active ? <PauseIcon size={14} weight="fill" /> : <PlayIcon size={14} weight="fill" />}
+            <span>{active ? "থামাও" : "নিজে নিজে চালাও"}</span>
           </button>
         )}
       </div>
@@ -107,6 +108,7 @@ export function HeroDemo() {
           </Stage>
         </div>
         <AlphaSlider alpha={alpha} onUser={onUser} />
+        <p className="player-help">স্লাইডার টানলেই অ্যানিমেশন থেমে যায় আর ছবি তোমার হাতে আসে।</p>
         <p className="demo-out">
           <span>লব্ধি R</span>
           <Readout alpha={alpha} />

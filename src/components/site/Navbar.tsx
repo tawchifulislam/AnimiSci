@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { useState, type CSSProperties } from "react";
 import { ContinueCard } from "@/components/progress/ContinueCard";
 import { subjectIcon } from "@/components/site/subject-icons";
@@ -24,13 +25,25 @@ export function Navbar() {
           </Link>
 
           <nav aria-label="প্রধান মেনু" className="nav-links">
-            {subjects.map((s) => (
-              <Link key={s.slug} href={`/${s.slug}`} className="nav-link" aria-current={current?.slug === s.slug ? "true" : undefined}>
-                {s.name}
-              </Link>
-            ))}
+            {subjects.map((s) => {
+              const on = current?.slug === s.slug;
+              return (
+                <Link key={s.slug} href={`/${s.slug}`} className="nav-link" aria-current={on ? "true" : undefined}>
+                  {on ? (
+                    <motion.span
+                      layoutId="nav-pill"
+                      className="nav-pill"
+                      initial={{ opacity: 0, scale: 0.92 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  ) : null}
+                  <span className="nav-text">{s.name}</span>
+                </Link>
+              );
+            })}
             <Link href="/#how" className="nav-link">
-              এক নজরে
+              <span className="nav-text">এক নজরে</span>
             </Link>
           </nav>
 

@@ -1860,3 +1860,136 @@
     display: none;
   }
 }
+
+html {
+  font-size: 100%;
+}
+
+@media (min-width: 48rem) {
+  html {
+    font-size: 106.25%;
+  }
+}
+
+@media (min-width: 80rem) {
+  html {
+    font-size: 112.5%;
+  }
+}
+
+.nav-link {
+  position: relative;
+}
+
+.nav-link[aria-current="true"] {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  color: #171a2c;
+}
+
+.nav-pill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border: var(--bw) solid var(--edge);
+  border-radius: 999px;
+  background: var(--spark);
+  box-shadow: var(--sh-sm);
+}
+
+.nav-text {
+  position: relative;
+  z-index: 1;
+}
+
+.page-in {
+  animation: page-in 0.3s ease both;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.player-bar {
+  flex-wrap: wrap;
+}
+
+.ctl-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+  min-height: var(--ctl-sm);
+  padding: 0 var(--s-3);
+  border: var(--bw) solid var(--edge);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--sh-sm);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  white-space: nowrap;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+}
+
+.ctl-text:not(:disabled):active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.ctl-text:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.ctl-text.main {
+  flex: 1;
+  min-height: var(--ctl);
+  background: var(--brand);
+  color: var(--on-brand);
+  font-size: var(--fs-md);
+}
+
+.segs-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.player-help {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--ink-3);
+}
+
+.demo-play {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-height: 1.875rem;
+  padding: 0 0.7rem;
+  border: var(--bw) solid var(--edge);
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+@media (min-width: 40rem) {
+  .segs-row {
+    flex: 1 1 0;
+  }
+  .ctl-text.main {
+    flex: 0 0 auto;
+  }
+}
