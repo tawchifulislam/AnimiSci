@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, type CSSProperties } from "react";
 import { ContinueCard } from "@/components/progress/ContinueCard";
 import { subjectIcon } from "@/components/site/subject-icons";
@@ -10,7 +11,9 @@ import { Logo } from "./Logo";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const path = usePathname();
   const close = () => setOpen(false);
+  const current = subjects.find((s) => path === `/${s.slug}` || path.startsWith(`/${s.slug}/`));
 
   return (
     <>
@@ -22,7 +25,7 @@ export function Navbar() {
 
           <nav aria-label="প্রধান মেনু" className="nav-links">
             {subjects.map((s) => (
-              <Link key={s.slug} href={`/${s.slug}`} className="nav-link">
+              <Link key={s.slug} href={`/${s.slug}`} className="nav-link" aria-current={current?.slug === s.slug ? "true" : undefined}>
                 {s.name}
               </Link>
             ))}
@@ -30,6 +33,12 @@ export function Navbar() {
               এক নজরে
             </Link>
           </nav>
+
+          {current ? (
+            <span className="nav-here" style={{ "--sc": current.color } as CSSProperties}>
+              {current.name}
+            </span>
+          ) : null}
 
           <button type="button" className="menu-btn" aria-label={open ? "মেনু বন্ধ করো" : "মেনু খোলো"} aria-expanded={open} aria-controls="sheet" onClick={() => setOpen((v) => !v)}>
             {open ? <XIcon size={24} weight="bold" /> : <MenuIcon size={24} weight="bold" />}
@@ -45,7 +54,14 @@ export function Navbar() {
           {subjects.map((s) => {
             const Icon = subjectIcon(s.icon);
             return (
-              <Link key={s.slug} href={`/${s.slug}`} className="sheet-link" style={{ "--sc": s.color } as CSSProperties} onClick={close}>
+              <Link
+                key={s.slug}
+                href={`/${s.slug}`}
+                className="sheet-link"
+                aria-current={current?.slug === s.slug ? "true" : undefined}
+                style={{ "--sc": s.color } as CSSProperties}
+                onClick={close}
+              >
                 <span className="ico">
                   <Icon size={22} weight="duotone" />
                 </span>
