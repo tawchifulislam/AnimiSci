@@ -32,7 +32,7 @@ export default function Home() {
             <ContinueCard />
           </div>
           <div className="hero-art">
-            <img src="/assests/animations/STUDENT.svg" alt="শিক্ষার্থীর অ্যানিমেশন" decoding="async" />
+            <img src="/assets/animations/STUDENT.svg" alt="শিক্ষার্থীর অ্যানিমেশন" decoding="async" />
           </div>
         </div>
       </section>

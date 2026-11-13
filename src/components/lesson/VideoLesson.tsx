@@ -15,11 +15,15 @@ export function VideoLesson({
   figure,
   below,
   durations,
+  onStep,
+  focusStep,
 }: {
   steps: LessonStep[];
   figure: (step: number) => ReactNode;
   below?: ReactNode;
   durations?: number[];
+  onStep?: (step: number) => void;
+  focusStep?: number;
 }) {
   const reduce = useReducedMotionPref();
   const durs = steps.map((_, i) => durations?.[i] ?? 7);
@@ -43,6 +47,10 @@ export function VideoLesson({
   const prog = useMotionValue(0);
   const thumb = useTransform(prog, (v) => `${v * 100}%`);
   const cur = steps[Math.min(step, last)];
+
+  useEffect(() => {
+    onStep?.(step);
+  }, [step]);
 
   const stepAt = (time: number) => {
     let idx = 0;
@@ -114,7 +122,7 @@ export function VideoLesson({
 
   const onBelow = () => {
     setPlaying(false);
-    if (step < last) seekTo(starts[last]);
+    if (focusStep !== undefined && step < focusStep) seekTo(starts[focusStep]);
   };
 
   const chapter = (dir: number) => {

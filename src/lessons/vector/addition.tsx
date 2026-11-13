@@ -187,7 +187,8 @@ export default function Anim() {
   ];
 
   const figure = (s: number) => (
-    <Stage w={440} h={300} label="দুটি ভেক্টরের লব্ধি নির্ণয়">
+    <Stage w={440} h={215} label="দুটি ভেক্টরের লব্ধি নির্ণয়">
+      <g transform="translate(0,-85)">
       <line x1={0} y1={o.y} x2={440} y2={o.y} strokeWidth={1} style={{ stroke: "var(--line)" }} />
       <motion.polygon
         initial={false}
@@ -225,6 +226,7 @@ export default function Anim() {
       <Lab p={pol(o, alpha / 2, 42)} c="f">α</Lab>
       <Lab p={pol(o, theta / 2, 68)} show={s >= 7} c="p">θ</Lab>
       <Lab p={pol(o, theta + (alpha - theta) / 2, 68)} show={s >= 8} c="q">γ</Lab>
+      </g>
     </Stage>
   );
 

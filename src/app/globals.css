@@ -2416,3 +2416,16 @@ html {
   height: auto;
   object-fit: contain;
 }
+
+.fix-centered {
+  margin: 0;
+}
+
+.lesson.narrow {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.video-wrap {
+  width: 100%;
+}
