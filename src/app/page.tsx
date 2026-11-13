@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ContinueCard } from "@/components/progress/ContinueCard";
-import { HeroDemo } from "@/components/site/HeroDemo";
 import { LessonReel } from "@/components/site/LessonReel";
 import { SubjectCard } from "@/components/site/SubjectCard";
 import { subjectIcon } from "@/components/site/subject-icons";
@@ -32,7 +31,9 @@ export default function Home() {
             </div>
             <ContinueCard />
           </div>
-          <HeroDemo />
+          <div className="hero-art">
+            <img src="/assests/animations/STUDENT.svg" alt="শিক্ষার্থীর অ্যানিমেশন" decoding="async" />
+          </div>
         </div>
       </section>
 

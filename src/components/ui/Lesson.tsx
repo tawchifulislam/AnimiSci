@@ -18,11 +18,13 @@ export function Lesson({
   steps,
   figure,
   extra,
+  extraFrom,
   onStep,
 }: {
   steps: LessonStep[];
   figure: (step: number) => ReactNode;
   extra?: ReactNode;
+  extraFrom?: number;
   onStep?: (step: number) => void;
 }) {
   const [step, setStep] = useState(0);
@@ -40,12 +42,29 @@ export function Lesson({
   const auto = wide && !reduce && !stopped;
   const active = playing || auto;
   const running = view === "player" && visible && active;
+  const showExtra = Boolean(extra) && (extraFrom === undefined || step >= extraFrom);
 
   const go = (i: number) => {
     const n = Math.min(Math.max(i, 0), last);
     setStep(n);
     onStep?.(n);
   };
+
+  useEffect(() => {
+    const h = (e: Event) => {
+      const d = (e as CustomEvent<{ step: number }>).detail;
+      if (!d || typeof d.step !== "number") return;
+      if (view === "list") {
+        document.getElementById(`lstep-${d.step}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      setStopped(true);
+      setPlaying(false);
+      go(d.step);
+    };
+    window.addEventListener("lesson-goto", h);
+    return () => window.removeEventListener("lesson-goto", h);
+  });
 
   useEffect(() => {
     if (!running) return;
@@ -119,7 +138,7 @@ export function Lesson({
           {extra}
           <ol>
             {steps.map((s, i) => (
-              <li key={s.title} className="step-card">
+              <li key={s.title} id={`lstep-${i}`} className="step-card">
                 <div className="step-card-head">
                   <span className="step-no">{bn(i + 1)}</span>
                   <h3>{s.title}</h3>
@@ -187,9 +206,19 @@ export function Lesson({
             {active
               ? "ধাপগুলো নিজে নিজে বদলাচ্ছে। নিজের গতিতে এগোতে 'থামাও' চাপো।"
               : "'নিজে নিজে চালাও' চাপলে ধাপগুলো একটার পর একটা চলবে। চাইলে 'আগে' ও 'পরে' দিয়ে হাতে এগোও।"}
+            {extraFrom !== undefined && step < extraFrom ? " শেষ ধাপে নিজে স্লাইডার টেনে দেখার সুযোগ পাবে।" : ""}
           </p>
 
-          {extra ? <div onPointerDownCapture={halt}>{extra}</div> : null}
+          {showExtra ? (
+            <div onPointerDownCapture={halt}>
+              {extraFrom !== undefined ? (
+                <p className="player-help">
+                  <b>এখন তোমার পালা:</b> স্লাইডার টানো, ছবি আর সংখ্যা সাথে সাথে বদলাবে।
+                </p>
+              ) : null}
+              {extra}
+            </div>
+          ) : null}
 
           <button type="button" className="link-btn" onClick={() => choose("list")}>
             <ListIcon size={16} weight="bold" /> সব ধাপ একসাথে পড়ো
