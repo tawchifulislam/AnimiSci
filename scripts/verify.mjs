@@ -96,6 +96,16 @@ const claims = [
   ["vector-practice", "straight time", 120 / Math.sqrt(25 - 9), 0, "30", "30 s"],
   ["vector-practice", "min time", 120 / 5, 0, "24", "24 s"],
   ["vector-practice", "drift", 3 * 24, 0, "72", "72 m"],
+  ["unit-vector", "2A-B magnitude", Math.sqrt(85), 2, "9.22", "9.22"],
+  ["unit-vector", "x for magnitude 13", Math.sqrt(144), 0, "12", "144"],
+  ["unit-vector", "unit y of 3,-4", -4 / 5, 1, "-0.8", "-0.8"],
+  ["perpendicular-components", "Fx 50 at 30", 50 * Math.cos(rad(30)), 1, "43.3", "43.3"],
+  ["perpendicular-components", "Fy 50 at 30", 50 * Math.sin(rad(30)), 0, "25", "25"],
+  ["perpendicular-components", "Fx 20 at 45", 20 * Math.cos(rad(45)), 2, "14.14", "14.14"],
+  ["perpendicular-components", "check 43.3,25", Math.hypot(43.3, 25), 0, "50", "50"],
+  ["sine-rule-resolution", "P 120,30,90", (120 * Math.sin(rad(90))) / Math.sin(rad(120)), 1, "138.6", "138.6"],
+  ["sine-rule-resolution", "Q 120,30,90", (120 * Math.sin(rad(30))) / Math.sin(rad(120)), 1, "69.3", "69.3"],
+  ["sine-rule-resolution", "lantern 45", (100 * Math.sin(rad(45))) / Math.sin(rad(90)), 1, "70.7", "70.7"],
 ];
 
 const lessonFile = (lesson) => {
