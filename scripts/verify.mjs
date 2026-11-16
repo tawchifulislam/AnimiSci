@@ -111,6 +111,10 @@ const claims = [
   ["river-boat", "river phi 0.5", deg(Math.acos(0.5)), 0, "60", "=60"],
   ["river-boat", "swimmer straight", 60 / 0.6, 0, "100", "=100"],
   ["river-boat", "swimmer drift", 0.8 * 60, 0, "48", "=48"],
+  ["relative-velocity", "cyclist relative speed", Math.hypot(6, 8), 0, "10", "=10"],
+  ["relative-velocity", "cyclist umbrella angle", deg(Math.atan(8 / 6)), 1, "53.1", "53.1"],
+  ["relative-velocity", "opposite trains", 60 + 40, 0, "100", "100"],
+  ["relative-velocity", "same direction trains", 60 - 40, 0, "20", "20"],
 ];
 
 const lessonFile = (lesson) => {
