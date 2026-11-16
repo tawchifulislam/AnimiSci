@@ -115,6 +115,10 @@ const claims = [
   ["relative-velocity", "cyclist umbrella angle", deg(Math.atan(8 / 6)), 1, "53.1", "53.1"],
   ["relative-velocity", "opposite trains", 60 + 40, 0, "100", "100"],
   ["relative-velocity", "same direction trains", 60 - 40, 0, "20", "20"],
+  ["dot-product", "3d dot product", 2 * 4 + 3 * -1 + 1 * 2, 0, "7", "=7"],
+  ["dot-product", "3d cos theta", 7 / Math.sqrt(14 * 21), 2, "0.41", "0.41"],
+  ["dot-product", "3d theta", deg(Math.acos(7 / Math.sqrt(14 * 21))), 1, "65.9", "65.9"],
+  ["dot-product", "perpendicular m", 5 / 2, 1, "2.5", "2.5"],
 ];
 
 const lessonFile = (lesson) => {
