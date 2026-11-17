@@ -119,6 +119,23 @@ const claims = [
   ["dot-product", "3d cos theta", 7 / Math.sqrt(14 * 21), 2, "0.41", "0.41"],
   ["dot-product", "3d theta", deg(Math.acos(7 / Math.sqrt(14 * 21))), 1, "65.9", "65.9"],
   ["dot-product", "perpendicular m", 5 / 2, 1, "2.5", "2.5"],
+  ["cross-product", "2d cross z", 2 * 5 - 3 * 4, 0, "-2", "=-2"],
+  ["cross-product", "triangle cross i", (-2) * (-1) - 1 * 1, 0, "1", "=1"],
+  ["cross-product", "triangle cross k", 3 * 1 - (-2) * 1, 0, "5", "=5"],
+  ["cross-product", "triangle cross magnitude", Math.sqrt(42), 2, "6.48", "6.48"],
+  ["cross-product", "triangle area", Math.sqrt(42) / 2, 2, "3.24", "3.24"],
+  ["cross-product", "triangle perpendicular check", 3 * 1 + -2 * 4 + 1 * 5, 0, "0", "=0"],
+  ["del-gradient", "gradient 3x2y dx", 6 * 1 * 2, 0, "12", "12"],
+  ["del-gradient", "gradient 3x2y dy", 3 * 1 - 3 * 4, 0, "-9", "-9"],
+  ["del-gradient", "gradient 3x2y magnitude", Math.hypot(12, 9), 0, "15", "=15"],
+  ["del-gradient", "temperature gradient magnitude", Math.sqrt(15 * 15 + 7.5 * 7.5), 2, "16.77", "16.77"],
+  ["del-gradient", "temperature gradient angle", deg(Math.atan(7.5 / 15)), 1, "26.6", "26.6"],
+  ["divergence", "divergence 3x2 at 1", 6 * 1 + 3, 0, "9", "=9"],
+  ["divergence", "divergence a", -1, 0, "-1", "=-1"],
+  ["divergence", "divergence 2x,3y", 2 + 3, 0, "5", "5"],
+  ["curl", "curl 3x minus -2y", 3 - -2, 0, "5", "=5"],
+  ["curl", "curl b", 2, 0, "2", "b=2"],
+  ["curl", "curl divergence", 4 - 1, 0, "3", "=3"],
 ];
 
 const lessonFile = (lesson) => {
