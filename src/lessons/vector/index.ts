@@ -1,7 +1,9 @@
 import type { ComponentType } from "react";
 import type { LessonMeta } from "@/lessons/types";
 import * as scalarVector from "./scalar-vector";
+import * as vectorTypes from "./vector-types";
 import * as addition from "./addition";
+import * as subtraction from "./subtraction";
 import * as unitVector from "./unit-vector";
 import * as perpendicularComponents from "./perpendicular-components";
 import * as sineRuleResolution from "./sine-rule-resolution";
@@ -9,13 +11,18 @@ import * as riverBoat from "./river-boat";
 import * as relativeVelocity from "./relative-velocity";
 import * as dotProduct from "./dot-product";
 import * as crossProduct from "./cross-product";
-import * as delGradDivCurl from "./del-grad-div-curl";
+import * as delGradient from "./del-gradient";
+import * as divergence from "./divergence";
+import * as curl from "./curl";
+import * as vectorPractice from "./vector-practice";
 
 type Entry = { meta: LessonMeta; default: ComponentType };
 
 export const vectorLessons: Record<string, Entry> = {
   "scalar-vector": scalarVector,
+  "vector-types": vectorTypes,
   addition,
+  subtraction,
   "unit-vector": unitVector,
   "perpendicular-components": perpendicularComponents,
   "sine-rule-resolution": sineRuleResolution,
@@ -23,5 +30,8 @@ export const vectorLessons: Record<string, Entry> = {
   "relative-velocity": relativeVelocity,
   "dot-product": dotProduct,
   "cross-product": crossProduct,
-  "del-grad-div-curl": delGradDivCurl,
+  "del-gradient": delGradient,
+  divergence,
+  curl,
+  "vector-practice": vectorPractice,
 };
