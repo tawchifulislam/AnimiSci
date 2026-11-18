@@ -1,45 +1,46 @@
 import Link from "next/link";
 import { subjects } from "@/data/subjects";
-import { Logo } from "./Logo";
 
 export function Footer() {
   return (
-    <footer className="footer">
-      <div className="shell footer-grid">
-        <div className="footer-col footer-brand">
-          <Logo />
-          <p className="footer-slogan">দেখো। বদলাও। বোঝো।</p>
-          <p className="muted" style={{ marginTop: "0.3rem", maxWidth: "24rem", fontSize: "0.95rem" }}>
-            এইচএসসি বিজ্ঞান ও গণিতের সূত্র, জীবন্ত ছবিতে।
-          </p>
+    <footer className="sx-foot">
+      <div className="shell sx-foot-in">
+        <div className="sx-foot-brand">
+          <div className="sx-mark sx-mark-sm" aria-label="AnimiSci">
+            <span>animi</span>
+            <span className="sx-mark-s">sci</span>
+          </div>
+          <p className="sx-foot-slogan">See it. Change it. Get it.</p>
+          <p className="sx-foot-note">HSC science, as living pictures.</p>
         </div>
-        <div className="footer-col">
-          <h3>বিষয়সমূহ</h3>
-          <ul>
-            {subjects.map((s) => (
-              <li key={s.slug}>
-                <Link href={`/${s.slug}`}>{s.name}</Link>
-              </li>
-            ))}
-          </ul>
+
+        <div className="sx-foot-col">
+          <h4>Subjects</h4>
+          {subjects.map((s) => (
+            <Link key={s.slug} href={`/${s.slug}`} className="sx-foot-link">
+              <i style={{ background: s.tint }} />
+              {s.en}
+            </Link>
+          ))}
         </div>
-        <div className="footer-col">
-          <h3>দ্রুত লিংক</h3>
-          <ul>
-            <li>
-              <Link href="/">হোম</Link>
-            </li>
-            <li>
-              <Link href="/#how">যাত্রাপথ</Link>
-            </li>
-            <li>
-              <Link href="/#subjects">বিষয়সমূহ</Link>
-            </li>
-          </ul>
+
+        <div className="sx-foot-col">
+          <h4>Explore</h4>
+          <Link href="/#how" className="sx-foot-link">
+            How it works
+          </Link>
+          <Link href="/#subjects" className="sx-foot-link">
+            All subjects
+          </Link>
+          <Link href="/physics/first/vector/addition" className="sx-foot-link">
+            First lesson
+          </Link>
         </div>
       </div>
-      <div className="footer-bottom">
-        <div className="shell">AnimiSci · দেখো, বদলাও, বোঝো</div>
+
+      <div className="shell sx-foot-bar">
+        <span>© {new Date().getFullYear()} AnimiSci</span>
+        <span>Built for HSC students</span>
       </div>
     </footer>
   );
