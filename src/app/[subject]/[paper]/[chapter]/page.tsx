@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { ChapterProgress } from "@/components/progress/ChapterProgress";
 import { LessonCheck } from "@/components/progress/LessonCheck";
-import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { ComingSoon } from "@/components/site/ComingSoon";
-import { PageHeader } from "@/components/site/PageHeader";
-import { ClockIcon } from "@/components/ui/icons";
 import { allChapterParams, getChapter, isReady } from "@/data/chapters";
 import { getPaper, getSubject } from "@/data/subjects";
 import { lessonKey } from "@/lib/lesson-key";
@@ -27,6 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : { title: "পাওয়া যায়নি" };
 }
 
+const duration = (min: number) => (min >= 60 ? `${Math.floor(min / 60)} h ${min % 60} min` : `${min} min`);
+
 export default async function ChapterPage({ params }: Props) {
   const { subject, paper, chapter } = await params;
   const s = getSubject(subject);
@@ -35,56 +35,78 @@ export default async function ChapterPage({ params }: Props) {
   if (!s || !p || !c) notFound();
 
   const base = `/${s.slug}/${p.slug}`;
-  const crumbs = [{ label: s.name, href: `/${s.slug}` }, { label: p.name, href: base }, { label: c.name }];
+  const tint = { "--tint": s.tint } as CSSProperties;
 
   if (!isReady(c)) {
     return (
       <div className="shell page">
-        <Breadcrumb items={crumbs} />
+        <div className="sx-sp-crumb">
+          <Link href={base} className="sx-back">
+            ← All chapters
+          </Link>
+        </div>
         <ComingSoon title={c.name} backHref={base} backLabel="অধ্যায়ের তালিকায় ফিরে যাও" />
       </div>
     );
   }
 
   const total = c.lessons.reduce((sum, l) => sum + l.minutes, 0);
+  const keys = c.lessons.map((l) => lessonKey(s.slug, p.slug, c.slug, l.slug));
 
   return (
-    <div className="shell page">
-      <Breadcrumb items={crumbs} />
-      <PageHeader
-        eyebrow={`অধ্যায় ${bn(c.n)}`}
-        title={c.name}
-        sub={`${bn(c.lessons.length)}টি পাঠ, মোট প্রায় ${bn(total)} মিনিট। ক্রমানুসারে পড়লে সবচেয়ে ভালো, কারণ আগের পাঠের ধারণা পরের পাঠে কাজে লাগে।`}
-        color={s.color}
-        art={s.icon}
-      >
-        <div style={{ maxWidth: "26rem" }}>
-          <ChapterProgress color={s.color} keys={c.lessons.map((l) => lessonKey(s.slug, p.slug, c.slug, l.slug))} />
-        </div>
-        <div>
-          <Link href={`${base}/${c.slug}/${c.lessons[0].slug}`} className="btn btn-primary">
-            প্রথম পাঠ থেকে শুরু
-          </Link>
-        </div>
-      </PageHeader>
+    <>
+      <div className="shell sx-sp-crumb">
+        <Link href={base} className="sx-back">
+          ← All chapters
+        </Link>
+      </div>
 
-      <ol className="lesson-list">
-        {c.lessons.map((l, i) => (
-          <li key={l.slug}>
-            <Link href={`${base}/${c.slug}/${l.slug}`} className="lesson-row lift">
-              <span className="chip-num">{bn(i + 1)}</span>
-              <div className="lesson-row-body">
-                <strong>{l.title}</strong>
-                <span>{l.short}</span>
-                <small>
-                  <ClockIcon size={14} /> {bn(l.minutes)} মিনিট
-                </small>
-              </div>
-              <LessonCheck k={lessonKey(s.slug, p.slug, c.slug, l.slug)} />
+      <section className="sx-sp-hero" style={tint}>
+        <div className="shell sx-sp-grid">
+          <div>
+            <p className="sx-sp-eye">Chapter {String(c.n).padStart(2, "0")}</p>
+            <h1 className="sx-sp-title sx-ch-title">{c.name}</h1>
+            <div className="sx-sp-stats">
+              <span className="sx-sp-stat">{c.lessons.length} lessons</span>
+              <span className="sx-sp-stat">about {duration(total)}</span>
+            </div>
+            <div className="sx-ch-hero-prog">
+              <ChapterProgress color="#171a2c" keys={keys} />
+            </div>
+            <Link href={`${base}/${c.slug}/${c.lessons[0].slug}`} className="btn btn-primary sx-start">
+              Start lesson 1
             </Link>
-          </li>
-        ))}
-      </ol>
-    </div>
+          </div>
+          <div className="sx-sp-art" aria-hidden>
+            <i className="sx-sp-dot d1" />
+            <i className="sx-sp-dot d2" />
+            <i className="sx-sp-dot d3" />
+            <span className="sx-sp-ic">
+              <b className="sx-sp-num">{c.n}</b>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section className="shell section">
+        <ol className="sx-lessons">
+          {c.lessons.map((l, i) => (
+            <li key={l.slug}>
+              <Link href={`${base}/${c.slug}/${l.slug}`} className="sx-lrow" style={tint}>
+                <span className="sx-lrow-no">{i + 1}</span>
+                <span className="sx-lrow-body">
+                  <strong>{l.title}</strong>
+                  <span>{l.short}</span>
+                </span>
+                <span className="sx-lrow-meta">
+                  <span className="sx-min">{l.minutes} min</span>
+                  <LessonCheck k={lessonKey(s.slug, p.slug, c.slug, l.slug)} />
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </>
   );
 }

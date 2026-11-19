@@ -3,16 +3,15 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { ChapterProgress } from "@/components/progress/ChapterProgress";
-import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { ComingSoon } from "@/components/site/ComingSoon";
-import { PageHeader } from "@/components/site/PageHeader";
 import { LockSimpleIcon } from "@/components/ui/icons";
 import { getChapters, isReady } from "@/data/chapters";
 import { getPaper, getSubject, papers, subjects } from "@/data/subjects";
 import { lessonKey } from "@/lib/lesson-key";
-import { bn } from "@/lib/vec";
 
 type Props = { params: Promise<{ subject: string; paper: string }> };
+
+const paperEn: Record<string, string> = { first: "First Paper", second: "Second Paper" };
 
 export function generateStaticParams() {
   return subjects.flatMap((s) => papers.map((p) => ({ subject: s.slug, paper: p.slug })));
@@ -33,57 +32,80 @@ export default async function PaperPage({ params }: Props) {
 
   const chapters = getChapters(s.slug, p.slug);
   const readyCount = chapters.filter(isReady).length;
+  const idx = papers.findIndex((x) => x.slug === p.slug) + 1;
+  const tint = { "--tint": s.tint } as CSSProperties;
 
   return (
-    <div className="shell page">
-      <Breadcrumb items={[{ label: "হোম", href: "/" }, { label: s.name, href: `/${s.slug}` }, { label: p.name }]} />
-      <PageHeader
-        eyebrow={s.en}
-        title={
-          <>
-            {s.name} <em>{p.name}</em>
-          </>
-        }
-        sub={chapters.length ? `${bn(chapters.length)}টি অধ্যায়, তার মধ্যে ${bn(readyCount)}টি চালু।` : undefined}
-        color={s.color}
-        art={s.icon}
-      />
+    <>
+      <div className="shell sx-sp-crumb">
+        <Link href={`/${s.slug}`} className="sx-back">
+          ← All papers
+        </Link>
+      </div>
 
-      {chapters.length ? (
-        <div className="chapter-grid">
-          {chapters.map((c) => {
-            const ready = isReady(c);
-            const top = (
-              <div className="chapter-top">
-                <span className="chapter-num">{bn(c.n)}</span>
-                <div style={{ minWidth: 0 }}>
-                  <h3 className="chapter-name">{c.name}</h3>
-                  <p className="chapter-en">{c.en}</p>
-                </div>
-                {ready ? null : (
-                  <span className="chapter-go">
-                    <LockSimpleIcon size={20} />
-                  </span>
-                )}
+      <section className="sx-sp-hero" style={tint}>
+        <div className="shell sx-sp-grid">
+          <div>
+            <h1 className="sx-sp-title">{paperEn[p.slug] ?? p.name}</h1>
+            <p className="sx-sp-blurb">অধ্যায় বেছে নাও। ক্রমানুসারে পড়লে সবচেয়ে ভালো, কারণ আগের ধারণা পরে কাজে লাগে।</p>
+            {chapters.length > 0 ? (
+              <div className="sx-sp-stats">
+                <span className="sx-sp-stat">{chapters.length} chapters</span>
+                <span className="sx-sp-stat">{readyCount > 0 ? `${readyCount} live` : "Coming soon"}</span>
               </div>
-            );
-            const style = { "--sc": s.color } as CSSProperties;
-            return ready ? (
-              <Link key={c.slug} href={`/${s.slug}/${p.slug}/${c.slug}`} className="chapter-card lift reveal" style={style}>
-                {top}
-                <ChapterProgress color={s.color} keys={c.lessons.map((l) => lessonKey(s.slug, p.slug, c.slug, l.slug))} />
-              </Link>
-            ) : (
-              <div key={c.slug} className="chapter-card locked" style={style}>
-                {top}
-                <p className="chapter-en">শীঘ্রই আসছে</p>
-              </div>
-            );
-          })}
+            ) : null}
+          </div>
+          <div className="sx-sp-art" aria-hidden>
+            <i className="sx-sp-dot d1" />
+            <i className="sx-sp-dot d2" />
+            <i className="sx-sp-dot d3" />
+            <span className="sx-sp-ic">
+              <b className="sx-sp-num">{idx}</b>
+            </span>
+          </div>
         </div>
-      ) : (
-        <ComingSoon title={`${s.name} ${p.name}`} backHref={`/${s.slug}`} backLabel="আগের পাতায় ফিরে যাও" />
-      )}
-    </div>
+      </section>
+
+      <section className="shell section">
+        {chapters.length ? (
+          <div className="sx-chs">
+            {chapters.map((c) => {
+              const ready = isReady(c);
+              const head = (
+                <>
+                  <span className="sx-ch-top">
+                    <span className="sx-ch-no">{String(c.n).padStart(2, "0")}</span>
+                    {ready ? (
+                      <span className="sx-chip">{c.lessons.length} lessons</span>
+                    ) : (
+                      <span className="sx-ch-lock">
+                        <LockSimpleIcon size={18} />
+                        <span className="sx-chip">Soon</span>
+                      </span>
+                    )}
+                  </span>
+                  <h3>{c.name}</h3>
+                  <span className="sx-ch-en">{c.en}</span>
+                </>
+              );
+              return ready ? (
+                <Link key={c.slug} href={`/${s.slug}/${p.slug}/${c.slug}`} className="sx-ch" style={tint}>
+                  {head}
+                  <span className="sx-ch-prog">
+                    <ChapterProgress color="#171a2c" keys={c.lessons.map((l) => lessonKey(s.slug, p.slug, c.slug, l.slug))} />
+                  </span>
+                </Link>
+              ) : (
+                <div key={c.slug} className="sx-ch locked" style={tint}>
+                  {head}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <ComingSoon title={`${s.name} ${p.name}`} backHref={`/${s.slug}`} backLabel="আগের পাতায় ফিরে যাও" />
+        )}
+      </section>
+    </>
   );
 }
