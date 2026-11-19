@@ -2,7 +2,6 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { StickerIcon } from "@/components/site/StickerIcon";
 import { getChapters, isReady } from "@/data/chapters";
 import { getSubject, papers, subjects } from "@/data/subjects";
@@ -37,20 +36,15 @@ export default async function SubjectPage({ params }: { params: Promise<Params> 
 
   return (
     <>
-      <div className="shell sx-sp-crumb">
-        <Breadcrumb items={[{ label: s.en }]} />
-      </div>
-
       <section className="sx-sp-hero" style={{ "--tint": s.tint } as CSSProperties}>
         <div className="shell sx-sp-grid">
           <div>
-            <p className="sx-sp-eye">{s.name}</p>
             <h1 className="sx-sp-title">{s.en}</h1>
             <p className="sx-sp-blurb">{s.blurb}</p>
             <div className="sx-sp-stats">
               <span className="sx-sp-stat">{papers.length} papers</span>
-              <span className="sx-sp-stat">{totalChapters} chapters</span>
-              <span className="sx-sp-stat">{totalLessons > 0 ? `${totalLessons} lessons live` : "Lessons coming soon"}</span>
+              {totalChapters > 0 ? <span className="sx-sp-stat">{totalChapters} chapters</span> : null}
+              <span className="sx-sp-stat">{totalLessons > 0 ? `${totalLessons} lessons live` : "Coming soon"}</span>
             </div>
           </div>
           <div className="sx-sp-art" aria-hidden>
@@ -65,10 +59,6 @@ export default async function SubjectPage({ params }: { params: Promise<Params> 
       </section>
 
       <section className="shell section">
-        <div className="section-head">
-          <p className="eyebrow">Choose a paper</p>
-          <h2 className="h2 sx-h2">Start where you are.</h2>
-        </div>
         <div className="sx-papers">
           {data.map(({ p, chapters, live, lessons }, i) => {
             const style = { "--tint": s.tint, "--tilt": i % 2 === 0 ? "-1deg" : "1deg" } as CSSProperties;
@@ -76,15 +66,10 @@ export default async function SubjectPage({ params }: { params: Promise<Params> 
             return (
               <Link key={p.slug} href={`/${s.slug}/${p.slug}`} className={`sx-paper${live ? "" : " soon"}`} style={style}>
                 <span className="sx-paper-top">
-                  <span className="sx-paper-ic">
-                    <StickerIcon kind={s.icon} />
-                  </span>
+                  <span className="sx-paper-no">{i + 1}</span>
                   <span className="sx-chip">{live ? "Live" : "Soon"}</span>
                 </span>
-                <span>
-                  <h3>{paperEn[p.slug] ?? p.name}</h3>
-                  <span className="sx-paper-bn">{p.name}</span>
-                </span>
+                <h3>{paperEn[p.slug] ?? p.name}</h3>
                 {shown.length > 0 ? (
                   <ul className="sx-paper-list">
                     {shown.map((c) => (
@@ -99,7 +84,7 @@ export default async function SubjectPage({ params }: { params: Promise<Params> 
                   <span className="sx-paper-more">Chapter list is on its way.</span>
                 )}
                 <span className="sx-paper-foot">
-                  <span>{chapters.length > 0 ? `${chapters.length} chapters${lessons > 0 ? `, ${lessons} lessons` : ""}` : "Not started yet"}</span>
+                  {live ? <span>{`${chapters.length} chapters${lessons > 0 ? `, ${lessons} lessons` : ""}`}</span> : null}
                   <span>{live ? "Open →" : "Preview →"}</span>
                 </span>
               </Link>
@@ -109,9 +94,6 @@ export default async function SubjectPage({ params }: { params: Promise<Params> 
       </section>
 
       <section className="shell section" style={{ paddingTop: 0 }}>
-        <div className="section-head">
-          <p className="eyebrow">More subjects</p>
-        </div>
         <div className="sx-more">
           {subjects
             .filter((o) => o.slug !== s.slug)

@@ -3693,3 +3693,40 @@ html {
     animation: none;
   }
 }
+
+.sx4-marker {
+  margin: 0;
+}
+
+.sx-chip {
+  color: #171a2c;
+}
+
+.sx-paper {
+  text-align: left;
+}
+
+.sx-paper-no {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: var(--bw) solid #171a2c;
+  border-radius: 1rem;
+  background: #fff;
+  color: #171a2c;
+  font-family: var(--font-latin), sans-serif;
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  transform: rotate(-5deg);
+}
+
+.sx-paper.soon .sx-paper-no {
+  border-color: currentColor;
+  background: transparent;
+  color: var(--ink);
+}
+
+.sx-paper-foot span:last-child {
+  margin-left: auto;
+}
