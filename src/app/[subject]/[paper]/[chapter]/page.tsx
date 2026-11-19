@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { ChapterProgress } from "@/components/progress/ChapterProgress";
 import { LessonCheck } from "@/components/progress/LessonCheck";
-import { ComingSoon } from "@/components/site/ComingSoon";
+import { SoonPanel } from "@/components/site/SoonPanel";
 import { allChapterParams, getChapter, isReady } from "@/data/chapters";
 import { getPaper, getSubject } from "@/data/subjects";
 import { lessonKey } from "@/lib/lesson-key";
@@ -40,12 +40,7 @@ export default async function ChapterPage({ params }: Props) {
   if (!isReady(c)) {
     return (
       <div className="shell page">
-        <div className="sx-sp-crumb">
-          <Link href={base} className="sx-back">
-            ← All chapters
-          </Link>
-        </div>
-        <ComingSoon title={c.name} backHref={base} backLabel="অধ্যায়ের তালিকায় ফিরে যাও" />
+        <SoonPanel tint={s.tint} backHref={base} backLabel="All chapters" />
       </div>
     );
   }

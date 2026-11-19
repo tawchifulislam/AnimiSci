@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { ChapterProgress } from "@/components/progress/ChapterProgress";
-import { ComingSoon } from "@/components/site/ComingSoon";
+import { SoonPanel } from "@/components/site/SoonPanel";
 import { LockSimpleIcon } from "@/components/ui/icons";
 import { getChapters, isReady } from "@/data/chapters";
 import { getPaper, getSubject, papers, subjects } from "@/data/subjects";
@@ -47,7 +47,7 @@ export default async function PaperPage({ params }: Props) {
         <div className="shell sx-sp-grid">
           <div>
             <h1 className="sx-sp-title">{paperEn[p.slug] ?? p.name}</h1>
-            <p className="sx-sp-blurb">অধ্যায় বেছে নাও। ক্রমানুসারে পড়লে সবচেয়ে ভালো, কারণ আগের ধারণা পরে কাজে লাগে।</p>
+            {chapters.length > 0 ? <p className="sx-sp-blurb">অধ্যায় বেছে নাও। ক্রমানুসারে পড়লে সবচেয়ে ভালো, কারণ আগের ধারণা পরে কাজে লাগে।</p> : null}
             {chapters.length > 0 ? (
               <div className="sx-sp-stats">
                 <span className="sx-sp-stat">{chapters.length} chapters</span>
@@ -103,7 +103,7 @@ export default async function PaperPage({ params }: Props) {
             })}
           </div>
         ) : (
-          <ComingSoon title={`${s.name} ${p.name}`} backHref={`/${s.slug}`} backLabel="আগের পাতায় ফিরে যাও" />
+          <SoonPanel tint={s.tint} backHref={`/${s.slug}`} backLabel="All papers" />
         )}
       </section>
     </>

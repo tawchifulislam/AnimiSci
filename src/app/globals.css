@@ -3973,3 +3973,170 @@ a.sx-ch:hover {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+.sx6-marker {
+  margin: 0;
+}
+
+.sx-sp-grid {
+  padding-block: var(--s-5);
+}
+
+.sx-sp-title {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.sx-sp-blurb {
+  font-size: var(--fs-md);
+}
+
+.sx-sp-art {
+  width: 12rem;
+  height: 9rem;
+}
+
+.sx-sp-ic {
+  inset: 0.5rem 2.2rem;
+  border-radius: 1.6rem;
+}
+
+.sx-sp-ic svg {
+  width: 4rem;
+  height: 4rem;
+}
+
+.sx-sp-num {
+  font-size: 3.25rem;
+}
+
+.sx-ch-title {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.sx-chs {
+  align-items: start;
+}
+
+.sx-ch.locked,
+.sx-paper.soon {
+  border: var(--bw) dashed color-mix(in srgb, var(--tint) 70%, var(--ink));
+  background: color-mix(in srgb, var(--tint) 14%, var(--surface));
+  color: var(--ink);
+  box-shadow: none;
+  transform: none;
+}
+
+.sx-ch.locked .sx-ch-no,
+.sx-paper.soon .sx-paper-no {
+  border-color: color-mix(in srgb, var(--tint) 70%, var(--ink));
+  background: color-mix(in srgb, var(--tint) 30%, var(--surface));
+  color: var(--ink);
+}
+
+.sx-ch.locked .sx-chip,
+.sx-paper.soon .sx-chip {
+  border-style: dashed;
+  background: transparent;
+  color: var(--ink);
+}
+
+.sx-soon {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  padding: var(--s-5);
+  border: var(--bw) dashed color-mix(in srgb, var(--tint) 70%, var(--ink));
+  border-radius: 1.75rem;
+  background: color-mix(in srgb, var(--tint) 14%, var(--surface));
+}
+
+.sx-soon-ic {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  border: var(--bw) solid #171a2c;
+  border-radius: 1.5rem;
+  background: var(--tint);
+  color: #171a2c;
+  box-shadow: 0.25rem 0.25rem 0 #171a2c;
+  transform: rotate(-6deg);
+}
+
+.sx-soon h2 {
+  font-family: var(--font-latin), sans-serif;
+  font-size: var(--fs-2xl);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.sx-soon p {
+  margin-top: var(--s-1);
+  font-size: var(--fs-md);
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+.sx-soon-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+
+@media (max-width: 36rem) {
+  .sx-soon {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.sx7-marker {
+  margin: 0;
+}
+
+.sx-chs {
+  align-items: stretch;
+}
+
+.sx-ch.locked {
+  border: var(--bw) dashed #171a2c;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: none;
+  transform: none;
+}
+
+.sx-ch.locked .sx-ch-no {
+  border-color: currentColor;
+  background: transparent;
+  color: var(--ink);
+}
+
+.sx-ch.locked .sx-chip {
+  border-style: solid;
+  background: #fff;
+  color: #171a2c;
+}
+
+.sx-paper.soon {
+  border: var(--bw) dashed #171a2c;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: none;
+  transform: none;
+}
+
+.sx-paper.soon .sx-paper-no {
+  border-color: currentColor;
+  background: transparent;
+  color: var(--ink);
+}
+
+.sx-paper.soon .sx-chip {
+  border-style: solid;
+  background: #fff;
+  color: #171a2c;
+}
