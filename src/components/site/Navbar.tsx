@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { AuthControl } from "@/components/auth/AuthControl";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { StickerIcon } from "@/components/site/StickerIcon";
 import { subjects } from "@/data/subjects";
 
@@ -19,6 +21,8 @@ function LogoMark() {
 
 export function Navbar() {
   const path = usePathname();
+  const router = useRouter();
+  const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const current = subjects.find((s) => path === `/${s.slug}` || path.startsWith(`/${s.slug}/`));
 
@@ -30,6 +34,13 @@ export function Navbar() {
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, [open]);
+
+  const logout = async () => {
+    setOpen(false);
+    await signOut();
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <>
@@ -53,9 +64,6 @@ export function Navbar() {
                 </Link>
               );
             })}
-            <Link href="/#how" className="sx-nav-link">
-              <b className="sx-nav-t">How it works</b>
-            </Link>
           </nav>
 
           <div className="sx-nav-right">
@@ -64,9 +72,7 @@ export function Navbar() {
                 {current.en}
               </span>
             ) : null}
-            <Link href="/physics" className="sx-nav-cta">
-              Start
-            </Link>
+            <AuthControl />
             <button type="button" className="sx-burger" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
               <svg viewBox="0 0 24 24" width={22} height={22} fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" aria-hidden>
                 {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
@@ -79,15 +85,7 @@ export function Navbar() {
       <AnimatePresence>
         {open ? (
           <>
-            <motion.button
-              type="button"
-              className="sx-scrim"
-              aria-label="Close menu"
-              onClick={() => setOpen(false)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
+            <motion.button type="button" className="sx-scrim" aria-label="Close menu" onClick={() => setOpen(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
             <motion.div
               className="sx-sheet"
               role="dialog"
@@ -108,9 +106,23 @@ export function Navbar() {
                   </span>
                 </Link>
               ))}
-              <Link href="/#how" className="sx-sheet-plain" onClick={() => setOpen(false)}>
-                How it works
-              </Link>
+              {user ? (
+                <>
+                  <Link href="/dashboard" className="sx-sheet-plain" onClick={() => setOpen(false)}>
+                    Dashboard
+                  </Link>
+                  <Link href="/profile" className="sx-sheet-plain" onClick={() => setOpen(false)}>
+                    Profile
+                  </Link>
+                  <button type="button" className="sx-sheet-plain" onClick={logout}>
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <Link href="/login" className="sx-sheet-login" onClick={() => setOpen(false)}>
+                  Log in with Google
+                </Link>
+              )}
             </motion.div>
           </>
         ) : null}
