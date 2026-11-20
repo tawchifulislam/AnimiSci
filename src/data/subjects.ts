@@ -16,10 +16,10 @@ export const papers: { slug: PaperSlug; name: string }[] = [
 ];
 
 export const subjects: Subject[] = [
-  { slug: "physics", name: "পদার্থবিজ্ঞান", en: "Physics", blurb: "বল, গতি, তরঙ্গ ও শক্তির রহস্য অ্যানিমেশনে", color: "#3b5bdb", tint: "#9ccbff", icon: "atom" },
-  { slug: "chemistry", name: "রসায়ন", en: "Chemistry", blurb: "পরমাণু থেকে বিক্রিয়া, ধাপে ধাপে", color: "#0b8f6a", tint: "#8be6bb", icon: "flask" },
-  { slug: "biology", name: "জীববিজ্ঞান", en: "Biology", blurb: "কোষ থেকে জীবজগৎ, ছবি দেখে বোঝা", color: "#d6336c", tint: "#e9ccff", icon: "dna" },
-  { slug: "higher-math", name: "উচ্চতর গণিত", en: "Higher Math", blurb: "কঠিন সূত্রের পেছনের সহজ যুক্তি", color: "#e8590c", tint: "#ffe27a", icon: "sigma" },
+  { slug: "physics", name: "পদার্থবিজ্ঞান", en: "Physics", blurb: "বলবিদ্যা, তরঙ্গ, তাপগতিবিদ্যা ও আধুনিক পদার্থবিজ্ঞান", color: "#3b5bdb", tint: "#9ccbff", icon: "atom" },
+  { slug: "chemistry", name: "রসায়ন", en: "Chemistry", blurb: "পরমাণুর গঠন থেকে রাসায়নিক বিক্রিয়া ও জৈব রসায়ন", color: "#0b8f6a", tint: "#8be6bb", icon: "flask" },
+  { slug: "biology", name: "জীববিজ্ঞান", en: "Biology", blurb: "কোষ, জেনেটিক্স ও জীবের শারীরতত্ত্ব", color: "#d6336c", tint: "#e9ccff", icon: "dna" },
+  { slug: "higher-math", name: "উচ্চতর গণিত", en: "Higher Math", blurb: "ক্যালকুলাস, ভেক্টর ও জ্যামিতির ধারণা", color: "#e8590c", tint: "#ffe27a", icon: "sigma" },
 ];
 
 export const getSubject = (slug: string) => subjects.find((s) => s.slug === slug);

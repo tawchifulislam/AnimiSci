@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { LayoutDashboard, LogIn, LogOut, Menu, UserRound, X } from "lucide-react";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { StickerIcon } from "@/components/site/StickerIcon";
@@ -74,9 +75,7 @@ export function Navbar() {
             ) : null}
             <AuthControl />
             <button type="button" className="sx-burger" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-              <svg viewBox="0 0 24 24" width={22} height={22} fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" aria-hidden>
-                {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-              </svg>
+              {open ? <X size={22} aria-hidden /> : <Menu size={22} aria-hidden />}
             </button>
           </div>
         </div>
@@ -109,18 +108,18 @@ export function Navbar() {
               {user ? (
                 <>
                   <Link href="/dashboard" className="sx-sheet-plain" onClick={() => setOpen(false)}>
-                    Dashboard
+                    <LayoutDashboard size={18} aria-hidden /> Dashboard
                   </Link>
                   <Link href="/profile" className="sx-sheet-plain" onClick={() => setOpen(false)}>
-                    Profile
+                    <UserRound size={18} aria-hidden /> Profile
                   </Link>
                   <button type="button" className="sx-sheet-plain" onClick={logout}>
-                    Log out
+                    <LogOut size={18} aria-hidden /> Log out
                   </button>
                 </>
               ) : (
                 <Link href="/login" className="sx-sheet-login" onClick={() => setOpen(false)}>
-                  Log in with Google
+                  <LogIn size={18} aria-hidden /> Log in with Google
                 </Link>
               )}
             </motion.div>

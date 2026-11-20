@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Upload } from "lucide-react";
 import { Avatar } from "@/components/auth/Avatar";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
@@ -96,7 +97,7 @@ export function ProfileForm({ userId, email, initialName, initialAvatar, googleA
         <div className="sx-form-photo-btns">
           <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => pick(e.target.files?.[0])} />
           <button type="button" className="btn btn-ghost" onClick={() => fileRef.current?.click()}>
-            Upload photo
+            <Upload size={16} aria-hidden /> Upload photo
           </button>
           {googleAvatar ? (
             <button

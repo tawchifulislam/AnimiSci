@@ -4677,3 +4677,60 @@ button.sx-sheet-plain {
   font-size: var(--fs-xs);
   font-weight: 600;
 }
+
+.sx10-marker {
+  margin: 0;
+}
+
+.sx-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.sx-back svg,
+.sx-go svg,
+.btn svg {
+  flex-shrink: 0;
+}
+
+.sx-dash-head .btn,
+.sx-sync .btn,
+.sx-soon .btn,
+.sx-form-photo-btns .btn,
+.sx-sp-hero .btn,
+.sx-final .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.sx-menu a,
+.sx-menu button,
+.sx-sheet-plain,
+.sx-sheet-login {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.sx-sheet-login {
+  justify-content: center;
+}
+
+.sx-spin {
+  animation: sx-spin 0.9s linear infinite;
+}
+
+@keyframes sx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sx-spin {
+    animation: none;
+  }
+}

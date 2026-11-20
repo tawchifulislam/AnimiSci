@@ -11,7 +11,7 @@ export function Footer() {
             <span className="sx-mark-s">sci</span>
           </div>
           <p className="sx-foot-slogan">See it. Change it. Get it.</p>
-          <p className="sx-foot-note">HSC science, as living pictures.</p>
+          <p className="sx-foot-note">Interactive HSC science lessons.</p>
         </div>
 
         <div className="sx-foot-col">

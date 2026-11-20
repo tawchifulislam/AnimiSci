@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 import { StickerIcon } from "@/components/site/StickerIcon";
 import { getChapters, isReady } from "@/data/chapters";
 import { getSubject, papers, subjects } from "@/data/subjects";
@@ -85,7 +86,10 @@ export default async function SubjectPage({ params }: { params: Promise<Params> 
                 )}
                 <span className="sx-paper-foot">
                   {live ? <span>{`${chapters.length} chapters${lessons > 0 ? `, ${lessons} lessons` : ""}`}</span> : null}
-                  <span>{live ? "Open →" : "Preview →"}</span>
+                  <span className="sx-go">
+                    {live ? "Open" : "Preview"}
+                    <ArrowRight size={16} aria-hidden />
+                  </span>
                 </span>
               </Link>
             );

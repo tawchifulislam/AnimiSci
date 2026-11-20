@@ -42,11 +42,11 @@ export const metadata: Metadata = {
     default: "AnimiSci | See it. Change it. Get it.",
     template: "%s | AnimiSci",
   },
-  description: "এইচএসসি পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান ও উচ্চতর গণিতের সূত্র জীবন্ত ছবিতে। স্লাইডার টানো, নিজেই বুঝে নাও।",
+  description: "এইচএসসি পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান ও উচ্চতর গণিতের ইন্টারঅ্যাকটিভ অ্যানিমেশন পাঠ।",
   openGraph: {
     siteName: "AnimiSci",
     title: "AnimiSci | See it. Change it. Get it.",
-    description: "সূত্র মুখস্থ নয়, দেখে বোঝার জীবন্ত পাঠ",
+    description: "দেখে বোঝার ইন্টারঅ্যাকটিভ পাঠ",
     locale: "bn_BD",
     type: "website",
   },

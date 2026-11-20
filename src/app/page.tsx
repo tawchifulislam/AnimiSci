@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { ContinueCard } from "@/components/progress/ContinueCard";
 import { LessonPeek } from "@/components/site/LessonPeek";
 import { Marquee } from "@/components/site/Marquee";
@@ -8,11 +9,11 @@ import { isSubjectLive } from "@/data/chapters";
 import { subjects } from "@/data/subjects";
 
 const steps = [
-  { name: "দেখো", line: "ভিডিওর মতো অ্যানিমেশন, ধাপে ধাপে", tint: "#9ccbff", tilt: "-1.2deg" },
-  { name: "সূত্র", line: "যা দেখলে, তা থেকেই সূত্র আসে", tint: "#ffe27a", tilt: "1deg" },
-  { name: "ভাবো", line: "পরিস্থিতি পড়ে নিজে ভাবো", tint: "#e9ccff", tilt: "-0.8deg" },
-  { name: "কুইজ", line: "পাঁচটি MCQ, ভুলের কারণসহ", tint: "#8be6bb", tilt: "1.2deg" },
-  { name: "অঙ্ক", line: "সহজ থেকে কঠিন, ধাপে ধাপে", tint: "#ffb9a3", tilt: "-1deg" },
+  { name: "দেখো", line: "অ্যানিমেশনে ধারণাটা চোখের সামনে দেখো", tint: "#9ccbff", tilt: "-1.2deg" },
+  { name: "সূত্র", line: "অ্যানিমেশন থেকেই সূত্রের উৎপত্তি", tint: "#ffe27a", tilt: "1deg" },
+  { name: "ভাবো", line: "একটি বাস্তব পরিস্থিতি নিয়ে নিজে চিন্তা করো", tint: "#e9ccff", tilt: "-0.8deg" },
+  { name: "কুইজ", line: "পাঁচটি MCQ, প্রতিটির ব্যাখ্যাসহ", tint: "#8be6bb", tilt: "1.2deg" },
+  { name: "অঙ্ক", line: "সহজ থেকে কঠিন, ধাপে ধাপে সমাধান", tint: "#ffb9a3", tilt: "-1deg" },
 ];
 
 const tilts = ["-1deg", "1deg", "1deg", "-1deg"];
@@ -33,10 +34,7 @@ export default function Home() {
                 <b className="sx-hl">Get it.</b>
               </span>
             </h1>
-            <p className="sx-sub">Learn HSC science by watching it work.</p>
-            <p className="lead">
-              পদার্থ, রসায়ন, জীব ও উচ্চতর গণিতের প্রতিটি সূত্র একেকটা জীবন্ত ছবি। স্লাইডার টানো, ছবি বদলাবে, সূত্র নিজেই বেরিয়ে আসবে।
-            </p>
+            <p className="lead">এইচএসসি পদার্থবিজ্ঞান, রসায়ন, জীববিজ্ঞান ও উচ্চতর গণিতের পাঠ, ইন্টারঅ্যাকটিভ অ্যানিমেশনে।</p>
             <div className="cta-row">
               <Link href="/physics" className="btn btn-primary">
                 Start Physics
@@ -98,7 +96,10 @@ export default function Home() {
                     <p>{s.blurb}</p>
                     <span className="sx-card-foot">
                       <span className="sx-chip">{live ? "Live" : "Soon"}</span>
-                      <span className="sx-go">{live ? "Start →" : "Coming soon →"}</span>
+                      <span className="sx-go">
+                        {live ? "Start" : "Coming soon"}
+                        <ArrowRight size={16} aria-hidden />
+                      </span>
                     </span>
                   </span>
                 </Link>
@@ -132,9 +133,9 @@ export default function Home() {
             <span>animi</span>
             <span className="sx-mark-s">sci</span>
           </div>
-          <p>প্রথম সূত্রটা নিজের চোখে দেখো। এক মিনিট লাগবে। একটা স্লাইডার টানলেই বুঝবে, মুখস্থ করার দরকার ছিল না।</p>
           <Link href="/physics/first/vector/addition" className="btn btn-primary">
             Start with Vectors
+            <ArrowRight size={16} aria-hidden />
           </Link>
         </div>
       </section>

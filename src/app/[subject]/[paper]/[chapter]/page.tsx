@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { ChapterProgress } from "@/components/progress/ChapterProgress";
 import { LessonCheck } from "@/components/progress/LessonCheck";
 import { SoonPanel } from "@/components/site/SoonPanel";
@@ -52,7 +53,7 @@ export default async function ChapterPage({ params }: Props) {
     <>
       <div className="shell sx-sp-crumb">
         <Link href={base} className="sx-back">
-          ← All chapters
+          <ArrowLeft size={16} aria-hidden /> All chapters
         </Link>
       </div>
 
@@ -69,7 +70,7 @@ export default async function ChapterPage({ params }: Props) {
               <ChapterProgress color="#171a2c" keys={keys} />
             </div>
             <Link href={`${base}/${c.slug}/${c.lessons[0].slug}`} className="btn btn-primary sx-start">
-              Start lesson 1
+              Start lesson 1 <ArrowRight size={16} aria-hidden />
             </Link>
           </div>
           <div className="sx-sp-art" aria-hidden>

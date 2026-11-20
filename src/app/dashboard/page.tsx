@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowRight, Pencil } from "lucide-react";
 import { Avatar } from "@/components/auth/Avatar";
 import { SyncNow } from "@/components/auth/SyncNow";
 import { buildCatalog, dayKey, lastDays, shortDate, streakOf } from "@/lib/progress-data";
@@ -69,7 +70,7 @@ export default async function DashboardPage() {
           {joined ? <p>Joined {joined}</p> : null}
         </div>
         <Link href="/profile" className="btn btn-ghost">
-          Edit profile
+          <Pencil size={16} aria-hidden /> Edit profile
         </Link>
         <SyncNow />
       </section>
@@ -109,7 +110,10 @@ export default async function DashboardPage() {
                   </small>
                   <strong>{next.title}</strong>
                 </span>
-                <span className="sx-go">{done > 0 ? "Continue →" : "Start →"}</span>
+                <span className="sx-go">
+                  {done > 0 ? "Continue" : "Start"}
+                  <ArrowRight size={16} aria-hidden />
+                </span>
               </Link>
             ) : (
               <p className="sx-muted">All available lessons are done. New chapters are on the way.</p>

@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { ChapterProgress } from "@/components/progress/ChapterProgress";
 import { SoonPanel } from "@/components/site/SoonPanel";
-import { LockSimpleIcon } from "@/components/ui/icons";
+import { ArrowLeft, Lock } from "lucide-react";
 import { getChapters, isReady } from "@/data/chapters";
 import { getPaper, getSubject, papers, subjects } from "@/data/subjects";
 import { lessonKey } from "@/lib/lesson-key";
@@ -39,7 +39,7 @@ export default async function PaperPage({ params }: Props) {
     <>
       <div className="shell sx-sp-crumb">
         <Link href={`/${s.slug}`} className="sx-back">
-          ← All papers
+          <ArrowLeft size={16} aria-hidden /> All papers
         </Link>
       </div>
 
@@ -47,7 +47,6 @@ export default async function PaperPage({ params }: Props) {
         <div className="shell sx-sp-grid">
           <div>
             <h1 className="sx-sp-title">{paperEn[p.slug] ?? p.name}</h1>
-            {chapters.length > 0 ? <p className="sx-sp-blurb">অধ্যায় বেছে নাও। ক্রমানুসারে পড়লে সবচেয়ে ভালো, কারণ আগের ধারণা পরে কাজে লাগে।</p> : null}
             {chapters.length > 0 ? (
               <div className="sx-sp-stats">
                 <span className="sx-sp-stat">{chapters.length} chapters</span>
@@ -79,7 +78,7 @@ export default async function PaperPage({ params }: Props) {
                       <span className="sx-chip">{c.lessons.length} lessons</span>
                     ) : (
                       <span className="sx-ch-lock">
-                        <LockSimpleIcon size={18} />
+                        <Lock size={16} aria-hidden />
                         <span className="sx-chip">Soon</span>
                       </span>
                     )}

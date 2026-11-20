@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { RefreshCw } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useProgress } from "@/lib/progress";
 import { createClient } from "@/lib/supabase/client";
@@ -41,7 +42,7 @@ export function SyncNow() {
   return (
     <div className="sx-sync">
       <button type="button" className="btn btn-ghost" onClick={run} disabled={busy}>
-        {busy ? "Syncing..." : "Sync progress"}
+        <RefreshCw size={16} className={busy ? "sx-spin" : undefined} aria-hidden /> {busy ? "Syncing..." : "Sync progress"}
       </button>
       {msg ? <small>{msg}</small> : null}
     </div>

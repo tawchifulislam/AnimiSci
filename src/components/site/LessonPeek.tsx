@@ -11,10 +11,10 @@ import { useInView } from "@/lib/use-in-view";
 const HOLD = 3600;
 
 const steps = [
-  { name: "Two forces", bn: "দুজন দুই দিকে ঠেলছে", tint: "#9ccbff", alpha: 60 },
-  { name: "Close the shape", bn: "সামান্তরিক পূর্ণ করলে কর্ণই লব্ধি", tint: "#ffe27a", alpha: 60 },
-  { name: "Change the angle", bn: "কোণ বদলাও, লাল তীর সাথে সাথে বাঁকে", tint: "#8be6bb", alpha: 125 },
-  { name: "The formula", bn: "ছবি থেকেই সূত্র বেরিয়ে এল", tint: "#e9ccff", alpha: 60 },
+  { name: "Two forces", bn: "দুটি বল দুই দিকে কাজ করছে", tint: "#9ccbff", alpha: 60 },
+  { name: "Close the shape", bn: "সামান্তরিক আঁকলে কর্ণই লব্ধি", tint: "#ffe27a", alpha: 60 },
+  { name: "Change the angle", bn: "কোণ বদলালে লব্ধিও বদলায়", tint: "#8be6bb", alpha: 125 },
+  { name: "The formula", bn: "এই ছবি থেকেই লব্ধির সূত্র", tint: "#e9ccff", alpha: 60 },
 ];
 
 function PeekFigure({ s }: { s: number }) {
@@ -79,7 +79,6 @@ export function LessonPeek() {
               <span className="sx-peek-no">{i + 1}</span>
               <span className="sx-peek-t">
                 <b>{s.name}</b>
-                <small>{s.bn}</small>
               </span>
             </button>
           </li>

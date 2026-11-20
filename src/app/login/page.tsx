@@ -24,7 +24,7 @@ export default async function LoginPage({ searchParams }: Props) {
     <div className="shell sx-login">
       <div className="sx-login-card">
         <h1>Log in</h1>
-        <p>তোমার অগ্রগতি জমা থাকবে, যেকোনো ডিভাইস থেকে আবার শুরু করতে পারবে। শুধু তোমার নাম, ছবি আর পাঠের অগ্রগতি সংরক্ষণ হবে।</p>
+        <p>লগইন করলে তোমার অগ্রগতি যেকোনো ডিভাইসে পাওয়া যাবে। আমরা শুধু নাম, ছবি ও পাঠের অগ্রগতি সংরক্ষণ করি।</p>
         {authConfigured ? (
           <GoogleButton next={next} />
         ) : (

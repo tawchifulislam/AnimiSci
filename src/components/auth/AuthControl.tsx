@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { LayoutDashboard, LogOut, UserRound } from "lucide-react";
 import { Avatar } from "@/components/auth/Avatar";
 import { useAuth } from "@/components/auth/AuthProvider";
 
@@ -58,13 +59,13 @@ export function AuthControl() {
         <div className="sx-menu" role="menu">
           <p className="sx-menu-name">{name}</p>
           <Link href="/dashboard" role="menuitem" onClick={() => setOpen(false)}>
-            Dashboard
+            <LayoutDashboard size={16} aria-hidden /> Dashboard
           </Link>
           <Link href="/profile" role="menuitem" onClick={() => setOpen(false)}>
-            Profile
+            <UserRound size={16} aria-hidden /> Profile
           </Link>
           <button type="button" role="menuitem" onClick={logout}>
-            Log out
+            <LogOut size={16} aria-hidden /> Log out
           </button>
         </div>
       ) : null}

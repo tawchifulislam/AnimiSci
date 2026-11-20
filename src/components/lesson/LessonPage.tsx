@@ -34,9 +34,7 @@ function PartHead({ title, todo }: { title: string; todo: string }) {
     <div className="part2-head">
       <div>
         <h2>{title}</h2>
-        <p className="todo">
-          <b>এখন কী করবে:</b> {todo}
-        </p>
+        <p className="todo">{todo}</p>
       </div>
     </div>
   );
@@ -156,7 +154,7 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
               <Anim />
 
               <section id="sec-2" className="part2">
-                <PartHead title="সূত্র" todo="ভিডিওতে যা দেখলে, তা থেকে এই সূত্রগুলো এসেছে। ধাপের বোতামে চাপলে ভিডিও ওই জায়গায় ফিরে যাবে।" />
+                <PartHead title="সূত্র" todo="প্রতিটি সূত্রের বোতাম ভিডিওর সংশ্লিষ্ট ধাপে নিয়ে যায়।" />
                 <div className="formula-grid">
                   {meta.formulas.map((f) => (
                     <div key={f.tex} className="formula-card">
@@ -190,7 +188,7 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
               </section>
 
               <section id="sec-3" className="part2">
-                <PartHead title="ভাবো" todo="মনে মনে ভাবো, লিখতে হবে না। আটকে গেলে ইঙ্গিত দেখো।" />
+                <PartHead title="ভাবো" todo="পরিস্থিতিটি পড়ে প্রশ্নগুলো নিয়ে ভাবো। প্রয়োজনে ইঙ্গিত দেখো।" />
                 <p className="scenario">{meta.think?.scenario}</p>
                 <ol className="think-list">
                   {meta.think?.points.map((pt) => (
@@ -199,7 +197,7 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
                 </ol>
                 {meta.think?.hint ? (
                   <details className="soft">
-                    <summary>ভাবার পর ইঙ্গিত দেখো</summary>
+                    <summary>ইঙ্গিত দেখো</summary>
                     <p>{meta.think.hint}</p>
                   </details>
                 ) : null}
@@ -218,7 +216,7 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
               </section>
 
               <section id="sec-4" className="part2">
-                <PartHead title="কুইজ" todo="একটা উত্তর বেছে নাও। ভুল হলে নিচে কারণ দেখাবে। সব প্রশ্ন শেষ হলে পাঠ শেষ গোনা হবে।" />
+                <PartHead title="কুইজ" todo="সঠিক উত্তরটি বেছে নাও। সব প্রশ্ন শেষ হলে পাঠটি সম্পূর্ণ হিসেবে গণ্য হবে।" />
                 <Quiz items={meta.quiz.slice(0, 5)} onDone={() => {
                   markDone(key);
                   pushDone(key, true);
@@ -226,7 +224,7 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
               </section>
 
               <section id="sec-5" className="part2">
-                <PartHead title="অঙ্ক" todo="প্রথম অঙ্ক পুরো করা আছে, পড়ে বোঝো। দ্বিতীয়টার শেষ ধাপ নিজে করো। তৃতীয়টা পুরো নিজে করো, আটকালে ইঙ্গিত দেখো।" />
+                <PartHead title="অঙ্ক" todo="প্রথম অঙ্কের সমাধান দেওয়া আছে। দ্বিতীয়টির শেষ ধাপ এবং তৃতীয়টি নিজে করো।" />
                 {meta.problems?.map((pr, k) => {
                   const n = pr.steps.length;
                   const shown = k === 0 ? pr.steps : k === 1 ? pr.steps.slice(0, n - 1) : [];
@@ -242,7 +240,7 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
                       {shown.length > 0 ? <Sol steps={shown} /> : null}
                       {hidden.length > 0 ? (
                         <details className="soft">
-                          <summary>{k === 1 ? "শেষ ধাপটা নিজে করে তারপর দেখো" : "নিজে করে তারপর সমাধান দেখো"}</summary>
+                          <summary>{k === 1 ? "শেষ ধাপটি চেষ্টা করে দেখো" : "নিজে চেষ্টা করে সমাধান দেখো"}</summary>
                           <Sol steps={hidden} from={shown.length} />
                         </details>
                       ) : null}
