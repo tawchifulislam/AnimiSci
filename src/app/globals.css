@@ -4734,3 +4734,84 @@ button.sx-sheet-plain {
     animation: none;
   }
 }
+
+.sx11-marker {
+  margin: 0;
+}
+
+body {
+  overflow-x: clip;
+}
+
+.shell,
+.lesson,
+.lesson > * {
+  min-width: 0;
+}
+
+.lesson-title {
+  overflow-wrap: anywhere;
+}
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+}
+
+.video-wrap {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.video-wrap > *,
+.video,
+.vcap,
+.vbar {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.try,
+.try * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.try input[type="range"] {
+  width: 100%;
+}
+
+.formula-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+}
+
+.formula-card,
+.part2,
+.part2 > * {
+  min-width: 0;
+}
+
+.katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.prob,
+.scenario,
+.think-list li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 30rem) {
+  .vtime {
+    display: none;
+  }
+
+  .vbar {
+    gap: var(--s-2);
+  }
+}
