@@ -29,6 +29,7 @@ export function ProgressSync() {
 
     (async () => {
       const { data, error } = await supabase.from("lesson_progress").select("lesson_key");
+      if (error) console.error("progress load failed:", error.message);
       if (cancelled || error || !data) return;
       const remote = new Set<string>(data.map((r: { lesson_key: string }) => r.lesson_key));
       remote.forEach((k) => {

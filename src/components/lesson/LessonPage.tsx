@@ -13,6 +13,7 @@ import { lessonRegistry } from "@/lessons/registry";
 import type { ExampleStep } from "@/lessons/types";
 import { lessonKey } from "@/lib/lesson-key";
 import { markDone, setLast, toggleDone, useProgress } from "@/lib/progress";
+import { pushDone } from "@/lib/progress-remote";
 import { bn } from "@/lib/vec";
 
 function Fold({ id, title, hint, open, children }: { id: string; title: string; hint?: string; open?: boolean; children: ReactNode }) {
@@ -96,7 +97,10 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
   const doneBar = (
     <div className="done-bar">
       <span>{isDone ? "পাঠটি শেষ হয়েছে" : "পাঠ শেষ করেছ?"}</span>
-      <button type="button" onClick={() => toggleDone(key)} className={`btn ${isDone ? "btn-ghost" : "btn-primary"}`}>
+      <button type="button" onClick={() => {
+          toggleDone(key);
+          pushDone(key, !isDone);
+        }} className={`btn ${isDone ? "btn-ghost" : "btn-primary"}`}>
         <CheckCircleIcon size={20} weight={isDone ? "regular" : "fill"} /> {isDone ? "শেষ চিহ্ন সরাও" : "শেষ করেছি"}
       </button>
     </div>
@@ -215,7 +219,10 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
 
               <section id="sec-4" className="part2">
                 <PartHead title="কুইজ" todo="একটা উত্তর বেছে নাও। ভুল হলে নিচে কারণ দেখাবে। সব প্রশ্ন শেষ হলে পাঠ শেষ গোনা হবে।" />
-                <Quiz items={meta.quiz.slice(0, 5)} onDone={() => markDone(key)} />
+                <Quiz items={meta.quiz.slice(0, 5)} onDone={() => {
+                  markDone(key);
+                  pushDone(key, true);
+                }} />
               </section>
 
               <section id="sec-5" className="part2">
@@ -318,7 +325,10 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
 
               {meta.quiz.length > 0 ? (
                 <Fold id="quiz" title="কুইজ" hint={`${bn(meta.quiz.length)}টি`}>
-                  <Quiz items={meta.quiz} onDone={() => markDone(key)} />
+                  <Quiz items={meta.quiz} onDone={() => {
+                  markDone(key);
+                  pushDone(key, true);
+                }} />
                 </Fold>
               ) : null}
 

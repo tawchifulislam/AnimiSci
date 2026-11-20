@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Avatar } from "@/components/auth/Avatar";
+import { SyncNow } from "@/components/auth/SyncNow";
 import { buildCatalog, dayKey, lastDays, shortDate, streakOf } from "@/lib/progress-data";
 import { authConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
@@ -70,6 +71,7 @@ export default async function DashboardPage() {
         <Link href="/profile" className="btn btn-ghost">
           Edit profile
         </Link>
+        <SyncNow />
       </section>
 
       <section className="sx-stats">

@@ -4662,3 +4662,18 @@ button.sx-sheet-plain {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.sx9-marker {
+  margin: 0;
+}
+
+.sx-sync {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: start;
+}
+
+.sx-sync small {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
