@@ -5,7 +5,6 @@ import { AnimatePresence, motion, useMotionValue, useTransform } from "framer-mo
 import { LightbulbIcon, PauseIcon, PlayIcon } from "@/components/ui/icons";
 import type { LessonStep } from "@/components/ui/Lesson";
 import { Tex } from "@/components/ui/Tex";
-import { useReducedMotionPref } from "@/lib/motion-pref";
 import { bn } from "@/lib/vec";
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
@@ -25,7 +24,6 @@ export function VideoLesson({
   onStep?: (step: number) => void;
   focusStep?: number;
 }) {
-  const reduce = useReducedMotionPref();
   const durs = steps.map((_, i) => durations?.[i] ?? 7);
   const starts: number[] = [];
   let acc = 0;
@@ -97,10 +95,6 @@ export function VideoLesson({
       const d = (e as CustomEvent<{ step: number }>).detail;
       if (!d || typeof d.step !== "number") return;
       const n = Math.min(Math.max(d.step, 0), last);
-      if (reduce) {
-        document.getElementById(`lstep-${n}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-      }
       setPlaying(false);
       seekTo(starts[n]);
       rootRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -149,37 +143,6 @@ export function VideoLesson({
     if (!r) return;
     seekTo(Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * total);
   };
-
-  if (reduce) {
-    return (
-      <div className="steps-list" ref={rootRef}>
-        <ol>
-          {steps.map((s, i) => (
-            <li key={s.title} id={`lstep-${i}`} className="step-card">
-              <div className="step-card-head">
-                <span className="step-no">{bn(i + 1)}</span>
-                <h3>{s.title}</h3>
-              </div>
-              <div className="player-stage">{figure(i)}</div>
-              <p>{s.text}</p>
-              {s.tex?.map((tx) => (
-                <div key={tx} style={{ overflowX: "auto" }}>
-                  <Tex display>{tx}</Tex>
-                </div>
-              ))}
-              {s.note ? (
-                <div className="player-note">
-                  <LightbulbIcon size={20} weight="duotone" />
-                  <span>{s.note}</span>
-                </div>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-        {below}
-      </div>
-    );
-  }
 
   return (
     <div className="video-wrap" ref={rootRef} tabIndex={-1} onKeyDown={onKey}>
