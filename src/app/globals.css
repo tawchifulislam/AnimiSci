@@ -5044,3 +5044,106 @@ body {
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+.sx13-marker {
+  margin: 0;
+}
+
+.lesson *,
+.guide * {
+  min-width: 0;
+}
+
+.step-num,
+.vbtn,
+.vt-thumb,
+.guide-nav .btn:first-child,
+.guide-explain svg {
+  flex-shrink: 0;
+}
+
+.sol,
+.prob,
+.part2,
+.think-list,
+.guide,
+.guide-body,
+.guide-sol,
+.formula-card,
+.fold-body,
+.vcap {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.guide-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.guide-tag {
+  padding: 0.1rem 0.75rem;
+  border: var(--bw) solid #171a2c;
+  border-radius: 999px;
+  background: var(--spark);
+  color: #171a2c;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+}
+
+.guide-bar {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line-2);
+}
+
+.guide-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--brand);
+  transition: width 0.3s ease;
+}
+
+.guide-reveal,
+.guide-think {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-1);
+}
+
+.guide-list {
+  display: grid;
+  gap: 0.6rem;
+  padding-left: 1.3rem;
+  list-style: decimal;
+  line-height: 1.75;
+}
+
+.guide-list.bullets {
+  list-style: disc;
+}
+
+.guide-sub {
+  font-weight: 800;
+}
+
+.guide-sol {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.guide-sol li {
+  display: flex;
+  gap: var(--s-3);
+}
+
+.guide-sol li > div {
+  flex: 1;
+}
+
+.guide-sol p {
+  line-height: 1.75;
+}

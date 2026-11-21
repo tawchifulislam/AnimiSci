@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { Guide, type GuideStep } from "@/components/lesson/Guide";
+import { C, Choices, tailSteps, useFinishMark } from "@/components/lesson/guide-kit";
 import { Arc, Dot, Lab, Seg, Square, Stage, Vec, add, col, mid, pol, type Pt } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
 import { rad } from "@/lib/vec";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "দুটি ভেক্টর যোগ করলে লব্ধির মান ও দিক কীভাবে বের হয়, সেটা ছবি এঁকে নিজে প্রমাণ করতে পারবে এবং সূত্রটা কেন এমন, তা বুঝবে।",
   hook: "দুই বন্ধু একটা ভারী বাক্সকে আলাদা আলাদা দিকে ঠেলছে। বাক্সটা শেষে কোন দিকে কতটা জোরে যাবে?",
   formulas: [
@@ -35,20 +37,20 @@ export const meta: LessonMeta = {
     "ক্যালকুলেটর রেডিয়ান মোডে রেখে cos, sin বের করা।",
   ],
   recap: [
-    "ত্রিভুজ সূত্র: দ্বিতীয় ভেক্টরের লেজ প্রথমটির মাথায় বসাও। শুরু থেকে শেষ মাথা পর্যন্ত তীরটাই লব্ধি।",
-    "সামান্তরিক সূত্র: দুই ভেক্টরকে একই বিন্দু থেকে এঁকে সামান্তরিক পূর্ণ করো। কর্ণই লব্ধি।",
-    "মান: R = √(P² + Q² + 2PQ cosα)। দিক: tanθ = Q sinα ÷ (P + Q cosα)।",
-    "α = 0° হলে R সবচেয়ে বড় (P + Q)। α = 180° হলে সবচেয়ে ছোট (|P − Q|)।",
+    "একই দিকে টানলে বল যোগ হয়, উল্টো দিকে টানলে বিয়োগ হয়।",
+    "কোণ থাকলে Q-কে P-এর মাথায় বসাও। শুরু থেকে শেষ পর্যন্ত তীরটাই লব্ধি।",
+    "লব্ধির মান R = √(P² + Q² + 2PQ cosα)। α বাড়লে R কমে।",
+    "দিক বের করতে tanθ = Q sinα ÷ (P + Q cosα)।",
   ],
   think: {
     scenario: "তুমি আর তোমার বন্ধু একটা ভারী বাক্স ঠেলছ। তুমি ঠেলছ পূর্ব দিকে 6 N বলে। বন্ধু ঠেলছে 4 N বলে, তোমার দিকের সাথে 60° কোণে।",
     points: [
-      "দুজনে ঠিক একই দিকে ঠেললে মোট বল কত হতো? এখন কোণ থাকায় মোট বল তার চেয়ে বেশি হবে না কম, আর কেন?",
-      "বন্ধু যদি ঠিক উল্টো দিক থেকে (180° কোণে) ঠেলত, তাহলে বাক্সের কী হতো?",
-      "কোন অবস্থায় বাক্স একেবারেই নড়ত না? দুই বলের মান আর মাঝের কোণ কেমন হতে হবে?",
+      "বাক্স নড়বে না, এমন হতে হলে দুই বলের মান আর মাঝের কোণ কেমন হতে হবে?",
       "লব্ধি বড় বলের দিকে বেশি হেলে থাকবে, না ছোট বলের দিকে? কেন?",
+      "বন্ধু যদি ঠিক উল্টো দিক থেকে (180° কোণে) ঠেলত, তাহলে বাক্সের কী হতো?",
+      "দুজনে একই দিকে ঠেললে মোট বল কত হতো? কোণ থাকলে সেটা বাড়ে না কমে?",
     ],
-    hint: "ধাপ 7-এর স্লাইডারে α-কে 0° আর 180° এ নিয়ে যাও। তারপর P = Q ধরে α = 180° দিয়ে লাল তীরের কী হয়, কল্পনা করো।",
+    hint: "ধাপ 7-এ স্লাইডারে α-কে 0° আর 180° এ নিয়ে লাল তীরের কী হয়, দেখো। মনে রাখো, সমান মান আর উল্টো দিক মানে লব্ধি শূন্য।",
     traps: [
       "লব্ধির মান সব সময় P + Q।",
       "α হলো যেকোনো দুই তীরের মাঝের কোণ, তীরের লেজ কোথায় আছে তাতে কিছু আসে না।",
@@ -108,11 +110,6 @@ const P = 6;
 const Q = 4;
 const S = 20;
 const pt = (x: number, y: number): Pt => ({ x, y });
-const tone = { p: col.p, q: col.q, r: col.r };
-
-function C({ k, children }: { k: "p" | "q" | "r"; children: ReactNode }) {
-  return <b style={{ color: tone[k], fontWeight: 800 }}>{children}</b>;
-}
 
 function Crate({ x, y, dx = 0, dy = 0 }: { x: number; y: number; dx?: number; dy?: number }) {
   return (
@@ -132,31 +129,6 @@ function Puller({ x, y, color, face = 1 }: { x: number; y: number; color: string
       <line x1={x} y1={y + 9} x2={x + 6} y2={y + 21} />
       <line x1={x} y1={y - 3} x2={x - face * 12} y2={y + 2} />
     </g>
-  );
-}
-
-function Choices({ options, answer, picked, onPick, explain }: { options: string[]; answer: number; picked: number | undefined; onPick: (i: number) => void; explain: string }) {
-  const shown = picked !== undefined;
-  return (
-    <div className="guide-opts">
-      {options.map((o, i) => {
-        const cls = shown && i === answer ? " ok" : shown && picked === i ? " bad" : "";
-        return (
-          <button key={o} type="button" className={`guide-opt${cls}`} disabled={shown} onClick={() => onPick(i)}>
-            {o}
-          </button>
-        );
-      })}
-      {shown ? (
-        <p className="guide-explain" aria-live="polite">
-          {picked === answer ? <Check size={18} aria-hidden /> : <X size={18} aria-hidden />}
-          <span>
-            <b>{picked === answer ? "ঠিক। " : "ঠিক উত্তরটা দেখো। "}</b>
-            {explain}
-          </span>
-        </p>
-      ) : null}
-    </div>
   );
 }
 
@@ -190,11 +162,17 @@ function TriFigure({ level, phase }: { level: 0 | 1 | 2; phase: number }) {
 }
 
 export default function Anim() {
+  const router = useRouter();
+  const path = usePathname();
   const [step, setStep] = useState(0);
   const [picks, setPicks] = useState<Record<number, number>>({});
+  const [reveal, setRevealState] = useState<Record<number, number>>({});
   const [alpha, setAlpha] = useState(60);
 
-  const pick = (i: number) => (v: number) => setPicks((p) => ({ ...p, [i]: v }));
+  const setPick = (i: number, v: number) => setPicks((p) => ({ ...p, [i]: v }));
+  const setReveal = (i: number, n: number) => setRevealState((p) => ({ ...p, [i]: n }));
+  const pick = (i: number) => (v: number) => setPick(i, v);
+
   const aR = rad(alpha);
   const rv = Math.sqrt(P * P + Q * Q + 2 * P * Q * Math.cos(aR));
   const th = (Math.atan2(Q * Math.sin(aR), P + Q * Math.cos(aR)) * 180) / Math.PI;
@@ -217,7 +195,7 @@ export default function Anim() {
   const pT7 = pt(O7.x + P * S, O7.y);
   const qT7 = pt(pT7.x + Q * Math.cos(aR) * S, O7.y - Q * Math.sin(aR) * S);
 
-  const steps: GuideStep[] = [
+  const concept: GuideStep[] = [
     {
       title: "একই দিকে টানলে",
       text: (
@@ -446,16 +424,38 @@ export default function Anim() {
     },
     {
       title: "সংখ্যা বসিয়ে দেখি",
-      text: (
-        <>
-          P = 6 N, Q = 4 N, α = 60° হলে লব্ধি আর তার দিক:
-        </>
-      ),
+      text: "P = 6 N, Q = 4 N, α = 60° হলে লব্ধি আর তার দিক:",
       tex: ["R=\\sqrt{6^2+4^2+2\\times6\\times4\\times\\cos60^\\circ}=\\sqrt{76}=8.72\\ \\text{N}", "\\tan\\theta=\\dfrac{Q\\sin\\alpha}{P+Q\\cos\\alpha}=\\dfrac{3.46}{8}\\Rightarrow\\theta=23.4^\\circ"],
       replay: true,
       figure: (phase) => <TriFigure level={2} phase={phase} />,
     },
-  ];
+  ].map((s) => ({ ...s, tag: "দেখো" })) as GuideStep[];
 
-  return <Guide steps={steps} step={step} onStep={setStep} />;
+  const tail = tailSteps({
+    meta,
+    base: concept.length,
+    picks,
+    setPick,
+    reveal,
+    setReveal,
+    summary: [
+      {
+        title: "দুটি সূত্র",
+        text: "এটুকুই মনে রাখতে হবে। α হলো P আর Q-এর মাঝের কোণ।",
+        tex: ["R=\\sqrt{P^2+Q^2+2PQ\\cos\\alpha}", "\\tan\\theta=\\dfrac{Q\\sin\\alpha}{P+Q\\cos\\alpha}"],
+      },
+      {
+        title: "তিনটি বিশেষ ক্ষেত্র",
+        text: "কোণ বিশেষ হলে সূত্র সহজ হয়ে যায়।",
+        tex: ["\\alpha=0^\\circ:\\ R=P+Q", "\\alpha=90^\\circ:\\ R=\\sqrt{P^2+Q^2}", "\\alpha=180^\\circ:\\ R=|P-Q|"],
+      },
+    ],
+  });
+
+  const all = [...concept, ...tail];
+  useFinishMark(step === all.length - 1);
+
+  const chapterHref = `/${path.split("/").filter(Boolean).slice(0, 3).join("/")}`;
+
+  return <Guide steps={all} step={step} onStep={setStep} onFinish={() => router.push(chapterHref)} />;
 }

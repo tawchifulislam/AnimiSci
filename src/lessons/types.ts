@@ -16,4 +16,5 @@ export type LessonMeta = {
   think?: Think;
   problems?: Problem[];
   concepts?: string[];
+  guided?: boolean;
 };

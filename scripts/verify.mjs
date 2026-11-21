@@ -207,7 +207,7 @@ const checkLesson = (file) => {
   if (src.includes("think:")) {
     const levels = (src.match(/level:\s*"/g) || []).length;
     if (levels !== 3) fail(`${name}: ${levels} problems, expected 3`);
-    if (!src.includes("look:")) warn(`${name}: no look line`);
+    if (!src.includes("look:") && !src.includes("guided: true")) warn(`${name}: no look line`);
     if (!src.includes("concepts:")) warn(`${name}: no concepts list`);
     if (!src.includes("problems:")) fail(`${name}: think without problems`);
   }

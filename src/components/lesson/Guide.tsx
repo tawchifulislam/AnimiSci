@@ -6,10 +6,11 @@ import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 import { Tex } from "@/components/ui/Tex";
 
 export type GuideStep = {
+  tag?: string;
   title: string;
   text: ReactNode;
   tex?: string[];
-  figure: (phase: number) => ReactNode;
+  figure?: (phase: number) => ReactNode;
   prompt?: ReactNode;
   locked?: boolean;
   replay?: boolean;
@@ -19,14 +20,14 @@ export function Guide({
   steps,
   step,
   onStep,
-  finishLabel = "সূত্রগুলো দেখো",
-  finishTarget = "sec-2",
+  onFinish,
+  finishLabel = "অধ্যায়ে ফিরে যাও",
 }: {
   steps: GuideStep[];
   step: number;
   onStep: (n: number) => void;
+  onFinish?: () => void;
   finishLabel?: string;
-  finishTarget?: string;
 }) {
   const [phase, setPhase] = useState(0);
   const [tick, setTick] = useState(0);
@@ -40,18 +41,12 @@ export function Guide({
   }, [step, tick]);
 
   useEffect(() => {
-    const h = (e: Event) => {
-      const d = (e as CustomEvent<{ step: number }>).detail;
-      if (d && typeof d.step === "number") onStep(Math.min(Math.max(d.step, 0), last));
-      document.getElementById("guide-top")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
-    window.addEventListener("lesson-goto", h);
-    return () => window.removeEventListener("lesson-goto", h);
-  });
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [step]);
 
   const next = () => {
     if (step >= last) {
-      document.getElementById(finishTarget)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      onFinish?.();
       return;
     }
     onStep(step + 1);
@@ -60,31 +55,25 @@ export function Guide({
   return (
     <section className="guide" id="guide-top" aria-label="ধাপে ধাপে পাঠ">
       <div className="guide-head">
-        <div className="guide-dots">
-          {steps.map((s, i) => (
-            <button
-              key={s.title}
-              type="button"
-              className={`guide-dot${i === step ? " on" : i < step ? " past" : ""}`}
-              aria-label={`ধাপ ${i + 1}: ${s.title}`}
-              disabled={i > step}
-              onClick={() => onStep(i)}
-            />
-          ))}
-        </div>
+        <span className="guide-tag">{cur.tag ?? ""}</span>
         <span className="guide-count">
           {step + 1} / {steps.length}
         </span>
       </div>
-
-      <div className="guide-stage">
-        {cur.figure(phase)}
-        {cur.replay ? (
-          <button type="button" className="guide-replay" aria-label="আবার দেখাও" onClick={() => setTick((v) => v + 1)}>
-            <RotateCcw size={16} aria-hidden />
-          </button>
-        ) : null}
+      <div className="guide-bar" role="progressbar" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={step + 1}>
+        <i style={{ width: `${((step + 1) / steps.length) * 100}%` }} />
       </div>
+
+      {cur.figure ? (
+        <div className="guide-stage">
+          {cur.figure(phase)}
+          {cur.replay ? (
+            <button type="button" className="guide-replay" aria-label="আবার দেখাও" onClick={() => setTick((v) => v + 1)}>
+              <RotateCcw size={16} aria-hidden />
+            </button>
+          ) : null}
+        </div>
+      ) : null}
 
       <AnimatePresence mode="wait">
         <motion.div key={step} className="guide-body" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>

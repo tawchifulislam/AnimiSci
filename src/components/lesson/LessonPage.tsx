@@ -108,7 +108,7 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
     <>
       <ReadingProgress />
       <div className="shell page">
-        <div className={`lesson${v2 ? " narrow" : ""}`}>
+        <div className={`lesson${v2 || meta.guided ? " narrow" : ""}`}>
           <div className="lesson-head">
             <Breadcrumb
               items={[
@@ -142,6 +142,11 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
               <h2 style={{ fontSize: "1.3rem" }}>এই পাঠ তৈরি হচ্ছে</h2>
               <p className="muted">অ্যানিমেশন, সূত্র, অঙ্ক ও কুইজ নিয়ে পাঠটি শীঘ্রই আসছে।</p>
             </div>
+          ) : meta.guided ? (
+            <>
+              <Anim />
+              {doneBar}
+            </>
           ) : v2 ? (
             <>
               {meta.look ? (
