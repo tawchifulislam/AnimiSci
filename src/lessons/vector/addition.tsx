@@ -195,7 +195,7 @@ export default function Anim() {
   const pT7 = pt(O7.x + P * S, O7.y);
   const qT7 = pt(pT7.x + Q * Math.cos(aR) * S, O7.y - Q * Math.sin(aR) * S);
 
-  const concept: GuideStep[] = [
+  const raw: GuideStep[] = [
     {
       title: "একই দিকে টানলে",
       text: (
@@ -429,7 +429,9 @@ export default function Anim() {
       replay: true,
       figure: (phase) => <TriFigure level={2} phase={phase} />,
     },
-  ].map((s) => ({ ...s, tag: "দেখো" })) as GuideStep[];
+  ];
+
+  const concept: GuideStep[] = raw.map((s) => ({ ...s, tag: "দেখো" }));
 
   const tail = tailSteps({
     meta,
