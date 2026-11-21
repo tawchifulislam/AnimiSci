@@ -136,6 +136,11 @@ const claims = [
   ["curl", "curl 3x minus -2y", 3 - -2, 0, "5", "=5"],
   ["curl", "curl b", 2, 0, "2", "b=2"],
   ["curl", "curl divergence", 4 - 1, 0, "3", "=3"],
+  ["addition", "guided R 6,4,60", R(6, 4, 60), 2, "8.72", "8.72"],
+  ["addition", "guided theta 6,4,60", TH(6, 4, 60), 1, "23.4", "23.4"],
+  ["addition", "guided R 6,4,90", R(6, 4, 90), 2, "7.21", "7.21"],
+  ["addition", "guided same direction", 6 + 4, 0, "10", "10 N"],
+  ["addition", "guided opposite", 6 - 4, 0, "2", "2 N"],
 ];
 
 const lessonFile = (lesson) => {

@@ -154,7 +154,7 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
               <Anim />
 
               <section id="sec-2" className="part2">
-                <PartHead title="সূত্র" todo="প্রতিটি সূত্রের বোতাম ভিডিওর সংশ্লিষ্ট ধাপে নিয়ে যায়।" />
+                <PartHead title="সূত্র" todo="প্রতিটি সূত্রের বোতাম পাঠের সংশ্লিষ্ট ধাপে নিয়ে যায়।" />
                 <div className="formula-grid">
                   {meta.formulas.map((f) => (
                     <div key={f.tex} className="formula-card">
@@ -166,7 +166,7 @@ export function LessonPage({ subject, paper, chapter, slug }: { subject: string;
                       </p>
                       {f.step !== undefined ? (
                         <button type="button" className="link-btn" onClick={() => gotoStep((f.step as number) - 1)}>
-                          ভিডিওর ধাপ {bn(f.step)}
+                          ধাপ {bn(f.step)}
                         </button>
                       ) : null}
                     </div>
