@@ -45,7 +45,7 @@ export function Choices({
         <p className="guide-explain" aria-live="polite">
           {picked === answer ? <Check size={18} aria-hidden /> : <X size={18} aria-hidden />}
           <span>
-            <b>{picked === answer ? "ঠিক। " : "ঠিক উত্তরটা দেখো। "}</b>
+            <b>{picked === answer ? "ঠিক। " : `সঠিক উত্তর: ${options[answer]}। `}</b>
             {explain}
           </span>
         </p>
