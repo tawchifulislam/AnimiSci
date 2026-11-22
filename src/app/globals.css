@@ -5147,3 +5147,36 @@ body {
 .guide-sol p {
   line-height: 1.75;
 }
+
+.sx14-marker {
+  margin: 0;
+}
+
+.guide-sort {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-1);
+}
+
+.guide-sort-row {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border: var(--bw) solid var(--line-2);
+  border-radius: 1rem;
+  background: var(--surface);
+}
+
+.guide-sort-t {
+  font-weight: 700;
+}
+
+.guide-sort-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+
+.guide-sort-btns .guide-opt {
+  text-align: center;
+}
