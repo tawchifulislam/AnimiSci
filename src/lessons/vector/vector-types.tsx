@@ -1,22 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Slider } from "@/components/ui/Slider";
-import { Dot, Lab, Seg, SliderCard, Stage, Vec, add, mid, mk, type Col, type Pt } from "@/components/anim/kit";
+import { usePathname, useRouter } from "next/navigation";
+import { Guide, type GuideStep } from "@/components/lesson/Guide";
+import { C, Choices, tailSteps, useFinishMark } from "@/components/lesson/guide-kit";
+import { Dot, Lab, Seg, Stage, Vec, add, col, mid, type Pt } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
-import { f1 } from "@/lib/vec";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "সমান, বিপরীত, শূন্য, একক, অবস্থান ও সমান্তরাল ভেক্টর চিনবে এবং প্রতিটির নিয়ম বলতে পারবে।",
-  hook: "দুই ভাই ঠিক একই গতিতে একই দিকে হাঁটছে, একজন সামনে আরেকজন পেছনে। তাদের বেগ কি আলাদা? না। বেগ একই, কারণ মান ও দিক একই। ভেক্টরের পরিচয় জায়গায় নয়, মান আর দিকে। এই কথাটা বুঝলে ভেক্টরের প্রকারভেদ জলের মতো সহজ।",
-  look: "ছবির কোন তীরগুলো মান ও দিক দুটোই মেলে আর কোনগুলো শুধু দিকে মেলে, তা খেয়াল করো। জায়গা বদলালে তীর বদলায় কি না, সেটাও দেখো।",
+  hook: "দুই ভাই ঠিক একই গতিতে একই দিকে হাঁটছে, একজন সামনে আরেকজন পেছনে। তাদের বেগ কি আলাদা? না। ভেক্টরের পরিচয় জায়গায় নয়, মান আর দিকে।",
   formulas: [
-    { tex: "-\\vec A", meaning: "A-এর বিপরীত ভেক্টর: মান সমান, দিক ঠিক উল্টো।", step: 3 },
-    { tex: "\\vec A+(-\\vec A)=\\vec 0", meaning: "বিপরীত দুটি যোগ করলে শূন্য ভেক্টর পাওয়া যায়, সাধারণ সংখ্যা 0 নয়।", step: 4 },
-    { tex: "\\hat A=\\dfrac{\\vec A}{|\\vec A|}", meaning: "A-এর দিকে একক ভেক্টর, মান ঠিক 1।", step: 5 },
-    { tex: "\\vec r=x\\hat\\imath+y\\hat\\jmath", meaning: "(x, y) বিন্দুর অবস্থান ভেক্টর, শুরু মূলবিন্দুতে।", step: 6 },
-    { tex: "\\vec B=k\\vec A", meaning: "সমান্তরাল ভেক্টর। k ধনাত্মক হলে একই দিক, ঋণাত্মক হলে উল্টো দিক।", step: 7 },
+    { tex: "-\\vec A", meaning: "A-এর বিপরীত ভেক্টর: মান সমান, দিক ঠিক উল্টো।" },
+    { tex: "\\vec A+(-\\vec A)=\\vec 0", meaning: "বিপরীত দুটি যোগ করলে শূন্য ভেক্টর পাওয়া যায়, সাধারণ সংখ্যা 0 নয়।" },
+    { tex: "\\hat A=\\dfrac{\\vec A}{|\\vec A|}", meaning: "A-এর দিকে একক ভেক্টর, মান ঠিক 1।" },
+    { tex: "\\vec r=x\\hat\\imath+y\\hat\\jmath", meaning: "(x, y) বিন্দুর অবস্থান ভেক্টর, শুরু মূলবিন্দুতে।" },
+    { tex: "\\vec B=k\\vec A", meaning: "সমান্তরাল ভেক্টর। k ধনাত্মক হলে একই দিক, ঋণাত্মক হলে উল্টো দিক।" },
   ],
   example: {
     problem: "A⃗ = 3î + 4ĵ। (ক) A⃗-এর বিপরীত ভেক্টর কী? (খ) A⃗-এর দিকে একক ভেক্টর বের করো। (গ) A⃗-এর সমান্তরাল এবং মান 10 এমন একটি ভেক্টর বের করো।",
@@ -35,7 +35,7 @@ export const meta: LessonMeta = {
   ],
   recap: [
     "সমান ভেক্টর: মান ও দিক দুটোই এক। জায়গা বদলালে ভেক্টর বদলায় না।",
-    "বিপরীত ভেক্টর: মান এক, দিক উল্টো। শূন্য ভেক্টর: মান শূন্য, দিক নেই।",
+    "বিপরীত ভেক্টর: মান এক, দিক উল্টো। দুটো যোগ করলে শূন্য ভেক্টর।",
     "একক ভেক্টর: মান 1, কাজ শুধু দিক দেখানো। অবস্থান ভেক্টর: মূলবিন্দু থেকে বিন্দু পর্যন্ত।",
     "সমান্তরাল ভেক্টর: একটি আরেকটির কোনো সংখ্যা গুণিতক।",
   ],
@@ -103,145 +103,237 @@ export const meta: LessonMeta = {
   ],
 };
 
-type Arrow = { a: Pt; b: Pt; c: Col; show: boolean; label?: string; dash?: boolean };
-const P = (x: number, y: number): Pt => ({ x, y });
-const NONE: Arrow = { a: P(0, 0), b: P(0, 0), c: "f", show: false };
-
-function scene(s: number, px: number, py: number): Arrow[] {
-  const m = mk(60, 235, 24);
-  if (s === 0)
-    return [
-      { a: P(70, 90), b: P(170, 50), c: "p", show: true, label: "A" },
-      { a: P(70, 170), b: P(170, 130), c: "q", show: true, label: "B" },
-      { a: P(260, 170), b: P(330, 110), c: "u", show: true, label: "C" },
-    ];
-  if (s === 1)
-    return [
-      { a: P(70, 90), b: P(170, 50), c: "p", show: true, label: "A = B" },
-      { a: P(70, 90), b: P(170, 50), c: "q", show: true },
-      { a: P(260, 170), b: P(330, 110), c: "u", show: false },
-    ];
-  if (s === 2)
-    return [
-      { a: P(220, 130), b: P(320, 90), c: "p", show: true, label: "A" },
-      { a: P(220, 130), b: P(120, 170), c: "r", show: true, label: "−A" },
-      NONE,
-    ];
-  if (s === 3)
-    return [
-      { a: P(120, 130), b: P(220, 90), c: "p", show: true, label: "A" },
-      { a: P(220, 98), b: P(120, 138), c: "r", show: true, label: "−A" },
-      NONE,
-    ];
-  if (s === 4)
-    return [
-      { a: P(60, 200), b: P(160, 160), c: "p", show: true, label: "A" },
-      { a: P(60, 200), b: P(97.1, 185.1), c: "v", show: true, label: "Â" },
-      NONE,
-    ];
-  if (s === 5)
-    return [
-      { a: m(0, 0), b: m(px, py), c: "r", show: true, label: "r" },
-      { a: m(0, 0), b: m(px, 0), c: "p", show: true, dash: true },
-      { a: m(px, 0), b: m(px, py), c: "q", show: true, dash: true },
-    ];
-  return [
-    { a: P(40, 230), b: P(140, 190), c: "p", show: true, label: "A" },
-    { a: P(40, 170), b: P(240, 90), c: "v", show: true, label: "2A" },
-    { a: P(400, 60), b: P(250, 120), c: "r", show: true, label: "−1.5A" },
-  ];
-}
+const pt = (x: number, y: number): Pt => ({ x, y });
 
 export default function Anim() {
-  const [px, setPx] = useState(4);
-  const [py, setPy] = useState(3);
+  const router = useRouter();
+  const path = usePathname();
+  const [step, setStep] = useState(0);
+  const [picks, setPicks] = useState<Record<number, number>>({});
+  const [reveal, setRevealState] = useState<Record<number, number>>({});
+  const [k, setK] = useState(2);
 
-  const steps: LessonStep[] = [
+  const setPick = (i: number, v: number) => setPicks((p) => ({ ...p, [i]: v }));
+  const setReveal = (i: number, n: number) => setRevealState((p) => ({ ...p, [i]: n }));
+  const pick = (i: number) => (v: number) => setPick(i, v);
+
+  const insight =
+    k === 1
+      ? "k = 1: B আর A সমান ভেক্টর।"
+      : k === -1
+        ? "k = −1: B হলো A-এর বিপরীত ভেক্টর।"
+        : k === 0
+          ? "k = 0: B হলো শূন্য ভেক্টর।"
+          : k > 1
+            ? "k > 1: B একই দিকে, কিন্তু A-এর চেয়ে লম্বা।"
+            : k > 0
+              ? "0 < k < 1: B একই দিকে, কিন্তু A-এর চেয়ে ছোট।"
+              : "k < 0: B উল্টো দিকে।";
+
+  const raw: GuideStep[] = [
     {
-      title: "এই তীরগুলো দেখো",
-      text: "ভেক্টর অনেক রকমের হয়। নাম জানা থাকলে প্রশ্ন পড়েই বোঝা যায় কী করতে হবে। ছবিতে তিনটা তীর আছে। A আর B দেখতে কেমন? C কি এদের মতো?",
-    },
-    {
-      title: "সমান ভেক্টর",
-      text: "যে দুই ভেক্টরের মান ও দিক দুটোই এক, তারা সমান ভেক্টর, জায়গা যেখানেই থাকুক। B-কে নিজের সমান্তরালে সরিয়ে A-এর ওপর বসালে হুবহু মিলে যায়। ভেক্টর জায়গা বদলালে বদলায় না।",
-      tex: ["\\vec A=\\vec B"],
-      note: "পরের পাঠে এই কারণেই Q-কে সরিয়ে P-এর মাথায় বসানো যাবে।",
+      title: "কোন দুটি সমান?",
+      text: (
+        <>
+          তিনজন হাঁটছে, তীরগুলো তাদের গতি। কোন দুটি তীর <b>সমান ভেক্টর</b>?
+        </>
+      ),
+      locked: picks[0] === undefined,
+      prompt: <Choices options={["A আর B", "A আর C", "B আর C"]} answer={0} picked={picks[0]} onPick={pick(0)} explain="A আর B-এর মান আর দিক দুটোই এক, জায়গা আলাদা হলেও। জায়গা বদলালে ভেক্টর বদলায় না।" />,
+      figure: () => {
+        const done = picks[0] !== undefined;
+        const a0 = pt(50, 100);
+        const a1 = pt(190, 60);
+        const b0 = pt(50, 200);
+        const b1 = pt(190, 160);
+        const c0 = pt(250, 215);
+        const c1 = pt(370, 135);
+        return (
+          <Stage w={440} h={260} label="তিনটি তীর, কোন দুটি সমান?">
+            <Vec a={a0} b={a1} c="p" w={4} />
+            <Vec a={b0} b={b1} c="q" w={4} />
+            <Vec a={c0} b={c1} c="u" w={4} />
+            <Seg a={a0} b={b0} dash c="m" w={1.5} show={done} />
+            <Seg a={a1} b={b1} dash c="m" w={1.5} show={done} />
+            <Lab p={add(mid(a0, a1), 0, -14)} c="p">A</Lab>
+            <Lab p={add(mid(b0, b1), 0, 22)} c="q">B</Lab>
+            <Lab p={add(mid(c0, c1), 12, 14)} c="u" anchor="start">C</Lab>
+            <Lab p={pt(120, 134)} c="m" show={done}>A = B</Lab>
+          </Stage>
+        );
+      },
     },
     {
       title: "বিপরীত ভেক্টর",
-      text: "মান সমান কিন্তু দিক ঠিক উল্টো হলে তাদের একে অপরের বিপরীত ভেক্টর বলে। A-এর বিপরীত ভেক্টরকে −A লিখি।",
-      tex: ["-\\vec A", "|-\\vec A|=|\\vec A|"],
+      text: (
+        <>
+          B-এর মান একই রাখো, কিন্তু দিক ঠিক উল্টো করো। নতুন ভেক্টরটা হলো B-এর <b>বিপরীত ভেক্টর</b>, লেখা হয় <C k="q">−B</C>।
+        </>
+      ),
+      replay: true,
+      figure: (phase) => {
+        const on = phase === 1;
+        const O = pt(220, 130);
+        return (
+          <Stage w={440} h={260} label="B আর তার বিপরীত ভেক্টর −B">
+            <Vec a={O} b={pt(O.x + 86, O.y - 50)} c="q" w={4} />
+            <Vec a={O} b={on ? pt(O.x - 86, O.y + 50) : O} c="q" w={4} dash show={on} />
+            <Dot p={O} c="f" r={5} />
+            <Lab p={pt(O.x + 96, O.y - 62)} c="q" anchor="start">B</Lab>
+            <Lab p={pt(O.x - 96, O.y + 70)} c="q" anchor="end" show={on}>−B</Lab>
+          </Stage>
+        );
+      },
     },
     {
-      title: "শূন্য ভেক্টর",
-      text: "A আর −A জোড়া দিলে তীর যেখান থেকে শুরু হয়েছিল সেখানেই ফিরে আসে। ফল একটা বিন্দু, যার মান শূন্য এবং কোনো নির্দিষ্ট দিক নেই। এটাই শূন্য ভেক্টর।",
-      tex: ["\\vec A+(-\\vec A)=\\vec 0"],
-      note: "শূন্য ভেক্টর একটা ভেক্টর, সাধারণ সংখ্যা 0 নয়। তাই এর মাথায় তীর চিহ্ন বসে।",
+      title: "ঘুরে এলে",
+      text: "তুমি B দূরত্ব হেঁটে ঠিক উল্টো দিকে একই দূরত্ব ফিরে এলে। শুরু থেকে তোমার সরণ কত?",
+      locked: picks[2] === undefined,
+      prompt: <Choices options={["B-এর দ্বিগুণ", "শূন্য", "B-এর অর্ধেক"]} answer={1} picked={picks[2]} onPick={pick(2)} explain="ফিরে এসেছ শুরুর বিন্দুতেই, তাই সরণ শূন্য। একে বলে শূন্য ভেক্টর। এর মান 0, কিন্তু এটা সাধারণ সংখ্যা 0 নয়, একটা ভেক্টর।" />,
+      replay: true,
+      figure: (phase) => {
+        const on = phase === 1;
+        const done = picks[2] !== undefined;
+        const O = pt(110, 130);
+        return (
+          <Stage w={440} h={260} label="B হেঁটে −B ফিরে এলে সরণ শূন্য">
+            <Vec a={pt(O.x, O.y - 14)} b={pt(O.x + 200, O.y - 14)} c="q" w={4} />
+            <Vec a={pt(O.x + 200, O.y + 14)} b={on ? pt(O.x, O.y + 14) : pt(O.x + 200, O.y + 14)} c="q" w={4} dash />
+            {done ? <circle cx={O.x} cy={O.y} r={22} fill="none" strokeWidth={3} style={{ stroke: col.r }} /> : null}
+            <Dot p={O} c="f" r={6} />
+            <Lab p={pt(O.x - 12, O.y + 36)} anchor="end">শুরু</Lab>
+            <Lab p={pt(O.x + 100, O.y - 34)} c="q">B</Lab>
+            <Lab p={pt(O.x + 100, O.y + 42)} c="q" show={on}>−B</Lab>
+            <Lab p={pt(O.x + 60, O.y + 100)} c="r" show={done}>সরণ = শূন্য ভেক্টর</Lab>
+          </Stage>
+        );
+      },
     },
     {
       title: "একক ভেক্টর",
-      text: "যে ভেক্টরের মান ঠিক 1, সে একক ভেক্টর। তার কাজ শুধু দিক দেখানো। যেকোনো ভেক্টরকে তার নিজের মান দিয়ে ভাগ করলে তার দিকের একক ভেক্টর পাওয়া যায়।",
-      tex: ["\\hat A=\\frac{\\vec A}{|\\vec A|}"],
-      note: "মাথার টুপি চিহ্ন (^) মানে একক ভেক্টর।",
+      text: (
+        <>
+          A-কে তার নিজের মান দিয়ে ভাগ করো। মান হবে ঠিক 1, দিক একই। এটাই A-এর দিকের <b>একক ভেক্টর Â</b>। তার মাথা সব সময় একক বৃত্তের ওপর পড়ে।
+        </>
+      ),
+      tex: ["\\hat A=\\dfrac{\\vec A}{|\\vec A|}"],
+      replay: true,
+      figure: (phase) => {
+        const on = phase === 1;
+        const O = pt(110, 200);
+        const aTip = pt(O.x + 190.5, O.y - 110);
+        const uTip = pt(O.x + 38.1, O.y - 22);
+        return (
+          <Stage w={440} h={260} label="ভেক্টর A আর তার একক ভেক্টর">
+            <circle cx={O.x} cy={O.y} r={44} fill="none" strokeWidth={1.5} strokeDasharray="5 5" style={{ stroke: col.m }} />
+            <Vec a={O} b={aTip} c="p" w={4} />
+            <Vec a={O} b={on ? uTip : O} c="v" w={5} show={on} />
+            <Dot p={O} c="f" r={5} />
+            <Lab p={add(mid(O, aTip), 12, -14)} c="p" anchor="start">A, মান = 5</Lab>
+            <Lab p={add(uTip, 14, 18)} c="v" anchor="start" show={on}>Â, মান = 1</Lab>
+          </Stage>
+        );
+      },
     },
     {
       title: "অবস্থান ভেক্টর",
-      text: `মূলবিন্দু থেকে কোনো বিন্দু পর্যন্ত টানা তীরই ওই বিন্দুর অবস্থান ভেক্টর। বিন্দুটি (${px}, ${py}) হলে অবস্থান ভেক্টর ${px} একক ডানে আর ${py} একক ওপরে। স্লাইডারে বিন্দু সরিয়ে দেখো।`,
-      tex: [`\\vec r=${px}\\hat\\imath+${py}\\hat\\jmath`, `|\\vec r|=\\sqrt{${px}^2+${py}^2}=${f1(Math.hypot(px, py))}`],
+      text: (
+        <>
+          ঘর থেকে স্কুলের দিকে একটা তীর টানো। মূলবিন্দু থেকে (3, 2) বিন্দু পর্যন্ত তীরটাই <b>অবস্থান ভেক্টর r</b>। এর শুরু সব সময় মূলবিন্দুতে। î মানে x-দিকে 1 একক, ĵ মানে y-দিকে 1 একক।
+        </>
+      ),
+      tex: ["\\vec r=3\\hat\\imath+2\\hat\\jmath"],
+      replay: true,
+      figure: (phase) => {
+        const on = phase === 1;
+        const O = pt(80, 210);
+        const P = pt(230, 110);
+        return (
+          <Stage w={440} h={260} label="মূলবিন্দু থেকে (3, 2) বিন্দুর অবস্থান ভেক্টর">
+            <Vec a={pt(60, 210)} b={pt(410, 210)} c="m" w={1.5} />
+            <Vec a={pt(80, 230)} b={pt(80, 30)} c="m" w={1.5} />
+            <Lab p={pt(412, 228)} c="m" anchor="end">x</Lab>
+            <Lab p={pt(94, 36)} c="m" anchor="start">y</Lab>
+            <Seg a={P} b={pt(P.x, 210)} dash c="m" w={1.5} show={on} />
+            <Seg a={P} b={pt(80, P.y)} dash c="m" w={1.5} show={on} />
+            <Vec a={O} b={on ? P : O} c="r" w={5} show={on} />
+            <Dot p={O} c="f" r={5} />
+            <Lab p={pt(O.x - 10, O.y + 20)} anchor="end">মূলবিন্দু</Lab>
+            <Lab p={add(P, 12, -8)} c="r" anchor="start" show={on}>(3, 2)</Lab>
+            <Lab p={add(mid(O, P), -10, -10)} c="r" anchor="end" show={on}>r</Lab>
+          </Stage>
+        );
+      },
     },
     {
       title: "সমান্তরাল ভেক্টর",
-      text: "দুই ভেক্টরের দিক এক বা ঠিক উল্টো হলে তারা সমান্তরাল, মান যেমনই হোক। একটাকে কোনো সংখ্যা দিয়ে গুণ করলেই অন্যটা পাওয়া যায়।",
-      tex: ["\\vec B=k\\vec A"],
-      note: "k ধনাত্মক হলে একই দিক, ঋণাত্মক হলে উল্টো দিক।",
+      text: (
+        <>
+          <b>k</b> বদলাও। B = kA, মানে B সব সময় A-এর সাথে এক সরলরেখা বরাবর। k = 1 হলে সমান, k = −1 হলে বিপরীত, k = 0 হলে শূন্য ভেক্টর।
+        </>
+      ),
+      prompt: (
+        <div className="guide-play">
+          <label className="guide-range-l">
+            <span>k</span>
+            <input className="guide-range" type="range" min={-2} max={3} step={0.5} value={k} onChange={(e) => setK(Number(e.target.value))} />
+            <b>{k}</b>
+          </label>
+          <div className="guide-chips">
+            {[-1, 0, 1, 2].map((v) => (
+              <button key={v} type="button" className={`guide-chip${k === v ? " on" : ""}`} onClick={() => setK(v)}>
+                {v}
+              </button>
+            ))}
+          </div>
+          <p className="guide-note">{insight}</p>
+        </div>
+      ),
+      figure: () => {
+        const a0 = pt(150, 120);
+        const a1 = pt(210, 90);
+        const b0 = pt(150, 170);
+        const b1 = pt(150 + k * 60, 170 - k * 30);
+        return (
+          <Stage w={440} h={260} label="B = kA, A-এর সমান্তরাল ভেক্টর">
+            <Vec a={a0} b={a1} c="p" w={4} />
+            <Vec a={b0} b={b1} c="q" w={4} />
+            <Dot p={b0} c="f" r={4} />
+            <Lab p={add(mid(a0, a1), 6, -14)} c="p" anchor="start">A</Lab>
+            <Lab p={pt(150, 200)} c="q">B = {k}A</Lab>
+          </Stage>
+        );
+      },
     },
   ];
 
-  const figure = (s: number) => {
-    const arrows = scene(s, px, py);
-    const m = mk(60, 235, 24);
-    const o = m(0, 0);
-    return (
-      <Stage w={440} h={290} label="ভেক্টরের বিভিন্ন প্রকার">
-        {s === 5 ? (
-          <>
-            <line x1={o.x} y1={o.y} x2={o.x + 10 * 24} y2={o.y} strokeWidth={1.5} style={{ stroke: "var(--muted)" }} />
-            <line x1={o.x} y1={o.y} x2={o.x} y2={o.y - 8 * 24} strokeWidth={1.5} style={{ stroke: "var(--muted)" }} />
-            <Lab p={{ x: o.x + 10 * 24, y: o.y + 16 }} anchor="end" c="m">x</Lab>
-            <Lab p={{ x: o.x + 8, y: o.y - 8 * 24 }} anchor="start" c="m">y</Lab>
-            <Dot p={m(px, py)} c="r" r={5} />
-            <Lab p={add(m(px, py), 10, -8)} anchor="start" c="r">({px}, {py})</Lab>
-          </>
-        ) : null}
-        {s === 4 ? (
-          <>
-            <circle cx={60} cy={200} r={40} fill="none" strokeWidth={1.2} strokeDasharray="4 4" style={{ stroke: "var(--muted)" }} />
-            <Seg a={P(260, 250)} b={P(300, 250)} c="f" w={4} />
-            <Lab p={P(280, 270)}>1 একক</Lab>
-          </>
-        ) : null}
-        {arrows.map((r, i) => (
-          <Vec key={`v${i}`} a={r.a} b={r.b} c={r.c} show={r.show} dash={r.dash} />
-        ))}
-        {arrows.map((r, i) => (
-          <Lab key={`l${i}`} p={add(mid(r.a, r.b), 0, -12)} show={r.show && !!r.label} c={r.c}>
-            {r.label ?? ""}
-          </Lab>
-        ))}
-        <Dot p={P(120, 130)} c="r" r={9} show={s === 3} />
-        <Lab p={P(120, 112)} show={s === 3} c="r">শূন্য ভেক্টর</Lab>
-        <Lab p={P(220, 40)} show={s === 1}>A = B (মান ও দিক এক)</Lab>
-        <Lab p={P(220, 40)} show={s === 2}>মান এক, দিক উল্টো</Lab>
-      </Stage>
-    );
-  };
+  const concept: GuideStep[] = raw.map((s) => ({ ...s, tag: "দেখো" }));
 
-  const extra = (
-    <SliderCard>
-      <Slider label="অবস্থান ভেক্টরের বিন্দু: x (ধাপ ৬)" value={px} min={1} max={9} onChange={setPx} />
-      <Slider label="অবস্থান ভেক্টরের বিন্দু: y (ধাপ ৬)" value={py} min={1} max={7} onChange={setPy} />
-    </SliderCard>
-  );
+  const tail = tailSteps({
+    meta,
+    base: concept.length,
+    picks,
+    setPick,
+    reveal,
+    setReveal,
+    summary: [
+      {
+        title: "বিপরীত আর শূন্য ভেক্টর",
+        text: "উল্টো দিকের ভেক্টর −A। দুটো যোগ করলে শূন্য ভেক্টর, যা একটা ভেক্টর, সাধারণ সংখ্যা 0 নয়।",
+        tex: ["-\\vec A", "\\vec A+(-\\vec A)=\\vec 0"],
+      },
+      {
+        title: "একক আর সমান্তরাল ভেক্টর",
+        text: "একক ভেক্টরের মান 1। সমান্তরাল ভেক্টর একে অপরের গুণিতক।",
+        tex: ["\\hat A=\\dfrac{\\vec A}{|\\vec A|}", "\\vec B=k\\vec A"],
+      },
+    ],
+  });
 
-  return <Lesson steps={steps} figure={figure} extra={extra} />;
+  const all = [...concept, ...tail];
+  useFinishMark(step === all.length - 1);
+
+  const chapterHref = `/${path.split("/").filter(Boolean).slice(0, 3).join("/")}`;
+
+  return <Guide steps={all} step={step} onStep={setStep} onFinish={() => router.push(chapterHref)} />;
 }
