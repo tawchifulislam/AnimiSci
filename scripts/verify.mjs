@@ -145,6 +145,10 @@ const claims = [
   ["subtraction", "guided same direction", 5 - 3, 0, "2", "5 \u2212 3 = 2"],
   ["subtraction", "guided opposite direction", 5 + 3, 0, "8", "5 + 3 = 8"],
   ["subtraction", "guided walk back", 5 - 2, 0, "3", "5 \u2212 2 = 3"],
+  ["unit-vector", "guided sum x", 3 + 2, 0, "5", "5î + 5ĵ"],
+  ["dot-product", "guided dot work", 40 * 20 * Math.cos(rad(60)), 0, "400", "400 J"],
+  ["dot-product", "guided cart share", 40 * Math.cos(rad(60)), 0, "20", "20 N"],
+  ["cross-product", "guided wrench torque", 0.3 * 50, 0, "15", "15 N"],
 ];
 
 const lessonFile = (lesson) => {

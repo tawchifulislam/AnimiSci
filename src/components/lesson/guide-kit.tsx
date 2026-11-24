@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect, useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Check, X } from "lucide-react";
 import { Tex } from "@/components/ui/Tex";
-import { col } from "@/components/anim/kit";
-import type { GuideStep } from "@/components/lesson/Guide";
+import { col, type Pt } from "@/components/anim/kit";
+import { Guide, type GuideStep } from "@/components/lesson/Guide";
 import type { ExampleStep, LessonMeta } from "@/lessons/types";
 import { lessonKey } from "@/lib/lesson-key";
 import { markDone } from "@/lib/progress";
 import { pushDone } from "@/lib/progress-remote";
 
 const tone = { p: col.p, q: col.q, r: col.r };
+
+export const pt = (x: number, y: number): Pt => ({ x, y });
 
 export function C({ k, children }: { k: "p" | "q" | "r"; children: ReactNode }) {
   return <b style={{ color: tone[k], fontWeight: 800 }}>{children}</b>;
@@ -50,6 +52,55 @@ export function Choices({
           </span>
         </p>
       ) : null}
+    </div>
+  );
+}
+
+export function Play({
+  label,
+  value,
+  min,
+  max,
+  step = 1,
+  suffix = "",
+  onChange,
+  chips,
+  read,
+  note,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step?: number;
+  suffix?: string;
+  onChange: (v: number) => void;
+  chips?: number[];
+  read?: ReactNode;
+  note?: string;
+}) {
+  return (
+    <div className="guide-play">
+      <label className="guide-range-l">
+        <span>{label}</span>
+        <input className="guide-range" type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
+        <b>
+          {value}
+          {suffix}
+        </b>
+      </label>
+      {chips ? (
+        <div className="guide-chips">
+          {chips.map((v) => (
+            <button key={v} type="button" className={`guide-chip${value === v ? " on" : ""}`} onClick={() => onChange(v)}>
+              {v}
+              {suffix}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {read ? <div className="guide-read">{read}</div> : null}
+      {note ? <p className="guide-note">{note}</p> : null}
     </div>
   );
 }
@@ -101,6 +152,8 @@ export function useFinishMark(active: boolean) {
   }, [active, path]);
 }
 
+export type SummaryItem = { title: string; text: ReactNode; tex: string[] };
+
 type Ctx = {
   meta: LessonMeta;
   base: number;
@@ -108,10 +161,11 @@ type Ctx = {
   setPick: (i: number, v: number) => void;
   reveal: Record<number, number>;
   setReveal: (i: number, n: number) => void;
-  summary: { title: string; text: ReactNode; tex: string[] }[];
+  summary: SummaryItem[];
+  limit?: number;
 };
 
-export function tailSteps({ meta, base, picks, setPick, reveal, setReveal, summary }: Ctx): GuideStep[] {
+export function tailSteps({ meta, base, picks, setPick, reveal, setReveal, summary, limit = 5 }: Ctx): GuideStep[] {
   const out: GuideStep[] = [];
   const at = () => base + out.length;
 
@@ -140,7 +194,7 @@ export function tailSteps({ meta, base, picks, setPick, reveal, setReveal, summa
     });
   }
 
-  const quiz = meta.quiz.slice(0, 5);
+  const quiz = meta.quiz.slice(0, limit);
   const quizStart = at();
   quiz.forEach((it, n) => {
     const idx = at();
@@ -183,4 +237,29 @@ export function tailSteps({ meta, base, picks, setPick, reveal, setReveal, summa
   });
 
   return out;
+}
+
+export type GuideCtx = { picks: Record<number, number>; pick: (i: number) => (v: number) => void };
+export type Built = { concept: GuideStep[]; summary: SummaryItem[] };
+
+export function GuidedLesson({ meta, build, limit }: { meta: LessonMeta; build: (g: GuideCtx) => Built; limit?: number }) {
+  const router = useRouter();
+  const path = usePathname();
+  const [step, setStep] = useState(0);
+  const [picks, setPicks] = useState<Record<number, number>>({});
+  const [reveal, setRevealState] = useState<Record<number, number>>({});
+
+  const setPick = (i: number, v: number) => setPicks((p) => ({ ...p, [i]: v }));
+  const setReveal = (i: number, n: number) => setRevealState((p) => ({ ...p, [i]: n }));
+
+  const built = build({ picks, pick: (i) => (v) => setPick(i, v) });
+  const concept = built.concept.map((s) => ({ ...s, tag: s.tag ?? "দেখো" }));
+  const tail = tailSteps({ meta, base: concept.length, picks, setPick, reveal, setReveal, summary: built.summary, limit });
+  const all: GuideStep[] = [...concept, ...tail];
+
+  useFinishMark(step === all.length - 1);
+
+  const chapterHref = `/${path.split("/").filter(Boolean).slice(0, 3).join("/")}`;
+
+  return <Guide steps={all} step={step} onStep={setStep} onFinish={() => router.push(chapterHref)} />;
 }
