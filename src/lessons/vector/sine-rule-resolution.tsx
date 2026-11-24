@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Slider } from "@/components/ui/Slider";
-import { Arc, Dot, Lab, Seg, SliderCard, Stage, Vec, add, mid, mk, pol } from "@/components/anim/kit";
+import { C, Choices, GuidedLesson, Play, pt, type Built } from "@/components/lesson/guide-kit";
+import { Arc, Dot, Lab, Seg, Stage, Vec, add, col } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
-import { f1, rad } from "@/lib/vec";
+import { rad } from "@/lib/vec";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "একটি ভেক্টরকে যেকোনো দুই দিকে ভাগ করার সূত্র বানাতে পারবে এবং সাইন সূত্র দিয়ে উপাংশ দুটির মান বের করতে পারবে।",
   hook: "খালের মাঝ বরাবর একটা নৌকা টেনে নিতে দুই পাড় থেকে দুজন দড়ি টানছে। নৌকা সোজা যাবে, কিন্তু দড়ি দুটো সোজা নয়, দুই পাশে বাঁকা। প্রতিটি দড়িতে কত টান লাগবে? দড়ি পরস্পর লম্ব নয়, তাই cos আর sin সরাসরি চলে না। এখানে কাজে লাগে সাইন সূত্র।",
   look: "R-এর মাথা থেকে টানা সমান্তরাল রেখা দুটো কীভাবে সামান্তরিক বানায়, তা দেখো। আর সামান্তরিকের অর্ধেকটা ত্রিভুজে কোন কোণ কোন বাহুর বিপরীতে পড়ে, সেটাও খেয়াল করো।",
@@ -107,106 +106,142 @@ export const meta: LessonMeta = {
   ],
 };
 
-export default function Anim() {
-  const [r, setR] = useState(4);
-  const [al, setAl] = useState(30);
-  const [be, setBe] = useState(45);
+const L = 120;
+const SC = 0.85;
 
-  const S = 22;
-  const m = mk(70, 145, S);
-  const o = m(0, 0);
-  const sum = al + be;
-  const p = (r * Math.sin(rad(be))) / Math.sin(rad(sum));
-  const q = (r * Math.sin(rad(al))) / Math.sin(rad(sum));
-  const rE = m(r, 0);
-  const pE = m(p * Math.cos(rad(al)), p * Math.sin(rad(al)));
-  const qE = m(q * Math.cos(rad(be)), -q * Math.sin(rad(be)));
-  const l1 = m(7 * Math.cos(rad(al)), 7 * Math.sin(rad(al)));
-  const l2 = m(7 * Math.cos(rad(be)), -7 * Math.sin(rad(be)));
-
-  const steps: LessonStep[] = [
-    {
-      title: "দুই দড়ির টান",
-      text: "খালের মাঝ বরাবর নৌকা টানতে হবে। মোট টান লাল তীর R। কিন্তু দুজন দুই পাড় থেকে টানছে। প্রশ্ন: প্রতিজন কত জোরে টানবে?",
-    },
-    {
-      title: "দড়ির দিক আঁকো",
-      text: "এক দড়ি R-এর সাথে α কোণে ওপরে, অন্য দড়ি β কোণে নিচে। দুই দড়ির দিক ছবিতে ডোরাকাটা রেখা।",
-    },
-    {
-      title: "সামান্তরিক পূর্ণ করো",
-      text: "R-এর মাথা থেকে দুই দড়ির সমান্তরাল রেখা টানি। রেখা দুটো দুই দিককে যেখানে কাটে, সেখানেই P আর Q-এর মাথা।",
-    },
-    {
-      title: "P ও Q পেলাম",
-      text: "শুরু থেকে ওই দুই বিন্দু পর্যন্ত তীর টানলে দড়ি দুটোর টান P আর Q পাই। এদের যোগফলই R।",
-      tex: ["\\vec P+\\vec Q=\\vec R"],
-    },
-    {
-      title: "ত্রিভুজটা দেখো",
-      text: "শুরুর বিন্দু, P-এর মাথা আর R-এর মাথা মিলে একটা ত্রিভুজ হয়েছে। শুরুতে কোণ α, R-এর মাথায় কোণ β, আর তৃতীয় কোণ 180° − (α + β)।",
-      note: "P-এর বিপরীত কোণ β। Q-এর বিপরীত কোণ α। R-এর বিপরীত কোণ 180° − (α + β)।",
-    },
-    {
-      title: "সাইন সূত্র",
-      text: "ত্রিভুজে প্রতিটি বাহু ÷ তার বিপরীত কোণের sin একই। আবার sin(180° − x) = sin x, তাই R-এর হরে sin(α + β) বসে।",
-      tex: ["\\frac{P}{\\sin\\beta}=\\frac{Q}{\\sin\\alpha}=\\frac{R}{\\sin(\\alpha+\\beta)}"],
-    },
-    {
-      title: "P আর Q আলাদা করো",
-      text: "সমান চিহ্ন ভেঙে P আর Q আলাদা লিখি। তারপর সংখ্যা বসাই।",
-      tex: [
-        "P=\\frac{R\\sin\\beta}{\\sin(\\alpha+\\beta)}",
-        `P=\\frac{${r}\\sin${be}^\\circ}{\\sin${sum}^\\circ}=${f1(p)}`,
-        "Q=\\frac{R\\sin\\alpha}{\\sin(\\alpha+\\beta)}",
-        `Q=\\frac{${r}\\sin${al}^\\circ}{\\sin${sum}^\\circ}=${f1(q)}`,
-      ],
-    },
-    {
-      title: "দিক লম্ব হলে",
-      text: "α + β = 90° হলে sin(α + β) = 1 আর sin β = cos α। তখন P = R cosα, Q = R sinα। আগের পাঠের সূত্রে ফিরে এলাম। স্লাইডারে α + β = 90° করে দেখো।",
-      tex: ["\\alpha+\\beta=90^\\circ:\\ P=R\\cos\\alpha,\\ Q=R\\sin\\alpha"],
-    },
-  ];
-
-  const figure = (s: number) => (
-    <Stage w={440} h={290} label="একটি ভেক্টরকে দুই দিকে ভাগ করা">
-      <motion.polygon
-        initial={false}
-        points={`${o.x},${o.y} ${pE.x},${pE.y} ${rE.x},${rE.y}`}
-        animate={{ opacity: s >= 4 ? 0.14 : 0 }}
-        transition={{ duration: 0.4 }}
-        style={{ fill: "var(--c-p)" }}
-      />
-      <Seg a={o} b={l1} show={s >= 1} dash c="p" w={1.5} />
-      <Seg a={o} b={l2} show={s >= 1} dash c="q" w={1.5} />
-      <Seg a={rE} b={pE} show={s >= 2} dash c="m" w={1.5} />
-      <Seg a={rE} b={qE} show={s >= 2} dash c="m" w={1.5} />
-      <Arc o={o} r={40} from={0} to={al} c="p" w={2} show={s >= 1} />
-      <Arc o={o} r={40} from={-be} to={0} c="q" w={2} show={s >= 1} />
-      <Arc o={rE} r={34} from={180 - be} to={180} c="q" w={2} show={s >= 4} />
-      <Vec a={o} b={rE} c="r" w={4} />
-      <Vec a={o} b={pE} c="p" w={3.5} show={s >= 3} />
-      <Vec a={o} b={qE} c="q" w={3.5} show={s >= 3} />
-      <Dot p={o} />
-
-      <Lab p={add(mid(o, rE), 0, 20)} c="r">R = {r}</Lab>
-      <Lab p={pol(o, al / 2, 58)} show={s >= 1} c="p">α</Lab>
-      <Lab p={pol(o, -be / 2, 58)} show={s >= 1} c="q">β</Lab>
-      <Lab p={pol(rE, 180 - be / 2, 52)} show={s >= 4} c="q">β</Lab>
-      <Lab p={add(pE, 8, -6)} show={s >= 3} c="p" anchor="start">P = {f1(p)}</Lab>
-      <Lab p={add(qE, 8, 14)} show={s >= 3} c="q" anchor="start">Q = {f1(q)}</Lab>
-      <Lab p={add(pE, 8, 12)} show={s === 4} anchor="start">180° − (α + β)</Lab>
+function LampFigure({ phi, resultant, para, arcs, vals }: { phi: number; resultant: boolean; para: boolean; arcs: boolean; vals: boolean }) {
+  const sn = Math.sin(rad(phi));
+  const cs = Math.cos(rad(phi));
+  const lamp = pt(220, 70 + L * cs);
+  const aL = pt(220 - L * sn, 70);
+  const aR = pt(220 + L * sn, 70);
+  const t = 100 / (2 * cs);
+  const ts = t * SC;
+  const t1 = pt(lamp.x - ts * sn, lamp.y - ts * cs);
+  const t2 = pt(lamp.x + ts * sn, lamp.y - ts * cs);
+  const rTip = pt(lamp.x, lamp.y - 100 * SC);
+  return (
+    <Stage w={440} h={260} label="দুই দড়িতে ঝোলানো লণ্ঠন">
+      <Seg a={pt(60, 70)} b={pt(380, 70)} c="m" w={4} />
+      <Seg a={lamp} b={aL} c="m" w={2.5} />
+      <Seg a={lamp} b={aR} c="m" w={2.5} />
+      <Seg a={t1} b={rTip} dash c="m" w={1.5} show={para} />
+      <Seg a={t2} b={rTip} dash c="m" w={1.5} show={para} />
+      <Vec a={lamp} b={pt(lamp.x, lamp.y + 60)} c="m" w={3} dash />
+      <Vec a={lamp} b={t1} c="p" w={4} />
+      <Vec a={lamp} b={t2} c="q" w={4} />
+      <Vec a={lamp} b={resultant ? rTip : lamp} c="r" w={5} show={resultant} />
+      <Arc o={lamp} r={34} from={90} to={90 + phi} c="f" w={1.5} show={arcs && phi > 3} />
+      <Arc o={lamp} r={34} from={90 - phi} to={90} c="f" w={1.5} show={arcs && phi > 3} />
+      <Lab p={pt(lamp.x - 30, lamp.y - 44)} show={arcs && phi > 3}>β</Lab>
+      <Lab p={pt(lamp.x + 30, lamp.y - 44)} show={arcs && phi > 3}>α</Lab>
+      <Dot p={lamp} c="f" r={9} />
+      <Lab p={add(t1, -8, -6)} c="p" anchor="end">{vals ? `${t.toFixed(1)} N` : "T"}</Lab>
+      <Lab p={add(t2, 8, -6)} c="q" anchor="start">{vals ? `${t.toFixed(1)} N` : "T"}</Lab>
+      <Lab p={add(rTip, 12, 0)} c="r" anchor="start" show={resultant}>R = 100 N</Lab>
+      <Lab p={pt(lamp.x + 14, lamp.y + 62)} c="m" anchor="start">ওজন 100 N</Lab>
     </Stage>
   );
+}
 
-  const extra = (
-    <SliderCard>
-      <Slider label="মোট টান R" value={r} min={2} max={6} onChange={setR} />
-      <Slider label="কোণ α" value={al} min={10} max={60} suffix="°" onChange={setAl} />
-      <Slider label="কোণ β" value={be} min={10} max={60} suffix="°" onChange={setBe} />
-    </SliderCard>
+export default function Anim() {
+  const [phi, setPhi] = useState(45);
+  const tv = 100 / (2 * Math.cos(rad(phi)));
+  const note =
+    phi <= 3
+      ? "দড়ি খাড়া: প্রতিটি দড়ি ওজনের অর্ধেক, 50 N।"
+      : phi >= 70
+        ? "দড়ি প্রায় আনুভূমিক: টান ওজনের কয়েক গুণ হয়ে যায়, দড়ি ছিঁড়ে যাওয়ার ঝুঁকি।"
+        : "দড়ি যত বেশি হেলানো, প্রতিটি দড়ির টান তত বেশি।";
+
+  return (
+    <GuidedLesson
+      meta={meta}
+      build={(g): Built => ({
+        concept: [
+          {
+            title: "ঝুলন্ত লণ্ঠন",
+            text: (
+              <>
+                100 N ওজনের একটা লণ্ঠন দুই দড়িতে ঝুলছে, সে স্থির। দুই দড়ির টানের লব্ধি কত আর কোন দিকে?
+              </>
+            ),
+            locked: g.picks[0] === undefined,
+            prompt: <Choices options={["100 N, ওপরের দিকে", "100 N, নিচের দিকে", "200 N, ওপরের দিকে"]} answer={0} picked={g.picks[0]} onPick={g.pick(0)} explain="লণ্ঠন স্থির, তাই টানের লব্ধি ওজনের সমান আর বিপরীত: 100 N ওপরের দিকে।" />,
+            figure: () => <LampFigure phi={45} resultant={g.picks[0] !== undefined} para={false} arcs={false} vals={false} />,
+          },
+          {
+            title: "সামান্তরিক আঁকো",
+            text: (
+              <>
+                লব্ধি <C k="r">R</C>-এর মাথা থেকে দুই দড়ির সমান্তরাল রেখা টানো। ছবিটা একটা সামান্তরিক, যার কর্ণ R আর বাহু দুটো <C k="p">T</C> আর <C k="q">T</C>।
+              </>
+            ),
+            replay: true,
+            figure: (phase) => <LampFigure phi={45} resultant para={phase === 1} arcs={false} vals={false} />,
+          },
+          {
+            title: "ত্রিভুজ আর সাইন সূত্র",
+            text: (
+              <>
+                R আর দড়ির মাঝের কোণ দুটো α আর β। ত্রিভুজে প্রতিটি বাহুকে তার বিপরীত কোণের sin দিয়ে ভাগ করলে একই সংখ্যা পাই।
+              </>
+            ),
+            tex: ["\\dfrac{P}{\\sin\\beta}=\\dfrac{Q}{\\sin\\alpha}=\\dfrac{R}{\\sin(\\alpha+\\beta)}"],
+            figure: () => <LampFigure phi={45} resultant para arcs vals={false} />,
+          },
+          {
+            title: "প্রতিটি দড়িতে কত টান?",
+            text: (
+              <>
+                α = β = 45°, R = 100 N। সাইন সূত্রে T বের করলে প্রতিটি দড়িতে টান কত?
+              </>
+            ),
+            tex: ["T=\\dfrac{R\\sin\\beta}{\\sin(\\alpha+\\beta)}=\\dfrac{100\\sin45^\\circ}{\\sin90^\\circ}"],
+            locked: g.picks[3] === undefined,
+            prompt: <Choices options={["50 N", "70.7 N", "100 N"]} answer={1} picked={g.picks[3]} onPick={g.pick(3)} explain="100 × 0.707 ÷ 1 = 70.7 N। প্রতিটি দড়ির টান ওজনের চেয়ে কম, কিন্তু দুটো মিলে ওজন সামলাচ্ছে।" />,
+            figure: () => <LampFigure phi={45} resultant para arcs vals={g.picks[3] !== undefined} />,
+          },
+          {
+            title: "দড়ি আরও হেলালে",
+            text: (
+              <>
+                দড়ির হেলান <b>φ</b> বদলাও। প্রতিটি দড়ির টান কীভাবে বদলায়?
+              </>
+            ),
+            prompt: (
+              <Play
+                label="φ"
+                value={phi}
+                min={0}
+                max={75}
+                suffix="°"
+                onChange={setPhi}
+                chips={[0, 30, 45, 60, 75]}
+                read={
+                  <span>
+                    T = <C k="p">{tv.toFixed(1)} N</C>
+                  </span>
+                }
+                note={note}
+              />
+            ),
+            figure: () => <LampFigure phi={phi} resultant para={false} arcs={false} vals />,
+          },
+        ],
+        summary: [
+          {
+            title: "সাইন সূত্র",
+            text: "R-কে P আর Q-তে ভাগ করার সূত্র। α আর β হলো R-এর সাথে P ও Q-এর কোণ।",
+            tex: ["\\dfrac{P}{\\sin\\beta}=\\dfrac{Q}{\\sin\\alpha}=\\dfrac{R}{\\sin(\\alpha+\\beta)}", "P=\\dfrac{R\\sin\\beta}{\\sin(\\alpha+\\beta)},\\quad Q=\\dfrac{R\\sin\\alpha}{\\sin(\\alpha+\\beta)}"],
+          },
+          {
+            title: "লম্ব হলে সরল",
+            text: "α + β = 90° হলে সূত্র আগের লম্ব উপাংশের সূত্রে ফিরে আসে।",
+            tex: ["\\alpha+\\beta=90^\\circ:\\ P=R\\cos\\alpha,\\ Q=R\\sin\\alpha"],
+          },
+        ],
+      })}
+    />
   );
-
-  return <Lesson steps={steps} figure={figure} extra={extra} />;
 }

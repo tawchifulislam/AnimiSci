@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Slider } from "@/components/ui/Slider";
-import { Arc, Dot, Lab, Seg, SliderCard, Square, Stage, Vec, add, mid, mk, pol } from "@/components/anim/kit";
+import { C, Choices, GuidedLesson, Play, pt, type Built } from "@/components/lesson/guide-kit";
+import { Arc, Dot, Lab, Seg, Square, Stage, Vec, add, mid, pol } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
-import { f1, rad } from "@/lib/vec";
+import { rad } from "@/lib/vec";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "একটি ভেক্টরকে পরস্পর লম্ব দুই দিকে ভাগ করতে পারবে, cosθ ও sinθ কোন উপাংশের সাথে বসে তা বুঝবে এবং উপাংশ থেকে ভেক্টর ফিরে পেতে পারবে।",
   hook: "একটা কাঠি ঢালু করে ধরো। ওপর থেকে আলো ফেললে মেঝেতে একটা ছায়া পড়ে, পাশ থেকে ফেললে দেয়ালে আরেকটা। মেঝের ছায়া বলে কাঠিটা কতটা সামনে গেছে, দেয়ালের ছায়া বলে কতটা ওপরে উঠেছে। ভেক্টরকে লম্ব উপাংশে ভাগ করা মানে এই দুই ছায়া মাপা।",
   look: "θ বাড়লে মেঝের ছায়া আর দেয়ালের ছায়ার মধ্যে কোনটা ছোট হয় আর কোনটা বড়, তা খেয়াল করো। আর দুই ছায়া আর R মিলে কোন আকার তৈরি হয়, সেটাও দেখো।",
@@ -106,90 +106,143 @@ export const meta: LessonMeta = {
   ],
 };
 
-export default function Anim() {
-  const [r, setR] = useState(7);
-  const [th, setTh] = useState(40);
+const O = pt(70, 70);
 
-  const S = 24;
-  const m = mk(70, 255, S);
-  const o = m(0, 0);
-  const rx = r * Math.cos(rad(th));
-  const ry = r * Math.sin(rad(th));
-  const tip = m(rx, ry);
-  const fx = m(rx, 0);
-  const wy = m(0, ry);
-
-  const steps: LessonStep[] = [
-    {
-      title: "ছায়ার খেলা",
-      text: "ছবির লাল তীরটা একটা ভেক্টর R। সে x-অক্ষের সাথে θ কোণ করে আছে। বাঁ দিকে দেয়াল, নিচে মেঝে। ওপর আর পাশ থেকে আলো ফেললে এর দুটো ছায়া পড়বে।",
-      note: "ভেক্টরকে লম্ব দুই দিকে ভাগ করা মানে এই দুই ছায়ার দৈর্ঘ্য মাপা।",
-    },
-    {
-      title: "মেঝের ছায়া",
-      text: "ওপর থেকে আলো ফেললে মেঝেতে R-এর ছায়া পড়ে। এই ছায়াই x-দিকের উপাংশ Rx। R যত শুয়ে থাকে, এই ছায়া তত লম্বা।",
-    },
-    {
-      title: "দেয়ালের ছায়া",
-      text: "পাশ থেকে আলো ফেললে দেয়ালে আরেকটা ছায়া পড়ে। এটা y-দিকের উপাংশ Ry। R যত খাড়া হয়, এই ছায়া তত লম্বা।",
-    },
-    {
-      title: "সমকোণী ত্রিভুজ",
-      text: "R, Rx আর Ry মিলে একটা সমকোণী ত্রিভুজ হয়েছে। R অতিভুজ, Rx ভূমি, Ry লম্ব। কোণ θ আছে ভূমির পাশে।",
-      note: "ভূমি হলো x-দিকের ছায়া, লম্ব হলো y-দিকের ছায়া।",
-    },
-    {
-      title: "ভূমি Rx বের করি",
-      text: "cosθ হলো ভূমি ÷ অতিভুজ। তাই ভূমি হলো অতিভুজ × cosθ।",
-      tex: ["\\cos\\theta=\\frac{R_x}{R}", "R_x=R\\cos\\theta", `R_x=${r}\\times\\cos${th}^\\circ=${f1(rx)}`],
-    },
-    {
-      title: "লম্ব Ry বের করি",
-      text: "sinθ হলো লম্ব ÷ অতিভুজ। তাই লম্ব হলো অতিভুজ × sinθ।",
-      tex: ["\\sin\\theta=\\frac{R_y}{R}", "R_y=R\\sin\\theta", `R_y=${r}\\times\\sin${th}^\\circ=${f1(ry)}`],
-    },
-    {
-      title: "উল্টো পথ",
-      text: "উপাংশ জানলে ভেক্টর ফিরে পাওয়া যায়। মান পাই পিথাগোরাস দিয়ে, কোণ পাই tan দিয়ে।",
-      tex: ["R=\\sqrt{R_x^2+R_y^2}", "\\tan\\theta=\\frac{R_y}{R_x}", `R=\\sqrt{${f1(rx)}^2+${f1(ry)}^2}=${r}`],
-    },
-    {
-      title: "সীমান্ত কোণ",
-      text: "θ = 0° হলে ভেক্টর পুরোটাই মেঝের ওপর, তাই Ry = 0। θ = 90° হলে পুরোটাই দেয়ালের গায়ে, তাই Rx = 0। স্লাইডার টেনে দেখো।",
-      tex: ["\\theta=0^\\circ:\\ R_x=R,\\ R_y=0", "\\theta=90^\\circ:\\ R_x=0,\\ R_y=R"],
-    },
-  ];
-
-  const figure = (s: number) => (
-    <Stage w={440} h={290} label="ভেক্টরের লম্ব উপাংশ">
-      <line x1={o.x} y1={o.y} x2={o.x + 10 * S} y2={o.y} strokeWidth={3} strokeLinecap="round" style={{ stroke: "var(--muted)" }} />
-      <line x1={o.x} y1={o.y} x2={o.x} y2={o.y - 9 * S} strokeWidth={3} strokeLinecap="round" style={{ stroke: "var(--muted)" }} />
-      <Lab p={{ x: o.x + 10 * S, y: o.y + 20 }} anchor="end" c="m">মেঝে</Lab>
-      <Lab p={{ x: o.x + 8, y: o.y - 9 * S - 6 }} anchor="start" c="m">দেয়াল</Lab>
-
-      <Seg a={o} b={fx} show={s >= 1} c="p" w={7} />
-      <Seg a={tip} b={fx} show={s >= 1} dash c="m" w={1.5} />
-      <Seg a={o} b={wy} show={s >= 2} c="q" w={7} />
-      <Seg a={tip} b={wy} show={s >= 2} dash c="m" w={1.5} />
-      <Seg a={fx} b={tip} show={s >= 3} c="q" w={3} />
-      <Square at={fx} d1={{ x: -1, y: 0 }} d2={{ x: 0, y: -1 }} show={s >= 3} />
-      <Arc o={o} r={34} from={0} to={th} c="f" w={1.5} show={s >= 3} />
-      <Vec a={o} b={tip} c="r" w={4} />
-      <Dot p={o} />
-
-      <Lab p={add(mid(o, fx), 0, 22)} show={s >= 1} c="p">{s >= 4 ? `Rx = ${f1(rx)}` : "Rx"}</Lab>
-      <Lab p={add(mid(o, wy), -10, 5)} show={s >= 2} c="q" anchor="end">{s >= 5 ? `Ry = ${f1(ry)}` : "Ry"}</Lab>
-      <Lab p={add(tip, 10, -8)} c="r" anchor="start">R = {r}</Lab>
-      <Lab p={pol(o, th / 2, 54)} show={s >= 3}>θ</Lab>
+function ForceFigure({ th, comp, arc, vals }: { th: number; comp: boolean; arc: boolean; vals: boolean }) {
+  const f = 50 * 3.6;
+  const c = Math.cos(rad(th));
+  const s = Math.sin(rad(th));
+  const tip = pt(O.x + f * c, O.y + f * s);
+  const corner = pt(tip.x, O.y);
+  return (
+    <Stage w={440} h={260} label="বল আর তার দুই লম্ব উপাংশ">
+      <Seg a={pt(30, O.y)} b={pt(410, O.y)} dash c="m" w={1} />
+      <Vec a={O} b={tip} c="r" w={5} />
+      <Vec a={O} b={comp ? corner : O} c="p" w={4} show={comp} />
+      <Vec a={corner} b={comp ? tip : corner} c="q" w={4} show={comp} />
+      <Square at={corner} d1={{ x: -1, y: 0 }} d2={{ x: 0, y: 1 }} show={comp && th > 4 && th < 86} />
+      <Arc o={O} r={36} from={-th} to={0} c="f" w={1.5} show={arc && th > 3} />
+      <Lab p={pol(O, -th / 2, 56)} show={arc && th > 3}>θ</Lab>
+      <Dot p={O} c="f" r={5} />
+      <Lab p={add(mid(O, corner), 0, -12)} c="p" show={comp && th < 88}>{vals ? `Fx = ${(50 * c).toFixed(1)} N` : "Fx"}</Lab>
+      <Lab p={add(mid(corner, tip), 12, 0)} c="q" anchor="start" show={comp && th > 2}>{vals ? `Fy = ${(50 * s).toFixed(1)} N` : "Fy"}</Lab>
+      <Lab p={add(mid(O, tip), -10, 8)} c="r" anchor="end">F = 50 N</Lab>
     </Stage>
   );
+}
 
-  const extra = (
-    <SliderCard>
-      <Slider label="ভেক্টরের মান R" value={r} min={1} max={9} onChange={setR} />
-      <Slider label="কোণ θ (x-অক্ষ থেকে)" value={th} min={0} max={90} suffix="°" onChange={setTh} />
-    </SliderCard>
+export default function Anim() {
+  const [ang, setAng] = useState(30);
+  const cx = 50 * Math.cos(rad(ang));
+  const cy = 50 * Math.sin(rad(ang));
+  const note =
+    ang === 0
+      ? "θ = 0°: পুরোটাই সামনে, নিচে চাপ নেই।"
+      : ang === 90
+        ? "θ = 90°: পুরোটাই নিচে চাপছে, গাড়ি এগোবে না।"
+        : "কোণ কমলে সামনের অংশ বাড়ে, কোণ বাড়লে নিচের অংশ বাড়ে।";
+
+  return (
+    <GuidedLesson
+      meta={meta}
+      build={(g): Built => ({
+        concept: [
+          {
+            title: "ঠেলাগাড়ি",
+            text: (
+              <>
+                তুমি হাতল ধরে 50 N বলে গাড়ি ঠেলছ। হাতল মাটির সাথে 30° কোণে নিচের দিকে হেলানো। পুরো 50 N কি গাড়িকে সামনে এগোচ্ছে?
+              </>
+            ),
+            locked: g.picks[0] === undefined,
+            prompt: <Choices options={["হ্যাঁ, পুরোটাই সামনে", "না, কিছুটা নিচে চাপছে", "না, পুরোটাই নিচে চাপছে"]} answer={1} picked={g.picks[0]} onPick={g.pick(0)} explain="বলের একটা অংশ গাড়িকে সামনে এগোয়, আরেকটা অংশ মাটিকে নিচে চাপে। বলকে এই দুই লম্ব অংশে ভাগ করা যায়।" />,
+            figure: () => <ForceFigure th={30} comp={g.picks[0] !== undefined} arc={false} vals={false} />,
+          },
+          {
+            title: "দুই অংশ",
+            text: (
+              <>
+                সামনের অংশ <C k="p">Fx</C>, নিচের অংশ <C k="q">Fy</C>। দুটো একসাথে ঠিক 50 N-এর মতো কাজ করে, আর পরস্পর লম্ব।
+              </>
+            ),
+            replay: true,
+            figure: (phase) => <ForceFigure th={30} comp={phase === 1} arc vals />,
+          },
+          {
+            title: "কোণ বদলে দেখো",
+            text: (
+              <>
+                <b>θ</b> বদলাও। কোন কোণে সামনের অংশ সবচেয়ে বড়? কোন কোণে নিচের অংশ?
+              </>
+            ),
+            prompt: (
+              <Play
+                label="θ"
+                value={ang}
+                min={0}
+                max={90}
+                suffix="°"
+                onChange={setAng}
+                chips={[0, 30, 45, 60, 90]}
+                read={
+                  <>
+                    <span>
+                      <C k="p">Fx = {cx.toFixed(1)} N</C>
+                    </span>
+                    <span>
+                      <C k="q">Fy = {cy.toFixed(1)} N</C>
+                    </span>
+                  </>
+                }
+                note={note}
+              />
+            ),
+            figure: () => <ForceFigure th={ang} comp arc vals />,
+          },
+          {
+            title: "কোনটায় cos, কোনটায় sin?",
+            text: "θ মাপা হয় অনুভূমিক দিক থেকে। কোণের গায়ে লাগানো অংশে cos, কোণের উল্টো দিকের অংশে sin।",
+            tex: ["F_x=F\\cos\\theta", "F_y=F\\sin\\theta"],
+            replay: true,
+            figure: (phase) => <ForceFigure th={30} comp={phase === 1} arc vals />,
+          },
+          {
+            title: "উপাংশ থেকে বল",
+            text: "উল্টো পথেও যাওয়া যায়। দুই উপাংশ 6 N আর 8 N হলে মূল বল কত?",
+            locked: g.picks[4] === undefined,
+            prompt: <Choices options={["14 N", "10 N", "2 N"]} answer={1} picked={g.picks[4]} onPick={g.pick(4)} explain="মান পাই পিথাগোরাস দিয়ে: √(6² + 8²) = 10 N। দিক: tanθ = 8 ÷ 6, তাই θ = 53.1°।" />,
+            figure: () => {
+              const done = g.picks[4] !== undefined;
+              const o = pt(80, 60);
+              const t = pt(200, 220);
+              return (
+                <Stage w={440} h={260} label="উপাংশ 6 N আর 8 N থেকে মূল বল">
+                  <Vec a={o} b={pt(200, 60)} c="p" w={4} />
+                  <Vec a={pt(200, 60)} b={t} c="q" w={4} />
+                  <Vec a={o} b={done ? t : o} c="r" w={5} show={done} />
+                  <Square at={pt(200, 60)} d1={{ x: -1, y: 0 }} d2={{ x: 0, y: 1 }} />
+                  <Dot p={o} c="f" r={5} />
+                  <Lab p={pt(140, 44)} c="p">6 N</Lab>
+                  <Lab p={pt(216, 140)} c="q" anchor="start">8 N</Lab>
+                  <Lab p={pt(128, 150)} c="r" anchor="end" show={done}>F = 10 N</Lab>
+                </Stage>
+              );
+            },
+          },
+        ],
+        summary: [
+          {
+            title: "দুটি সূত্র",
+            text: "কোণ অনুভূমিক দিক থেকে মাপলে:",
+            tex: ["F_x=F\\cos\\theta", "F_y=F\\sin\\theta"],
+          },
+          {
+            title: "উপাংশ থেকে বল",
+            text: "উপাংশ জানলে মূল বলের মান আর দিক ফিরে পাওয়া যায়।",
+            tex: ["F=\\sqrt{F_x^2+F_y^2}", "\\tan\\theta=\\dfrac{F_y}{F_x}"],
+          },
+        ],
+      })}
+    />
   );
-
-  return <Lesson steps={steps} figure={figure} extra={extra} />;
 }

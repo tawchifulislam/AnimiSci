@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Slider } from "@/components/ui/Slider";
-import { Dot, Lab, Seg, SliderCard, Square, Stage, Vec, add, mid, mk } from "@/components/anim/kit";
+import { C, Choices, GuidedLesson, pt, type Built } from "@/components/lesson/guide-kit";
+import { Dot, Lab, Square, Stage, Vec, add, col, mid } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
-import { f1 } from "@/lib/vec";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "î, ĵ, k̂ দিয়ে যেকোনো ভেক্টর লিখতে পারবে, তার মান বের করতে পারবে, কোনো ভেক্টরের দিকে একক ভেক্টর বানাতে এবং উপাংশ ধরে যোগ-বিয়োগ করতে পারবে।",
   hook: "মানচিত্রে কোনো জায়গা বোঝাতে আমরা বলি 'পূর্বে 3 কিমি, উত্তরে 4 কিমি'। দুই দিকের দুটো সংখ্যা জানলেই পুরো ভেক্টর জানা হয়ে যায়। î, ĵ, k̂ হলো সেই দিকগুলোর নাম, আর সংখ্যাগুলো হলো কতটা।",
   look: "î আর ĵ-কে কতগুণ লম্বা করে জোড়া দিলে A ভেক্টরটা তৈরি হয়, তা খেয়াল করো। আর Â-এর তীরটা কেন সব সময় একক বৃত্তের ওপর থাকে, সেটাও দেখো।",
@@ -103,104 +100,157 @@ export const meta: LessonMeta = {
   ],
 };
 
+const U = 40;
+const O = pt(60, 230);
+const at = (x: number, y: number) => pt(O.x + x * U, O.y - y * U);
+
+function Grid() {
+  return (
+    <g opacity={0.35}>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <line key={`v${i}`} x1={O.x + i * U} y1={O.y} x2={O.x + i * U} y2={O.y - 4 * U} strokeWidth={1} style={{ stroke: col.m }} />
+      ))}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <line key={`h${i}`} x1={O.x} y1={O.y - i * U} x2={O.x + 4 * U} y2={O.y - i * U} strokeWidth={1} style={{ stroke: col.m }} />
+      ))}
+    </g>
+  );
+}
+
 export default function Anim() {
-  const [ax, setAx] = useState(4);
-  const [ay, setAy] = useState(3);
-  const [bx, setBx] = useState(2);
-  const [by, setBy] = useState(2);
-
-  const S = 22;
-  const m = mk(60, 255, S);
-  const o = m(0, 0);
-  const mag = Math.hypot(ax, ay);
-  const uE = { x: o.x + (ax / mag) * S, y: o.y - (ay / mag) * S };
-  const aE = m(ax, ay);
-  const sumE = m(ax + bx, ay + by);
-
-  const steps: LessonStep[] = [
-    {
-      title: "একক ভেক্টর î ও ĵ",
-      text: "যে ভেক্টরের মান ঠিক 1, সে একক ভেক্টর। এর কাজ শুধু দিক দেখানো। x-অক্ষের দিকে একক ভেক্টরের নাম î (আই-হ্যাট), y-অক্ষের দিকে ĵ (জে-হ্যাট)। ত্রিমাত্রায় z-অক্ষের জন্য k̂ আছে।",
-      note: "î মানে 'ডান দিকে ঠিক 1 ধাপ', ĵ মানে 'ওপর দিকে ঠিক 1 ধাপ'।",
-    },
-    {
-      title: `î-কে ${ax} গুণ লম্বা করো`,
-      text: `সংখ্যা দিয়ে গুণ করলে ভেক্টরের মান বাড়ে, দিক একই থাকে। î-কে ${ax} গুণ লম্বা করলে x-দিকে ${ax} একক পাই।`,
-      tex: [`${ax}\\hat\\imath`],
-    },
-    {
-      title: `ĵ-কে ${ay} গুণ লম্বা করো`,
-      text: `এবার ĵ-কে ${ay} গুণ লম্বা করে ঠিক ওই মাথায় বসাই। y-দিকে ${ay} একক ওপরে উঠলাম।`,
-      tex: [`${ay}\\hat\\jmath`],
-    },
-    {
-      title: "জোড়া দিয়ে ভেক্টর A",
-      text: "শুরু থেকে শেষ মাথা পর্যন্ত তীরটাই আমাদের ভেক্টর A। একে দুই দিকের অংশের যোগফল হিসেবে লেখা যায়। একেই বলে উপাংশ রূপ।",
-      tex: [`\\vec A=${ax}\\hat\\imath+${ay}\\hat\\jmath`, "\\vec A=A_x\\hat\\imath+A_y\\hat\\jmath+A_z\\hat k"],
-    },
-    {
-      title: "A-এর মান",
-      text: "দুই অংশ সমকোণে আছে, তাই সমকোণী ত্রিভুজে পিথাগোরাস খাটে। ত্রিমাত্রায় z-অংশের বর্গও যোগ হয়।",
-      tex: [`A=\\sqrt{${ax}^2+${ay}^2}=${f1(mag)}`, "A=\\sqrt{A_x^2+A_y^2+A_z^2}"],
-    },
-    {
-      title: "A-এর দিকে একক ভেক্টর",
-      text: "যেকোনো ভেক্টরকে তার নিজের মান দিয়ে ভাগ করলে মান ঠিক 1 হয়ে যায়, দিক একই থাকে। ফলে A-এর দিকের একক ভেক্টর Â পাই। ছবির বেগুনি ছোট তীরটা সেই একক ভেক্টর। তার মাথা সব সময় একক বৃত্তের ওপর।",
-      tex: [`\\hat A=\\frac{\\vec A}{A}=\\frac{${ax}\\hat\\imath+${ay}\\hat\\jmath}{${f1(mag)}}`],
-    },
-    {
-      title: "উপাংশ ধরে যোগ",
-      text: `আরেকটা ভেক্টর B = ${bx}î + ${by}ĵ নিলাম। A আর B যোগ করতে একই দিকের অংশ যোগ করি। ছবিতে B-কে A-এর মাথায় বসানো হয়েছে। বিয়োগেও একইভাবে অংশ ধরে বিয়োগ হয়।`,
-      tex: [`\\vec A+\\vec B=(${ax}+${bx})\\hat\\imath+(${ay}+${by})\\hat\\jmath=${ax + bx}\\hat\\imath+${ay + by}\\hat\\jmath`],
-    },
-  ];
-
-  const figure = (s: number) => (
-    <Stage w={440} h={290} label="একক ভেক্টর ও উপাংশ">
-      <line x1={o.x} y1={o.y} x2={o.x + 11 * S} y2={o.y} strokeWidth={1.2} style={{ stroke: "var(--muted)" }} />
-      <line x1={o.x} y1={o.y} x2={o.x} y2={o.y - 10 * S} strokeWidth={1.2} style={{ stroke: "var(--muted)" }} />
-      <motion.circle
-        initial={false}
-        cx={o.x}
-        cy={o.y}
-        r={S}
-        fill="none"
-        strokeWidth={1.2}
-        strokeDasharray="4 4"
-        animate={{ opacity: s === 5 ? 1 : 0 }}
-        style={{ stroke: "var(--muted)" }}
-      />
-
-      <Vec a={o} b={m(s >= 1 ? ax : 1, 0)} c="p" w={4} />
-      <Vec a={o} b={m(0, 1)} c="q" w={4} />
-      <Vec a={m(ax, 0)} b={m(ax, s >= 2 ? ay : 0)} c="q" w={4} show={s >= 2} />
-      <Seg a={o} b={aE} show={s >= 3 && s <= 5} c="r" w={4} head />
-      <Square at={m(ax, 0)} d1={{ x: -1, y: 0 }} d2={{ x: 0, y: -1 }} show={s === 4} />
-      <Vec a={o} b={uE} c="v" w={4.5} show={s === 5} />
-
-      <Vec a={aE} b={sumE} c="u" w={3.5} show={s === 6} />
-      <Vec a={o} b={m(bx, by)} c="u" dash show={s === 6} w={2} />
-      <Seg a={o} b={sumE} show={s === 6} c="r" w={4} head />
-      <Dot p={o} />
-
-      <Lab p={add(m(s >= 1 ? ax / 2 : 0.5, 0), 0, 18)} c="p">{s >= 1 ? `${ax} î` : "î"}</Lab>
-      <Lab p={add(m(0, 0.5), -10, 4)} c="q" anchor="end">{s >= 2 ? "ĵ" : "ĵ"}</Lab>
-      <Lab p={add(m(ax, ay / 2), 12, 0)} show={s >= 2 && s <= 5} c="q" anchor="start">{`${ay} ĵ`}</Lab>
-      <Lab p={add(mid(o, aE), -12, -10)} show={s >= 3 && s <= 5} c="r" anchor="end">{s >= 4 ? `A = ${f1(mag)}` : "A"}</Lab>
-      <Lab p={add(uE, 8, -8)} show={s === 5} c="v" anchor="start">Â</Lab>
-      <Lab p={add(mid(o, sumE), -12, -10)} show={s === 6} c="r" anchor="end">A + B</Lab>
-      <Lab p={add(mid(aE, sumE), 12, 0)} show={s === 6} c="u" anchor="start">B</Lab>
-    </Stage>
+  return (
+    <GuidedLesson
+      meta={meta}
+      build={(g): Built => ({
+        concept: [
+          {
+            title: "ব্লক ধরে হাঁটা",
+            text: (
+              <>
+                দোকানটা <C k="p">পূর্বে 3 ব্লক</C> আর <C k="q">উত্তরে 4 ব্লক</C> দূরে। সোজা কত ব্লক দূরে?
+              </>
+            ),
+            locked: g.picks[0] === undefined,
+            prompt: <Choices options={["7", "5", "12"]} answer={1} picked={g.picks[0]} onPick={g.pick(0)} explain="পূর্ব আর উত্তর পরস্পর লম্ব, তাই পিথাগোরাস: √(3² + 4²) = 5 ব্লক।" />,
+            figure: () => {
+              const done = g.picks[0] !== undefined;
+              return (
+                <Stage w={440} h={260} label="পূর্বে 3 আর উত্তরে 4 ব্লক">
+                  <Grid />
+                  <Vec a={at(0, 0)} b={at(3, 0)} c="p" w={4} />
+                  <Vec a={at(3, 0)} b={at(3, 4)} c="q" w={4} />
+                  <Vec a={at(0, 0)} b={done ? at(3, 4) : at(0, 0)} c="r" w={5} show={done} />
+                  <Dot p={at(0, 0)} c="f" r={5} />
+                  <Lab p={add(mid(at(0, 0), at(3, 0)), 0, 20)} c="p">3 ব্লক</Lab>
+                  <Lab p={add(mid(at(3, 0), at(3, 4)), 14, 0)} c="q" anchor="start">4 ব্লক</Lab>
+                  <Lab p={add(mid(at(0, 0), at(3, 4)), -12, -8)} c="r" anchor="end" show={done}>5 ব্লক</Lab>
+                </Stage>
+              );
+            },
+          },
+          {
+            title: "দিক দেখানোর একক",
+            text: (
+              <>
+                পূর্বে ঠিক 1 ব্লকের তীরকে বলি <C k="p">î</C>, উত্তরে ঠিক 1 ব্লকের তীরকে বলি <C k="q">ĵ</C>। এদের মান 1, এরাই একক ভেক্টর। ওপরের দিকের জন্য আছে k̂।
+              </>
+            ),
+            replay: true,
+            figure: (phase) => (
+              <Stage w={440} h={260} label="একক ভেক্টর î আর ĵ">
+                <Grid />
+                <Vec a={at(0, 0)} b={phase === 1 ? at(1, 0) : at(0, 0)} c="p" w={5} />
+                <Vec a={at(0, 0)} b={phase === 1 ? at(0, 1) : at(0, 0)} c="q" w={5} />
+                <Dot p={at(0, 0)} c="f" r={5} />
+                <Lab p={add(at(0.5, 0), 0, 22)} c="p" show={phase === 1}>î</Lab>
+                <Lab p={add(at(0, 0.5), -14, 0)} c="q" anchor="end" show={phase === 1}>ĵ</Lab>
+              </Stage>
+            ),
+          },
+          {
+            title: "î আর ĵ জোড়া দাও",
+            text: (
+              <>
+                3 ব্লক পূর্বে মানে 3 গুণ î, 4 ব্লক উত্তরে মানে 4 গুণ ĵ। দুটো জোড়া দিলে পুরো ভেক্টর A।
+              </>
+            ),
+            tex: ["\\vec A=3\\hat\\imath+4\\hat\\jmath"],
+            replay: true,
+            figure: (phase) => (
+              <Stage w={440} h={260} label="3î আর 4ĵ জোড়া দিয়ে A">
+                <Grid />
+                <Vec a={at(0, 0)} b={at(3, 0)} c="p" w={4} />
+                <Vec a={at(3, 0)} b={phase === 1 ? at(3, 4) : at(3, 0)} c="q" w={4} />
+                <Vec a={at(0, 0)} b={phase === 1 ? at(3, 4) : at(0, 0)} c="r" w={5} show={phase === 1} />
+                <Dot p={at(0, 0)} c="f" r={5} />
+                <Lab p={add(mid(at(0, 0), at(3, 0)), 0, 20)} c="p">3î</Lab>
+                <Lab p={add(mid(at(3, 0), at(3, 4)), 14, 0)} c="q" anchor="start" show={phase === 1}>4ĵ</Lab>
+                <Lab p={add(mid(at(0, 0), at(3, 4)), -12, -8)} c="r" anchor="end" show={phase === 1}>A</Lab>
+              </Stage>
+            ),
+          },
+          {
+            title: "একক ভেক্টর বানাও",
+            text: (
+              <>
+                A-এর মান 5। A-কে 5 দিয়ে ভাগ করলে A-এর দিকের একক ভেক্টর Â পাই। Â-এর মান কত হবে?
+              </>
+            ),
+            tex: ["A=\\sqrt{3^2+4^2}=5", "\\hat A=\\dfrac{3\\hat\\imath+4\\hat\\jmath}{5}=0.6\\hat\\imath+0.8\\hat\\jmath"],
+            locked: g.picks[3] === undefined,
+            prompt: <Choices options={["0.6", "1", "5"]} answer={1} picked={g.picks[3]} onPick={g.pick(3)} explain="একক ভেক্টরের মান সব সময় ঠিক 1। শুধু দিক A-এর মতো, তাই মাথা একক বৃত্তের ওপর পড়ে।" />,
+            figure: () => {
+              const done = g.picks[3] !== undefined;
+              return (
+                <Stage w={440} h={260} label="A আর তার একক ভেক্টর Â">
+                  <circle cx={O.x} cy={O.y} r={U} fill="none" strokeWidth={1.5} strokeDasharray="5 5" style={{ stroke: col.m }} />
+                  <Vec a={at(0, 0)} b={at(3, 4)} c="r" w={4} />
+                  <Vec a={at(0, 0)} b={done ? at(0.6, 0.8) : at(0, 0)} c="v" w={5} show={done} />
+                  <Dot p={at(0, 0)} c="f" r={5} />
+                  <Lab p={add(mid(at(0, 0), at(3, 4)), 14, 0)} c="r" anchor="start">A, মান = 5</Lab>
+                  <Lab p={add(at(0.6, 0.8), 14, 8)} c="v" anchor="start" show={done}>Â, মান = 1</Lab>
+                </Stage>
+              );
+            },
+          },
+          {
+            title: "উপাংশ ধরে যোগ",
+            text: (
+              <>
+                A = 3î + 4ĵ আর B = 2î + ĵ যোগ করলে î-এর সংখ্যা কত হবে?
+              </>
+            ),
+            locked: g.picks[4] === undefined,
+            prompt: <Choices options={["5", "6", "3"]} answer={0} picked={g.picks[4]} onPick={g.pick(4)} explain="একই দিকের সংখ্যা যোগ হয়: 3 + 2 = 5, 4 + 1 = 5। তাই A + B = 5î + 5ĵ।" />,
+            figure: () => {
+              const done = g.picks[4] !== undefined;
+              return (
+                <Stage w={440} h={260} label="উপাংশ ধরে যোগ">
+                  <Vec a={at(0, 0)} b={at(3, 4)} c="p" w={4} />
+                  <Vec a={at(3, 4)} b={at(5, 5)} c="q" w={4} />
+                  <Vec a={at(0, 0)} b={done ? at(5, 5) : at(0, 0)} c="r" w={5} show={done} />
+                  <Dot p={at(0, 0)} c="f" r={5} />
+                  <Lab p={add(mid(at(0, 0), at(3, 4)), -12, 0)} c="p" anchor="end">A</Lab>
+                  <Lab p={add(mid(at(3, 4), at(5, 5)), 6, -12)} c="q" anchor="start">B</Lab>
+                  <Lab p={add(mid(at(0, 0), at(5, 5)), 16, 12)} c="r" anchor="start" show={done}>A + B = 5î + 5ĵ</Lab>
+                </Stage>
+              );
+            },
+          },
+        ],
+        summary: [
+          {
+            title: "ভেক্টর আর তার মান",
+            text: "î, ĵ, k̂ হলো x, y, z অক্ষ বরাবর একক ভেক্টর। উপাংশ থেকে ভেক্টর লেখা যায়, আর তার মান পিথাগোরাস দিয়ে।",
+            tex: ["\\vec A=A_x\\hat\\imath+A_y\\hat\\jmath+A_z\\hat k", "A=\\sqrt{A_x^2+A_y^2+A_z^2}"],
+          },
+          {
+            title: "একক ভেক্টর আর যোগ-বিয়োগ",
+            text: "একক ভেক্টর পেতে নিজের মান দিয়ে ভাগ করো। যোগ-বিয়োগ হয় একই দিকের সংখ্যা ধরে।",
+            tex: ["\\hat A=\\dfrac{\\vec A}{A}", "\\vec A\\pm\\vec B=(A_x\\pm B_x)\\hat\\imath+(A_y\\pm B_y)\\hat\\jmath+(A_z\\pm B_z)\\hat k"],
+          },
+        ],
+      })}
+    />
   );
-
-  const extra = (
-    <SliderCard>
-      <Slider label="A-এর x অংশ" value={ax} min={1} max={6} onChange={setAx} />
-      <Slider label="A-এর y অংশ" value={ay} min={1} max={6} onChange={setAy} />
-      <Slider label="B-এর x অংশ" value={bx} min={1} max={4} onChange={setBx} />
-      <Slider label="B-এর y অংশ" value={by} min={1} max={4} onChange={setBy} />
-    </SliderCard>
-  );
-
-  return <Lesson steps={steps} figure={figure} extra={extra} />;
 }
