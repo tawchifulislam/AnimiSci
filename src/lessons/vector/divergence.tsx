@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Chips } from "@/components/anim/controls";
+import { C, Choices, GuidedLesson, type Built } from "@/components/lesson/guide-kit";
 import { Particles, Quiver, fields, type FieldKey } from "@/components/anim/field";
-import { Lab, Stage, col } from "@/components/anim/kit";
+import { Stage, col } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "ভেক্টর ক্ষেত্রের ডাইভারজেন্স বের করতে পারবে এবং ফল ধনাত্মক, ঋণাত্মক বা শূন্য হলে ক্ষেত্রে কী ঘটছে তা বলতে পারবে।",
   hook: "ফোয়ারার মুখ থেকে পানি চারদিকে ছড়ায়। নর্দমার মুখে চারদিক থেকে পানি জমা হয়। আবার সোজা নদীর স্রোতে একটা ছোট জায়গা ধরলে যত পানি ঢোকে, ঠিক তত বেরোয়। এই ছড়ানো বা জমার মাপই ডাইভারজেন্স।",
   look: "মাঝের ছোট বাক্সে কতটা ঢুকছে আর কতটা বেরোচ্ছে, তা তীরের দৈর্ঘ্য দেখে মেলাও। উৎস, গ্রাহক, সমান স্রোত আর ঘূর্ণিতে বাক্সের অবস্থা কেমন বদলায়, সেটাও দেখো।",
@@ -105,82 +104,96 @@ export const meta: LessonMeta = {
   ],
 };
 
-const stepField: FieldKey[] = ["source", "source", "source", "source", "sink", "uniform", "rotation"];
+function FieldPic({ f, box }: { f: FieldKey; box?: boolean }) {
+  return (
+    <Stage w={440} h={290} label="ভেক্টর ক্ষেত্রের তীর ও কণা">
+      <Quiver field={f} c="p" />
+      <Particles key={f} field={f} />
+      {box ? <rect x={192} y={119} width={56} height={52} rx={6} fill="none" strokeWidth={2} strokeDasharray="5 4" style={{ stroke: col.r }} /> : null}
+    </Stage>
+  );
+}
 
 export default function Anim() {
-  const [cur, setCur] = useState(0);
   const [pick, setPick] = useState<FieldKey>("source");
+  const keys = Object.keys(fields) as FieldKey[];
 
-  const steps: LessonStep[] = [
-    {
-      title: "ফোয়ারা",
-      text: "ছবির তীরগুলো পানির স্রোত। মাঝের বিন্দু থেকে চারদিকে ছড়াচ্ছে। হলুদ ফোঁটাগুলো দেখো, সব মাঝ থেকে বাইরে যাচ্ছে। এটা একটা উৎস।",
-    },
-    {
-      title: "ছোট বাক্স",
-      text: "মাঝে একটা ছোট বাক্স ধরো, ছবিতে ডোরাকাটা। বাক্সের ভেতরে উৎস আছে, তাই যত ঢুকছে তার চেয়ে বেশি বেরোচ্ছে।",
-      note: "ডাইভারজেন্স মাপে: যত বেরোচ্ছে − যত ঢুকছে।",
-    },
-    {
-      title: "ডাইভারজেন্স",
-      text: "বেরোনো বেশি হলে ডাইভারজেন্স ধনাত্মক। এখানে A = x î + y ĵ। ∂Ax/∂x = 1 আর ∂Ay/∂y = 1, মোট 2।",
-      tex: ["\\vec A=x\\hat\\imath+y\\hat\\jmath", "\\nabla\\cdot\\vec A=1+1=2"],
-    },
-    {
-      title: "সূত্রটা কোথা থেকে এল",
-      text: "ডানে গেলে Ax বাড়ছে, মানে ডান দিকের তীর লম্বা। এই বাড়ার হার ∂Ax/∂x। তিন দিকের হার যোগ করলেই ডাইভারজেন্সের সূত্র।",
-      tex: ["\\nabla\\cdot\\vec A=\\frac{\\partial A_x}{\\partial x}+\\frac{\\partial A_y}{\\partial y}+\\frac{\\partial A_z}{\\partial z}"],
-    },
-    {
-      title: "নর্দমা",
-      text: "তীরগুলো উল্টে দিলে সব মাঝে জমে। এখন A = −x î − y ĵ। ডাইভারজেন্স −2, ঋণাত্মক। এটা গ্রাহক।",
-      tex: ["\\vec A=-x\\hat\\imath-y\\hat\\jmath", "\\nabla\\cdot\\vec A=-1-1=-2"],
-    },
-    {
-      title: "সমান স্রোত",
-      text: "সোজা সমান স্রোতে বাক্সে যত ঢোকে তত বেরোয়। কোথাও জমে না, কোথাও ছড়ায় না। ডাইভারজেন্স শূন্য।",
-      tex: ["\\vec A=2\\hat\\imath", "\\nabla\\cdot\\vec A=0"],
-    },
-    {
-      title: "ঘূর্ণি",
-      text: "ঘূর্ণির তীরগুলো বৃত্তে ঘুরছে। জমছেও না, ছড়াচ্ছেও না। A = −y î + x ĵ, ডাইভারজেন্স শূন্য।",
-      tex: ["\\vec A=-y\\hat\\imath+x\\hat\\jmath", "\\nabla\\cdot\\vec A=0+0=0"],
-    },
-    {
-      title: "নিজে বাছাই করো",
-      text: "নিচের বোতাম থেকে ক্ষেত্র বাছাই করো। তীর আর ফোঁটা দেখে বলো ডাইভারজেন্স ধনাত্মক, ঋণাত্মক না শূন্য। তারপর ছবির ডান কোণের মানের সাথে মেলাও।",
-    },
-  ];
-
-  const figure = (s: number) => {
-    const f: FieldKey = s >= stepField.length ? pick : stepField[s];
-    const def = fields[f];
-    return (
-      <Stage w={440} h={290} label="ভেক্টর ক্ষেত্রের তীর ও ডাইভারজেন্স">
-        <Quiver field={f} c="p" />
-        <Particles key={f} field={f} />
-        <motion.rect
-          initial={false}
-          x={192}
-          y={119}
-          width={56}
-          height={52}
-          rx={6}
-          fill="none"
-          strokeWidth={2}
-          strokeDasharray="5 4"
-          animate={{ opacity: s === 1 || s === 2 ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          style={{ stroke: col.r }}
-        />
-        <Lab p={{ x: 20, y: 26 }} anchor="start">{def.label}</Lab>
-        <Lab p={{ x: 420, y: 26 }} anchor="end" c="r" show={s >= 2}>∇·A = {def.div}</Lab>
-      </Stage>
-    );
-  };
-
-  const options = (Object.keys(fields) as FieldKey[]).map((k) => ({ key: k, name: fields[k].name }));
-  const extra = cur === 7 ? <Chips label="ক্ষেত্র বাছাই" value={pick} options={options} onChange={setPick} /> : null;
-
-  return <Lesson steps={steps} figure={figure} extra={extra} onStep={setCur} />;
+  return (
+    <GuidedLesson
+      meta={meta}
+      build={(g): Built => ({
+        concept: [
+          {
+            title: "স্প্রিংকলার",
+            text: "একটা স্প্রিংকলার চারদিকে পানি ছিটাচ্ছে। তার মুখে একটা ছোট বাক্স (ডোরাকাটা) ধরো। বাক্সে যত পানি ঢুকছে, তার চেয়ে বেরোচ্ছে বেশি না কম?",
+            locked: g.picks[0] === undefined,
+            prompt: <Choices options={["বেশি", "কম", "সমান"]} answer={0} picked={g.picks[0]} onPick={g.pick(0)} explain="বাক্সের ভেতরেই উৎস আছে, তাই যা ঢোকে তার চেয়ে বেশি বেরোয়। এই বেরোনো-বিয়োগ-ঢোকাই ডাইভারজেন্স, ধনাত্মক।" />,
+            figure: () => <FieldPic f="source" box />,
+          },
+          {
+            title: "নালার মুখ",
+            text: "এবার তীরগুলো উল্টে গেছে, চারদিক থেকে পানি জমছে। ডাইভারজেন্স ধনাত্মক, ঋণাত্মক, না শূন্য?",
+            locked: g.picks[1] === undefined,
+            prompt: <Choices options={["ধনাত্মক", "ঋণাত্মক", "শূন্য"]} answer={1} picked={g.picks[1]} onPick={g.pick(1)} explain="বেরোনোর চেয়ে ঢোকা বেশি, তাই ঋণাত্মক। এমন বিন্দুকে বলে গ্রাহক।" />,
+            figure: () => <FieldPic f="sink" box />,
+          },
+          {
+            title: "সোজা সমান স্রোত",
+            text: "খালের মাঝে সোজা সমান স্রোত বইছে। বাক্সে যত ঢোকে তত বেরোয়। ডাইভারজেন্স?",
+            locked: g.picks[2] === undefined,
+            prompt: <Choices options={["ধনাত্মক", "ঋণাত্মক", "শূন্য"]} answer={2} picked={g.picks[2]} onPick={g.pick(2)} explain="কোথাও জমছে না, কোথাও ছড়াচ্ছে না। যত ঢোকে তত বেরোয়, তাই ডাইভারজেন্স শূন্য।" />,
+            figure: () => <FieldPic f="uniform" box />,
+          },
+          {
+            title: "ঘূর্ণি",
+            text: "ঘূর্ণিতে পানি বৃত্তে ঘুরছে। কণাগুলো ঘুরছে, কিন্তু বাক্সে জমছেও না, ছড়াচ্ছেও না। তাই ডাইভারজেন্স শূন্য। ঘূর্ণি মাপতে লাগবে আরেকটা জিনিস, কার্ল (পরের পাঠে)।",
+            figure: () => <FieldPic f="rotation" box />,
+          },
+          {
+            title: "সূত্রটা কোথা থেকে আসে",
+            text: (
+              <>
+                ডানে গেলে Ax বাড়ছে, মানে ডান দিকের তীর লম্বা। এই বাড়ার হার ∂Ax/∂x। তিন দিকের বাড়ার হার যোগ করলেই ডাইভারজেন্স। <C k="r">A = x î + y ĵ</C> হলে হয় 1 + 1 = 2।
+              </>
+            ),
+            tex: ["\\nabla\\cdot\\vec A=\\dfrac{\\partial A_x}{\\partial x}+\\dfrac{\\partial A_y}{\\partial y}+\\dfrac{\\partial A_z}{\\partial z}", "\\vec A=x\\hat\\imath+y\\hat\\jmath\\Rightarrow\\nabla\\cdot\\vec A=1+1=2"],
+            figure: () => <FieldPic f="source" box />,
+          },
+          {
+            title: "নিজে বেছে দেখো",
+            text: "নিচের বোতাম থেকে একটা ক্ষেত্র বেছে নাও। তীর আর কণা দেখে আগে অনুমান করো, তারপর ফল মেলাও।",
+            prompt: (
+              <div className="guide-play">
+                <div className="guide-chips">
+                  {keys.map((k) => (
+                    <button key={k} type="button" className={`guide-chip${pick === k ? " on" : ""}`} onClick={() => setPick(k)}>
+                      {fields[k].name}
+                    </button>
+                  ))}
+                </div>
+                <div className="guide-read">
+                  <span>
+                    ∇·A = <C k="r">{fields[pick].div}</C>
+                  </span>
+                </div>
+              </div>
+            ),
+            figure: () => <FieldPic f={pick} box />,
+          },
+        ],
+        summary: [
+          {
+            title: "ডাইভারজেন্স",
+            text: "ছোট বাক্স থেকে ক্ষেত্র কতটা বেরোচ্ছে, তার মাপ। ফল একটা স্কেলার। ধনাত্মক মানে উৎস, ঋণাত্মক মানে গ্রাহক, শূন্য মানে সলিনয়ডাল।",
+            tex: ["\\nabla\\cdot\\vec A=\\dfrac{\\partial A_x}{\\partial x}+\\dfrac{\\partial A_y}{\\partial y}+\\dfrac{\\partial A_z}{\\partial z}"],
+          },
+          {
+            title: "তিনটি ক্ষেত্র",
+            text: "ছড়ালে ধনাত্মক, জমলে ঋণাত্মক, সমান স্রোত বা ঘূর্ণিতে শূন্য।",
+            tex: ["\\nabla\\cdot\\vec A>0", "\\nabla\\cdot\\vec A<0", "\\nabla\\cdot\\vec A=0"],
+          },
+        ],
+      })}
+    />
+  );
 }

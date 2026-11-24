@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Chips } from "@/components/anim/controls";
+import { C, Choices, GuidedLesson, type Built } from "@/components/lesson/guide-kit";
 import { Particles, Quiver, fields, type FieldKey } from "@/components/anim/field";
 import { Lab, Stage, col } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "কার্ল দিয়ে কীভাবে বোঝা যায় ক্ষেত্রে ঘূর্ণি আছে কি না তা শিখবে। কার্ল বের করতে এবং অঘূর্ণনশীল ক্ষেত্র চিনতে পারবে।",
   hook: "নদীর পানিতে একটা ছোট পাখনাওয়ালা চাকা ভাসিয়ে দাও। চাকা যদি ঘুরতে শুরু করে, তাহলে ওই জায়গার স্রোতে ঘূর্ণি আছে। চাকা শুধু ভেসে চললে ঘূর্ণি নেই। কার্ল হলো এই চাকার ঘোরার মাপ।",
   look: "চাকাটা কোন ক্ষেত্রে ঘোরে আর কোনটিতে ঘোরে না, তা দেখো। আর কেন সোজা তীরের ক্ষেত্রেও চাকা ঘুরতে পারে, সেটাও খেয়াল করো।",
@@ -106,19 +106,13 @@ export const meta: LessonMeta = {
   ],
 };
 
-const stepField: FieldKey[] = ["uniform", "rotation", "rotation", "shear", "source", "source"];
-
 function Wheel({ curl }: { curl: number }) {
   const spin = curl !== 0;
   const dur = 4 / Math.abs(curl || 1);
   return (
     <g>
       <circle cx={220} cy={145} r={44} strokeWidth={2.5} style={{ fill: "var(--surface)", stroke: "var(--edge)", opacity: 0.92 }} />
-      <motion.g
-        key={curl}
-        animate={spin ? { rotate: curl > 0 ? [0, -360] : [0, 360] } : { rotate: 0 }}
-        transition={spin ? { duration: dur, repeat: Infinity, ease: "linear" } : { duration: 0 }}
-      >
+      <motion.g key={curl} animate={spin ? { rotate: curl > 0 ? [0, -360] : [0, 360] } : { rotate: 0 }} transition={spin ? { duration: dur, repeat: Infinity, ease: "linear" } : { duration: 0 }}>
         {[0, 90, 180, 270].map((a) => (
           <g key={a} transform={`rotate(${a} 220 145)`}>
             <line x1={220} y1={145} x2={220} y2={115} strokeWidth={3} style={{ stroke: col.f }} />
@@ -131,63 +125,102 @@ function Wheel({ curl }: { curl: number }) {
   );
 }
 
+function FieldPic({ f }: { f: FieldKey }) {
+  const def = fields[f];
+  const dirText = def.curl > 0 ? "চাকা ঘোরে উল্টো ঘড়ির দিকে" : def.curl < 0 ? "চাকা ঘোরে ঘড়ির কাঁটার দিকে" : "চাকা ঘোরে না";
+  return (
+    <Stage w={440} h={290} label="ভেক্টর ক্ষেত্রে ভাসমান চাকা">
+      <Quiver field={f} c="p" />
+      <Particles key={f} field={f} />
+      <Wheel curl={def.curl} />
+      <Lab p={{ x: 20, y: 270 }} anchor="start" c="m">{dirText}</Lab>
+    </Stage>
+  );
+}
+
 export default function Anim() {
-  const [cur, setCur] = useState(0);
   const [pick, setPick] = useState<FieldKey>("rotation");
+  const keys = Object.keys(fields) as FieldKey[];
+  const def = fields[pick];
+  const dir = def.curl > 0 ? "উল্টো ঘড়ির দিকে ঘোরে" : def.curl < 0 ? "ঘড়ির কাঁটার দিকে ঘোরে" : "ঘোরে না";
 
-  const steps: LessonStep[] = [
-    {
-      title: "ভাসমান চাকা",
-      text: "ছবির মাঝে পাখনাওয়ালা একটা চাকা পানিতে ভাসছে। এখানে স্রোত সোজা সমান, সব তীর ডানে। চাকাটা শুধু ভেসে চলে, ঘোরে না।",
-    },
-    {
-      title: "ঘূর্ণি স্রোত",
-      text: "এবার স্রোত বৃত্তাকারে ঘুরছে। চাকাটা উল্টো ঘড়ির দিকে ঘুরতে শুরু করেছে। অর্থাৎ এখানে কার্ল আছে, আর সে ধনাত্মক।",
-    },
-    {
-      title: "কার্লের সূত্র",
-      text: "দুই মাত্রার ক্ষেত্রে কার্লের শুধু z-উপাংশ থাকে। A = −y î + x ĵ হলে Ax = −y আর Ay = x।",
-      tex: ["(\\nabla\\times\\vec A)_z=\\frac{\\partial A_y}{\\partial x}-\\frac{\\partial A_x}{\\partial y}", "(\\nabla\\times\\vec A)_z=\\frac{\\partial x}{\\partial x}-\\frac{\\partial(-y)}{\\partial y}=1+1=2"],
-    },
-    {
-      title: "সোজা তীর, তবু ঘোরে",
-      text: "এই ক্ষেত্রে সব তীর ডানে, কিন্তু ওপরে স্রোত জোরালো, নিচে ধীর। চাকার ওপরের পাখনা বেশি জোরে ধাক্কা খায়, তাই চাকা ঘড়ির কাঁটার দিকে ঘোরে। কার্ল ঋণাত্মক।",
-      tex: ["\\vec A=y\\hat\\imath", "(\\nabla\\times\\vec A)_z=0-\\frac{\\partial y}{\\partial y}=-1"],
-    },
-    {
-      title: "ছড়ানো স্রোতে ঘোরে না",
-      text: "উৎস থেকে চারদিকে ছড়ালে চাকা সোজা সরে যায়, ঘোরে না। ছড়ানো আর ঘোরা আলাদা জিনিস।",
-      tex: ["\\vec A=x\\hat\\imath+y\\hat\\jmath", "(\\nabla\\times\\vec A)_z=0-0=0"],
-    },
-    {
-      title: "অঘূর্ণনশীল ক্ষেত্র",
-      text: "কার্ল শূন্য হলে ক্ষেত্র অঘূর্ণনশীল। কোনো স্কেলারের গ্র্যাডিয়েন্ট থেকে পাওয়া ক্ষেত্র সব সময় এমন। এই উৎস-ক্ষেত্র A = ∇(x² + y²)/2।",
-      tex: ["\\nabla\\times\\vec A=\\vec 0", "\\nabla\\times(\\nabla\\varphi)=\\vec 0"],
-    },
-    {
-      title: "নিজে বাছাই করো",
-      text: "নিচের বোতাম থেকে ক্ষেত্র বাছাই করো। চাকা কোন দিকে ঘোরে বা ঘোরে না, দেখে কার্লের চিহ্ন আন্দাজ করো, তারপর ডান কোণের মানের সাথে মেলাও।",
-    },
-  ];
-
-  const figure = (s: number) => {
-    const f: FieldKey = s >= stepField.length ? pick : stepField[s];
-    const def = fields[f];
-    const dirText = def.curl > 0 ? "চাকা ঘোরে উল্টো ঘড়ির দিকে" : def.curl < 0 ? "চাকা ঘোরে ঘড়ির কাঁটার দিকে" : "চাকা ঘোরে না";
-    return (
-      <Stage w={440} h={290} label="ভেক্টর ক্ষেত্রে ভাসমান চাকা ও কার্ল">
-        <Quiver field={f} c="p" />
-        <Particles key={f} field={f} />
-        <Wheel curl={def.curl} />
-        <Lab p={{ x: 20, y: 26 }} anchor="start">{def.label}</Lab>
-        <Lab p={{ x: 20, y: 48 }} anchor="start" c="m">{dirText}</Lab>
-        <Lab p={{ x: 420, y: 26 }} anchor="end" c="r">(∇×A)z = {def.curl}</Lab>
-      </Stage>
-    );
-  };
-
-  const options = (Object.keys(fields) as FieldKey[]).map((k) => ({ key: k, name: fields[k].name }));
-  const extra = cur === 6 ? <Chips label="ক্ষেত্র বাছাই" value={pick} options={options} onChange={setPick} /> : null;
-
-  return <Lesson steps={steps} figure={figure} extra={extra} onStep={setCur} />;
+  return (
+    <GuidedLesson
+      meta={meta}
+      build={(g): Built => ({
+        concept: [
+          {
+            title: "সোজা সমান স্রোতে চাকা",
+            text: "নদীতে একটা ছোট পাখনা-চাকা ভাসানো হলো। স্রোত সোজা, সব দিকে সমান জোরে। চাকা কি ঘুরবে?",
+            locked: g.picks[0] === undefined,
+            prompt: <Choices options={["ঘুরবে", "ঘুরবে না"]} answer={1} picked={g.picks[0]} onPick={g.pick(0)} explain="চাকার দুই পাশে সমান ধাক্কা লাগে, তাই সে শুধু ভেসে চলে, ঘোরে না।" />,
+            figure: () => <FieldPic f="uniform" />,
+          },
+          {
+            title: "ঘূর্ণি স্রোত",
+            text: "এবার স্রোত বৃত্তাকারে ঘুরছে। চাকা কোন দিকে ঘুরবে?",
+            locked: g.picks[1] === undefined,
+            prompt: <Choices options={["উল্টো ঘড়ির কাঁটার দিকে", "ঘড়ির কাঁটার দিকে", "ঘুরবে না"]} answer={0} picked={g.picks[1]} onPick={g.pick(1)} explain="স্রোত যেদিকে ঘুরছে, চাকাও সেদিকেই ঘোরে। এখানে উল্টো ঘড়ির দিকে, তাই কার্ল ধনাত্মক।" />,
+            figure: () => <FieldPic f="rotation" />,
+          },
+          {
+            title: "সোজা তীর, তবু ঘোরে?",
+            text: "এই ক্ষেত্রে সব তীর ডানে, কিন্তু ওপরে স্রোত জোরালো, নিচে ধীর। চাকা কি ঘুরবে?",
+            locked: g.picks[2] === undefined,
+            prompt: <Choices options={["হ্যাঁ, ঘড়ির কাঁটার দিকে", "হ্যাঁ, উল্টো ঘড়ির দিকে", "না"]} answer={0} picked={g.picks[2]} onPick={g.pick(2)} explain="চাকার ওপরের পাখনা বেশি জোরে ধাক্কা খায়, তাই চাকা ঘড়ির কাঁটার দিকে ঘোরে। সোজা তীরেও ঘূর্ণি থাকতে পারে। এখানে কার্ল ঋণাত্মক।" />,
+            figure: () => <FieldPic f="shear" />,
+          },
+          {
+            title: "ছড়ানো স্রোতে",
+            text: "ফোয়ারার মতো ছড়ালে চাকা সোজা সরে যায়, ঘোরে না। ছড়ানো আর ঘোরা আলাদা জিনিস। ছড়ানো মাপে ডাইভারজেন্স, ঘোরা মাপে কার্ল।",
+            figure: () => <FieldPic f="source" />,
+          },
+          {
+            title: "কার্লের সূত্র",
+            text: (
+              <>
+                দুই মাত্রায় কার্লের শুধু z-উপাংশ থাকে। <C k="r">A = −y î + x ĵ</C> হলে Ax = −y আর Ay = x।
+              </>
+            ),
+            tex: ["(\\nabla\\times\\vec A)_z=\\dfrac{\\partial A_y}{\\partial x}-\\dfrac{\\partial A_x}{\\partial y}", "\\vec A=-y\\hat\\imath+x\\hat\\jmath\\Rightarrow 1-(-1)=2"],
+            figure: () => <FieldPic f="rotation" />,
+          },
+          {
+            title: "নিজে বেছে দেখো",
+            text: "ক্ষেত্র বেছে নাও। চাকা কোন দিকে ঘোরে, দেখে কার্লের চিহ্ন আন্দাজ করো।",
+            prompt: (
+              <div className="guide-play">
+                <div className="guide-chips">
+                  {keys.map((k) => (
+                    <button key={k} type="button" className={`guide-chip${pick === k ? " on" : ""}`} onClick={() => setPick(k)}>
+                      {fields[k].name}
+                    </button>
+                  ))}
+                </div>
+                <div className="guide-read">
+                  <span>
+                    (∇×A)z = <C k="r">{def.curl}</C>
+                  </span>
+                </div>
+                <p className="guide-note">চাকা {dir}।</p>
+              </div>
+            ),
+            figure: () => <FieldPic f={pick} />,
+          },
+        ],
+        summary: [
+          {
+            title: "কার্ল",
+            text: "কার্ল মাপে ক্ষেত্রে একটা ছোট চাকা কতটা ঘোরে। কার্ল শূন্য হলে ক্ষেত্র অঘূর্ণনশীল।",
+            tex: ["(\\nabla\\times\\vec A)_z=\\dfrac{\\partial A_y}{\\partial x}-\\dfrac{\\partial A_x}{\\partial y}", "\\nabla\\times\\vec A=\\vec 0"],
+          },
+          {
+            title: "দুটি নিয়ম",
+            text: "যেকোনো গ্র্যাডিয়েন্ট ক্ষেত্র অঘূর্ণনশীল। আর কার্লের ডাইভারজেন্স সব সময় শূন্য।",
+            tex: ["\\nabla\\times(\\nabla\\varphi)=\\vec 0", "\\nabla\\cdot(\\nabla\\times\\vec A)=0"],
+          },
+        ],
+      })}
+    />
+  );
 }

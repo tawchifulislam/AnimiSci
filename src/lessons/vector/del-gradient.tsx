@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import { motion } from "framer-motion";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Slider } from "@/components/ui/Slider";
-import { Stage, SliderCard, spring, type Pt } from "@/components/anim/kit";
+import { useState } from "react";
+import { C, Choices, GuidedLesson, Play, pt, type Built } from "@/components/lesson/guide-kit";
+import { Dot, Lab, Stage, Vec, add, col } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
-import { f1 } from "@/lib/vec";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "স্কেলার ক্ষেত্র কী তা বুঝবে, ∇ চিহ্নটা কী করে তা জানবে এবং গ্র্যাডিয়েন্টের মান ও দিক বের করতে পারবে।",
   hook: "শীতের সকালে ঘরের এক কোণে হিটার জ্বলছে। ঘরের যেকোনো জায়গায় দাঁড়ালে তুমি বলতে পারো কতটা গরম। কিন্তু কোন দিকে হাঁটলে সবচেয়ে তাড়াতাড়ি উষ্ণতা বাড়বে? এর উত্তর দেয় গ্র্যাডিয়েন্ট।",
   look: "P বিন্দু সরালে লাল তীরটা কোন দিকে মুখ করে থাকে, তা দেখো। আর সমতাপ রেখার সাথে তীরের কোণটা কত, সেটাও খেয়াল করো।",
@@ -106,152 +104,141 @@ export const meta: LessonMeta = {
   ],
 };
 
-const PU = 40;
-const X0 = 20;
-const Y0 = 285;
-const CW = 25;
-const COLS = 16;
-const ROWS = 11;
-const KG = 2.2;
+const CEN = pt(220, 110);
+const px = (x: number) => 20 + 40 * x;
+const py = (y: number) => 250 - 40 * y;
 
-const phi = (x: number, y: number) => 100 - 2.5 * ((x - 5) ** 2 + (y - 3.5) ** 2);
-const sx = (x: number) => X0 + x * PU;
-const sy = (y: number) => Y0 - y * PU;
-const shade = (t: number) => `hsl(${Math.round(215 - 180 * t)} 80% ${Math.round(86 - 18 * t)}%)`;
-
-const cells: { x: number; y: number; fill: string }[] = [];
-for (let r = 0; r < ROWS; r++) {
-  for (let c = 0; c < COLS; c++) {
-    const ux = ((c + 0.5) * CW) / PU;
-    const uy = ((r + 0.5) * CW) / PU;
-    const t = Math.min(1, Math.max(0, phi(ux, uy) / 100));
-    cells.push({ x: X0 + c * CW, y: Y0 - (r + 1) * CW, fill: shade(t) });
-  }
-}
-
-const marker = (id: string, color: string) => (
-  <marker key={id} id={id} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-    <path d="M0 0L10 5L0 10z" fill={color} />
-  </marker>
-);
-
-function Ar({ a, b, color, mk, show = true, w = 3.5 }: { a: Pt; b: Pt; color: string; mk: string; show?: boolean; w?: number }) {
+function Hill({ x, y, mode, done }: { x: number; y: number; mode: "peek" | "slopes" | "sum" | "contour"; done: boolean }) {
+  const P = pt(px(x), py(y));
+  const gx = -5 * (x - 5);
+  const gy = -5 * (y - 3.5);
+  const dx = CEN.x - P.x;
+  const dy = CEN.y - P.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const toPeak = pt(P.x + (dx / dist) * 64, P.y + (dy / dist) * 64);
+  const g = pt(P.x + gx * 2.5, P.y - gy * 2.5);
   return (
-    <motion.line
-      initial={false}
-      animate={{ x1: a.x, y1: a.y, x2: b.x, y2: b.y, opacity: show ? 1 : 0 }}
-      transition={spring}
-      strokeWidth={w}
-      strokeLinecap="round"
-      markerEnd={`url(#${mk})`}
-      style={{ stroke: color }}
-    />
-  );
-}
-
-function T({ x, y, children, anchor = "middle", show = true }: { x: number; y: number; children: ReactNode; anchor?: "start" | "middle" | "end"; show?: boolean }) {
-  return (
-    <text x={x} y={y} textAnchor={anchor} fontSize={13} fontWeight={700} opacity={show ? 1 : 0} style={{ fill: "#171a2c", stroke: "#fff", strokeWidth: 3, paintOrder: "stroke" }}>
-      {children}
-    </text>
+    <Stage w={440} h={260} label="পাহাড়ের সমান উচ্চতার রেখা আর ঢালের তীর">
+      {[32, 64, 96].map((r) => (
+        <circle key={r} cx={CEN.x} cy={CEN.y} r={r} fill="none" strokeWidth={1.5} strokeDasharray="5 5" style={{ stroke: col.m }} />
+      ))}
+      {mode === "contour" ? <circle cx={CEN.x} cy={CEN.y} r={dist} fill="none" strokeWidth={2.5} strokeDasharray="7 5" style={{ stroke: col.u }} /> : null}
+      <Dot p={CEN} c="r" r={5} />
+      <Lab p={add(CEN, 0, -14)} c="r">শৃঙ্গ</Lab>
+      {mode === "peek" ? <Vec a={P} b={done ? toPeak : P} c="r" w={5} show={done} /> : null}
+      {mode === "slopes" ? (
+        <>
+          <Vec a={P} b={pt(P.x + gx * 2.5, P.y)} c="p" w={4} />
+          <Vec a={P} b={pt(P.x, P.y - gy * 2.5)} c="q" w={4} />
+        </>
+      ) : null}
+      {mode === "sum" ? (
+        <>
+          <Vec a={P} b={pt(P.x + gx * 2.5, P.y)} c="p" w={3} />
+          <Vec a={P} b={pt(P.x, P.y - gy * 2.5)} c="q" w={3} />
+          <Vec a={P} b={g} c="r" w={5} />
+        </>
+      ) : null}
+      {mode === "contour" ? <Vec a={P} b={done ? toPeak : P} c="r" w={5} show={done} /> : null}
+      <Dot p={P} c="f" r={7} />
+      <Lab p={add(P, 0, 26)}>তুমি</Lab>
+    </Stage>
   );
 }
 
 export default function Anim() {
-  const [px, setPx] = useState(2);
-  const [py, setPy] = useState(2);
-
-  const gx = -5 * (px - 5);
-  const gy = -5 * (py - 3.5);
-  const temp = phi(px, py);
-  const dist = Math.hypot(px - 5, py - 3.5);
+  const [x, setX] = useState(2);
+  const [y, setY] = useState(2);
+  const gx = -5 * (x - 5);
+  const gy = -5 * (y - 3.5);
   const mag = Math.hypot(gx, gy);
-  const P: Pt = { x: sx(px), y: sy(py) };
-  const C: Pt = { x: sx(5), y: sy(3.5) };
-  const xEnd: Pt = { x: P.x + gx * KG, y: P.y };
-  const yEnd: Pt = { x: P.x, y: P.y - gy * KG };
-  const gEnd: Pt = { x: P.x + gx * KG, y: P.y - gy * KG };
+  const note = mag < 0.5 ? "শৃঙ্গে পৌঁছেছ: কোনো দিকে ঢাল নেই, ∇φ = 0।" : "শৃঙ্গ থেকে যত দূরে, ঢাল তত খাড়া, তীর তত লম্বা।";
 
-  const steps: LessonStep[] = [
-    {
-      title: "তাপ-মানচিত্র",
-      text: "ঘরের প্রতিটি বিন্দুর একটা তাপমাত্রা আছে। রঙ দিয়ে দেখানো হয়েছে: নীল ঠান্ডা, কমলা গরম। প্রতি বিন্দুতে শুধু একটা সংখ্যা, কোনো দিক নেই। একে বলে স্কেলার ক্ষেত্র φ।",
-    },
-    {
-      title: "একটি বিন্দু",
-      text: `P বিন্দুতে দাঁড়িয়ে আছো। এখানে তাপমাত্রা ${f1(temp)}°C। প্রশ্ন: কোন দিকে হাঁটলে সবচেয়ে তাড়াতাড়ি গরম হবে? স্লাইডারে P সরিয়ে দেখো।`,
-    },
-    {
-      title: "x আর y দিকের ঢাল",
-      text: "শুধু ডানে গেলে প্রতি একক দূরত্বে তাপমাত্রা কত বাড়ে, সেটা ∂φ/∂x। শুধু ওপরে গেলে ∂φ/∂y। নীল তীর ডান দিকের ঢাল, সবুজ তীর ওপর দিকের ঢাল।",
-      tex: [
-        "\\varphi=100-2.5\\left[(x-5)^2+(y-3.5)^2\\right]",
-        `\\frac{\\partial\\varphi}{\\partial x}=-5(x-5)=${f1(gx)}`,
-        `\\frac{\\partial\\varphi}{\\partial y}=-5(y-3.5)=${f1(gy)}`,
-      ],
-    },
-    {
-      title: "দুই ঢাল জোড়া দাও",
-      text: "দুই ঢালকে ভেক্টরের মতো যোগ করলে যে লাল তীর পাই, সেটাই গ্র্যাডিয়েন্ট। ∇ চিহ্নটা তিন দিকের অবকলনকে একসাথে গুছিয়ে রাখে।",
-      tex: [
-        "\\nabla=\\hat\\imath\\frac{\\partial}{\\partial x}+\\hat\\jmath\\frac{\\partial}{\\partial y}+\\hat k\\frac{\\partial}{\\partial z}",
-        `\\nabla\\varphi=${f1(gx)}\\hat\\imath${gy < 0 ? "-" : "+"}${f1(Math.abs(gy))}\\hat\\jmath`,
-        `|\\nabla\\varphi|=\\sqrt{(${f1(gx)})^2+(${f1(gy)})^2}=${f1(mag)}`,
-      ],
-    },
-    {
-      title: "গ্র্যাডিয়েন্টের মানে",
-      text: "লাল তীর দেখায় কোন দিকে গেলে তাপমাত্রা সবচেয়ে দ্রুত বাড়ে। তীরের দৈর্ঘ্য বলে ঢাল কত খাড়া। কেন্দ্র থেকে দূরে ঢাল বেশি, তীরও লম্বা।",
-      note: "গ্র্যাডিয়েন্ট সব সময় φ বাড়ার দিকে মুখ করে থাকে, কমার দিকে নয়।",
-    },
-    {
-      title: "সমতাপ রেখা",
-      text: "যে বিন্দুগুলোর তাপমাত্রা সমান, তাদের জুড়ে সাদা বৃত্তটা সমতাপ রেখা। গ্র্যাডিয়েন্ট সব সময় এই রেখার লম্ব। রেখা বরাবর হাঁটলে তাপমাত্রা বদলায় না।",
-      tex: ["\\nabla\\varphi\\perp\\varphi=\\text{constant}"],
-    },
-    {
-      title: "সর্বোচ্চ বিন্দু",
-      text: "সবচেয়ে গরম বিন্দুতে ঢাল নেই, কারণ সেখান থেকে যেদিকেই যাও তাপমাত্রা কমে। তাই সেখানে গ্র্যাডিয়েন্ট শূন্য। স্লাইডারে P কে মাঝখানে (5, 3.5) এ নিয়ে যাও।",
-      tex: ["\\nabla\\varphi=\\vec 0"],
-    },
-  ];
-
-  const figure = (s: number) => (
-    <Stage w={440} h={290} label="তাপ-মানচিত্র ও গ্র্যাডিয়েন্ট">
-      <defs>
-        {marker("gd-r", "#b4132f")}
-        {marker("gd-b", "#1d4ed8")}
-        {marker("gd-g", "#047857")}
-      </defs>
-      {cells.map((cell, i) => (
-        <rect key={i} x={cell.x} y={cell.y} width={CW} height={CW} style={{ fill: cell.fill }} />
-      ))}
-
-      {s >= 5 ? <circle cx={C.x} cy={C.y} r={dist * PU} fill="none" strokeWidth={2.5} strokeDasharray="7 5" style={{ stroke: "#fff" }} /> : null}
-      <circle cx={C.x} cy={C.y} r={5} strokeWidth={2} style={{ fill: "#171a2c", stroke: "#fff" }} />
-      <T x={C.x} y={C.y - 12} show={s >= 6}>সবচেয়ে গরম</T>
-
-      <line x1={xEnd.x} y1={xEnd.y} x2={gEnd.x} y2={gEnd.y} strokeWidth={1.5} strokeDasharray="4 4" opacity={s === 3 ? 0.9 : 0} style={{ stroke: "#171a2c" }} />
-      <line x1={yEnd.x} y1={yEnd.y} x2={gEnd.x} y2={gEnd.y} strokeWidth={1.5} strokeDasharray="4 4" opacity={s === 3 ? 0.9 : 0} style={{ stroke: "#171a2c" }} />
-      <Ar a={P} b={xEnd} color="#1d4ed8" mk="gd-b" show={s >= 2 && Math.abs(gx) > 0.5} />
-      <Ar a={P} b={yEnd} color="#047857" mk="gd-g" show={s >= 2 && Math.abs(gy) > 0.5} />
-      <Ar a={P} b={gEnd} color="#b4132f" mk="gd-r" show={s >= 3 && mag > 0.5} w={4.5} />
-      <circle cx={P.x} cy={P.y} r={7} strokeWidth={2.5} style={{ fill: "#fff", stroke: "#171a2c" }} />
-
-      <T x={P.x} y={P.y + 24} show={s >= 1}>P: {f1(temp)}°C</T>
-      <T x={(P.x + xEnd.x) / 2} y={P.y + 40} show={s >= 2 && Math.abs(gx) > 0.5}>∂φ/∂x</T>
-      <T x={P.x - 10} y={(P.y + yEnd.y) / 2} anchor="end" show={s >= 2 && Math.abs(gy) > 0.5}>∂φ/∂y</T>
-      <T x={gEnd.x + 8} y={gEnd.y - 8} anchor="start" show={s >= 3 && mag > 0.5}>∇φ</T>
-      <T x={26} y={28} anchor="start" show={s >= 4}>ঢাল |∇φ| = {f1(mag)}</T>
-    </Stage>
+  return (
+    <GuidedLesson
+      meta={meta}
+      build={(g): Built => ({
+        concept: [
+          {
+            title: "কুয়াশার পাহাড়",
+            text: "তুমি কুয়াশায় ঢাকা এক পাহাড়ের ঢালে দাঁড়িয়ে। দৃশ্য দেখা যায় না, শুধু পায়ের নিচের ঢাল অনুভব করো। কোন দিকে হাঁটলে সবচেয়ে দ্রুত ওপরে উঠবে?",
+            locked: g.picks[0] === undefined,
+            prompt: <Choices options={["শৃঙ্গের দিকে সোজা", "সমান উচ্চতার রেখা ধরে", "শৃঙ্গের উল্টো দিকে"]} answer={0} picked={g.picks[0]} onPick={g.pick(0)} explain="শৃঙ্গের দিকে সোজা হাঁটলে সবচেয়ে দ্রুত ওঠা যায়। এই দিকটাই গ্র্যাডিয়েন্ট দেখায়।" />,
+            figure: () => <Hill x={2} y={2} mode="peek" done={g.picks[0] !== undefined} />,
+          },
+          {
+            title: "x আর y দিকের ঢাল",
+            text: (
+              <>
+                শুধু পূর্ব দিকে এক ধাপ গেলে কতটা ওঠো, সেটা <C k="p">∂φ/∂x</C>। শুধু উত্তর দিকে গেলে <C k="q">∂φ/∂y</C>। তীরের দৈর্ঘ্য ঢাল বোঝায়।
+              </>
+            ),
+            replay: true,
+            figure: () => <Hill x={2} y={2} mode="slopes" done />,
+          },
+          {
+            title: "দুই ঢাল জোড়া দাও",
+            text: (
+              <>
+                দুই ঢালকে ভেক্টরের মতো যোগ করলে যে <C k="r">লাল তীর</C> পাই, সেটাই গ্র্যাডিয়েন্ট ∇φ। এখানে ∂φ/∂x = 15 আর ∂φ/∂y = 7.5।
+              </>
+            ),
+            tex: ["\\nabla\\varphi=\\dfrac{\\partial\\varphi}{\\partial x}\\hat\\imath+\\dfrac{\\partial\\varphi}{\\partial y}\\hat\\jmath", "\\nabla\\varphi=15\\hat\\imath+7.5\\hat\\jmath"],
+            replay: true,
+            figure: () => <Hill x={2} y={2} mode="sum" done />,
+          },
+          {
+            title: "সমান উচ্চতার রেখা",
+            text: "নীল ডোরাকাটা রেখাটা তোমার বিন্দু দিয়ে যাওয়া সমান উচ্চতার রেখা। এই রেখা ধরে হাঁটলে উচ্চতা কেমন বদলাবে?",
+            locked: g.picks[3] === undefined,
+            prompt: <Choices options={["বাড়বে", "কমবে", "বদলাবে না"]} answer={2} picked={g.picks[3]} onPick={g.pick(3)} explain="সমান উচ্চতার রেখার সংজ্ঞাই তাই। রেখা বরাবর φ বদলায় না, তাই গ্র্যাডিয়েন্ট সব সময় রেখার লম্বে থাকে।" />,
+            figure: () => <Hill x={2} y={2} mode="contour" done={g.picks[3] !== undefined} />,
+          },
+          {
+            title: "নিজে ঘুরে দেখো",
+            text: (
+              <>
+                <b>x</b> আর <b>y</b> বদলিয়ে নিজেকে পাহাড়ের অন্য জায়গায় নাও। শৃঙ্গ (5, 3.5)-এ গ্র্যাডিয়েন্ট কত?
+              </>
+            ),
+            prompt: (
+              <div className="guide-play">
+                <Play label="x" value={x} min={0.5} max={9.5} step={0.5} onChange={setX} />
+                <Play
+                  label="y"
+                  value={y}
+                  min={0.5}
+                  max={6}
+                  step={0.5}
+                  onChange={setY}
+                  read={
+                    <>
+                      <span>
+                        ∇φ = <C k="r">{gx.toFixed(1)}î {gy < 0 ? "−" : "+"} {Math.abs(gy).toFixed(1)}ĵ</C>
+                      </span>
+                      <span>|∇φ| = {mag.toFixed(1)}</span>
+                    </>
+                  }
+                  note={note}
+                />
+              </div>
+            ),
+            figure: () => <Hill x={x} y={y} mode="sum" done />,
+          },
+        ],
+        summary: [
+          {
+            title: "গ্র্যাডিয়েন্ট",
+            text: "স্কেলার ক্ষেত্রের প্রতিটি বিন্দুতে একটা ভেক্টর, যা সবচেয়ে দ্রুত বাড়ার দিক দেখায়। তার মান সেই বাড়ার হার।",
+            tex: ["\\nabla\\varphi=\\dfrac{\\partial\\varphi}{\\partial x}\\hat\\imath+\\dfrac{\\partial\\varphi}{\\partial y}\\hat\\jmath+\\dfrac{\\partial\\varphi}{\\partial z}\\hat k", "|\\nabla\\varphi|=\\sqrt{\\left(\\dfrac{\\partial\\varphi}{\\partial x}\\right)^2+\\left(\\dfrac{\\partial\\varphi}{\\partial y}\\right)^2+\\left(\\dfrac{\\partial\\varphi}{\\partial z}\\right)^2}"],
+          },
+          {
+            title: "লম্ব আর শূন্য",
+            text: "গ্র্যাডিয়েন্ট সমান φ-এর রেখার লম্ব। শৃঙ্গ বা সর্বনিম্ন বিন্দুতে সে শূন্য।",
+            tex: ["\\nabla\\varphi\\perp\\varphi=\\text{constant}"],
+          },
+        ],
+      })}
+    />
   );
-
-  const extra = (
-    <SliderCard>
-      <Slider label="P-এর x অবস্থান" value={px} min={0.5} max={9.5} step={0.5} onChange={setPx} />
-      <Slider label="P-এর y অবস্থান" value={py} min={0.5} max={6} step={0.5} onChange={setPy} />
-    </SliderCard>
-  );
-
-  return <Lesson steps={steps} figure={figure} extra={extra} />;
 }

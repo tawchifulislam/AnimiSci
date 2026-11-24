@@ -1,15 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Slider } from "@/components/ui/Slider";
-import { Chips } from "@/components/anim/controls";
-import { Arc, Dot, Lab, Seg, SliderCard, Square, Stage, Vec, add, col, mid, mk, pol } from "@/components/anim/kit";
+import { C, Choices, GuidedLesson, Play, pt, type Built } from "@/components/lesson/guide-kit";
+import { Arc, Dot, Lab, Seg, Stage, Vec, add, col, mid, pol } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
-import { f1, rad } from "@/lib/vec";
+import { rad } from "@/lib/vec";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "ক্রস গুণনের মান ও দিক দুটোই বের করতে পারবে, সামান্তরিকের ক্ষেত্রফলের সাথে সম্পর্কটা বুঝবে এবং ডান হাতের নিয়ম ও ডিটারমিন্যান্ট ব্যবহার করতে পারবে।",
   hook: "দরজা খুলতে কব্জার কাছে ঠেললে কষ্ট হয়, কিনারায় ঠেললে সহজে খোলে। আবার দরজার সমান্তরালে ঠেললে একেবারেই খোলে না। দূরত্ব, বল আর তাদের মাঝের কোণ, এই তিনটে মিলে ঘোরানোর ক্ষমতা ঠিক করে। এই হিসাবটাই ক্রস গুণন।",
   look: "সামান্তরিকের ক্ষেত্রফল আর |A × B|-এর মান কীভাবে মিলে যায়, তা দেখো। আর A ও B-এর ক্রম বদলালে ⊙ চিহ্নটা কেন ⊗ হয়ে যায়, সেটাও খেয়াল করো।",
@@ -113,116 +111,186 @@ export const meta: LessonMeta = {
   ],
 };
 
-export default function Anim() {
-  const [a, setA] = useState(5);
-  const [b, setB] = useState(4);
-  const [th, setTh] = useState(55);
-
-  const S = 22;
-  const m = mk(190, 215, S);
-  const o = m(0, 0);
+function Wrench({ th, note }: { th: number; note: string }) {
+  const P0 = pt(80, 150);
+  const H = pt(240, 150);
   const c = Math.cos(rad(th));
-  const sn = Math.sin(rad(th));
-  const aE = m(a, 0);
-  const bE = m(b * c, b * sn);
-  const abE = m(a + b * c, b * sn);
-  const foot = m(b * c, 0);
-  const h = b * sn;
-  const area = a * b * sn;
-  const c0 = mid(o, abE);
-  const side = c >= 0 ? 1 : -1;
-
-  const steps: LessonStep[] = [
-    {
-      title: "দুই ভেক্টর",
-      text: "ছবিতে নীল A আর সবুজ B একই বিন্দু থেকে আঁকা, মাঝের কোণ θ। দরজার গল্পে A হলো কব্জা থেকে দূরত্ব, B হলো ঠেলার বল।",
-    },
-    {
-      title: "সামান্তরিক",
-      text: "A আর B-কে দুই বাহু ধরে সামান্তরিক পূর্ণ করি। লাল রঙের অংশটাই সামান্তরিক।",
-    },
-    {
-      title: "উচ্চতা",
-      text: "B-এর মাথা থেকে A-এর রেখায় লম্ব টানি। এই উচ্চতা h = B sinθ।",
-      tex: ["h=B\\sin\\theta", `h=${b}\\sin${th}^\\circ=${f1(h)}`],
-    },
-    {
-      title: "ক্ষেত্রফল",
-      text: "সামান্তরিকের ক্ষেত্রফল হলো ভূমি × উচ্চতা, অর্থাৎ A × B sinθ। এটাই ক্রস গুণনের মান।",
-      tex: ["\\text{Area}=A\\cdot B\\sin\\theta", "|\\vec A\\times\\vec B|=AB\\sin\\theta", `|\\vec A\\times\\vec B|=${a}\\times${f1(h)}=${f1(area)}`],
-    },
-    {
-      title: "দিক: ডান হাতের নিয়ম",
-      text: "ফলের দিক সামান্তরিকের তলের লম্ব। ডান হাতের চার আঙুল A থেকে B-র দিকে ঘোরালে বুড়ো আঙুল যেদিকে থাকে, সেটাই দিক। ছবিতে A থেকে B উল্টো ঘড়ির দিকে ঘুরেছে, তাই দিক কাগজ থেকে বেরিয়ে আসছে। এই চিহ্নটা ⊙।",
-    },
-    {
-      title: "ক্রম উল্টালে",
-      text: "B × A করলে B থেকে A-তে ঘুরতে হয়, ঘড়ির কাঁটার দিকে। তাই দিক কাগজের ভেতরে ঢুকছে। এই চিহ্ন ⊗। মান একই, দিক উল্টো।",
-      tex: ["\\vec A\\times\\vec B=-\\vec B\\times\\vec A"],
-    },
-    {
-      title: "বিশেষ কোণ",
-      text: "θ = 0° বা 180° হলে sinθ = 0, তাই সামান্তরিক চ্যাপ্টা হয়ে যায় আর ক্রস গুণন শূন্য। θ = 90° হলে সামান্তরিকের ক্ষেত্রফল সবচেয়ে বড়। নিচের বোতামে চাপো।",
-      tex: ["\\theta=0^\\circ,180^\\circ:\\ 0", "\\theta=90^\\circ:\\ AB"],
-    },
-    {
-      title: "উপাংশ দিয়ে",
-      text: "ছবি না থাকলে ডিটারমিন্যান্ট। আগে একক ভেক্টরের চক্র মনে রাখো: î × ĵ = k̂, ĵ × k̂ = î, k̂ × î = ĵ।",
-      tex: ["\\hat\\imath\\times\\hat\\jmath=\\hat k,\\ \\hat\\jmath\\times\\hat k=\\hat\\imath,\\ \\hat k\\times\\hat\\imath=\\hat\\jmath", "\\vec A\\times\\vec B=\\begin{vmatrix}\\hat\\imath&\\hat\\jmath&\\hat k\\\\A_x&A_y&A_z\\\\B_x&B_y&B_z\\end{vmatrix}"],
-    },
-  ];
-
-  const figure = (s: number) => (
-    <Stage w={440} h={290} label="ক্রস গুণন ও সামান্তরিকের ক্ষেত্রফল">
-      <motion.polygon
-        initial={false}
-        points={`${o.x},${o.y} ${aE.x},${aE.y} ${abE.x},${abE.y} ${bE.x},${bE.y}`}
-        animate={{ opacity: s >= 1 ? 0.18 : 0 }}
-        transition={{ duration: 0.4 }}
-        style={{ fill: "var(--c-r)" }}
-      />
-      <Seg a={aE} b={abE} show={s >= 1} dash c="m" w={1.5} />
-      <Seg a={bE} b={abE} show={s >= 1} dash c="m" w={1.5} />
-      <Seg a={bE} b={foot} show={s >= 2} dash c="u" w={2.5} />
-      <Square at={foot} d1={{ x: -side, y: 0 }} d2={{ x: 0, y: -1 }} show={s >= 2 && Math.abs(b * c) > 0.3} />
-      <Arc o={o} r={32} from={0} to={th} c="f" w={1.5} />
-      <Vec a={o} b={aE} c="p" w={4} />
-      <Vec a={o} b={bE} c="q" w={4} />
-      <Dot p={o} />
-
-      {s === 4 ? (
-        <g>
-          <circle cx={c0.x} cy={c0.y} r={13} fill="none" strokeWidth={2.5} style={{ stroke: col.r }} />
-          <circle cx={c0.x} cy={c0.y} r={3.5} style={{ fill: col.r }} />
-        </g>
-      ) : null}
-      {s === 5 ? (
-        <g>
-          <circle cx={c0.x} cy={c0.y} r={13} fill="none" strokeWidth={2.5} style={{ stroke: col.r }} />
-          <line x1={c0.x - 7} y1={c0.y - 7} x2={c0.x + 7} y2={c0.y + 7} strokeWidth={2.5} strokeLinecap="round" style={{ stroke: col.r }} />
-          <line x1={c0.x - 7} y1={c0.y + 7} x2={c0.x + 7} y2={c0.y - 7} strokeWidth={2.5} strokeLinecap="round" style={{ stroke: col.r }} />
-        </g>
-      ) : null}
-      <Lab p={add(c0, 0, 34)} show={s === 4 || s === 5} c="r">{s === 5 ? "B × A" : "A × B"}</Lab>
-
-      <Lab p={add(aE, 10, 20)} c="p" anchor="start">A = {a}</Lab>
-      <Lab p={add(bE, 8, -8)} c="q" anchor="start">B = {b}</Lab>
-      <Lab p={pol(o, th / 2, 52)}>θ</Lab>
-      <Lab p={add(mid(bE, foot), 10 * side, 4)} show={s >= 2} c="u" anchor={side > 0 ? "start" : "end"}>h = {f1(h)}</Lab>
-      <Lab p={{ x: 20, y: 28 }} anchor="start" show={s >= 3} c="r">|A × B| = {f1(area)}</Lab>
+  const s = Math.sin(rad(th));
+  const tip = pt(H.x + 100 * c, H.y - 100 * s);
+  return (
+    <Stage w={440} h={260} label="রেঞ্চ দিয়ে নাট ঘোরানো">
+      <Seg a={P0} b={H} c="m" w={12} />
+      <Dot p={P0} c="f" r={12} />
+      <Vec a={H} b={tip} c="r" w={5} />
+      <Vec a={H} b={pt(H.x, H.y - 100 * s)} c="q" w={3} show={s > 0.03} />
+      <Arc o={H} r={34} from={0} to={th} c="f" w={1.5} show={th > 3} />
+      <Lab p={pol(H, th / 2, 52)} show={th > 3}>θ</Lab>
+      <Lab p={pt(160, 184)} c="m">হাতল 0.3 m</Lab>
+      <Lab p={add(tip, 10, -10)} c="r" anchor="start">F = 50 N</Lab>
+      <Lab p={pt(220, 238)} c="q">{note}</Lab>
     </Stage>
   );
+}
 
-  const extra = (
-    <div className="grid gap-3">
-      <SliderCard>
-        <Slider label="A-এর মান" value={a} min={2} max={5} onChange={setA} />
-        <Slider label="B-এর মান" value={b} min={1} max={5} onChange={setB} />
-        <Slider label="মাঝের কোণ θ" value={th} min={0} max={180} suffix="°" onChange={setTh} />
-      </SliderCard>
-      <Chips label="দ্রুত কোণ" value={th} options={[0, 30, 90, 150, 180].map((k) => ({ key: k, name: `${k}°` }))} onChange={setTh} />
-    </div>
+function Para({ on }: { on: boolean }) {
+  const O = pt(80, 215);
+  const a = pt(O.x + 150, O.y);
+  const b = pt(O.x + 120 * Math.cos(rad(55)), O.y - 120 * Math.sin(rad(55)));
+  const ab = pt(a.x + (b.x - O.x), b.y);
+  return (
+    <Stage w={440} h={260} label="সামান্তরিকের ক্ষেত্রফল">
+      <polygon points={`${O.x},${O.y} ${a.x},${a.y} ${ab.x},${ab.y} ${b.x},${b.y}`} opacity={on ? 0.2 : 0} style={{ fill: col.r }} />
+      <Seg a={b} b={pt(b.x, O.y)} dash c="u" w={2.5} show={on} />
+      <Seg a={a} b={ab} dash c="m" w={1.5} show={on} />
+      <Seg a={b} b={ab} dash c="m" w={1.5} show={on} />
+      <Vec a={O} b={a} c="p" w={4} />
+      <Vec a={O} b={b} c="q" w={4} />
+      <Dot p={O} c="f" r={5} />
+      <Lab p={add(mid(O, a), 0, 22)} c="p">A = 5</Lab>
+      <Lab p={add(mid(O, b), -10, -4)} c="q" anchor="end">B = 4</Lab>
+      <Lab p={add(mid(b, pt(b.x, O.y)), 10, 0)} c="u" anchor="start" show={on}>h = B sinθ</Lab>
+    </Stage>
   );
+}
 
-  return <Lesson steps={steps} figure={figure} extra={extra} />;
+function Dir({ out }: { out: boolean }) {
+  const O = pt(120, 210);
+  const a = pt(O.x + 160, O.y);
+  const b = pt(O.x + 90, O.y - 126);
+  const ab = pt(a.x + 90, b.y);
+  const c0 = pt((O.x + ab.x) / 2, (O.y + b.y) / 2);
+  return (
+    <Stage w={440} h={260} label="ক্রস গুণনের দিক">
+      <polygon points={`${O.x},${O.y} ${a.x},${a.y} ${ab.x},${ab.y} ${b.x},${b.y}`} opacity={0.15} style={{ fill: col.r }} />
+      <Vec a={O} b={a} c="p" w={4} />
+      <Vec a={O} b={b} c="q" w={4} />
+      <Arc o={O} r={46} from={0} to={55} c="f" w={2} />
+      <Lab p={pol(O, 27, 66)}>A থেকে B</Lab>
+      <circle cx={c0.x} cy={c0.y} r={15} fill="none" strokeWidth={2.5} style={{ stroke: col.r }} />
+      {out ? <circle cx={c0.x} cy={c0.y} r={4.5} style={{ fill: col.r }} /> : (
+        <>
+          <line x1={c0.x - 8} y1={c0.y - 8} x2={c0.x + 8} y2={c0.y + 8} strokeWidth={2.5} strokeLinecap="round" style={{ stroke: col.r }} />
+          <line x1={c0.x - 8} y1={c0.y + 8} x2={c0.x + 8} y2={c0.y - 8} strokeWidth={2.5} strokeLinecap="round" style={{ stroke: col.r }} />
+        </>
+      )}
+      <Lab p={add(c0, 0, 36)} c="r">{out ? "A × B: কাগজ থেকে বেরিয়ে আসছে" : "B × A: কাগজের ভেতরে ঢুকছে"}</Lab>
+      <Dot p={O} c="f" r={5} />
+    </Stage>
+  );
+}
+
+export default function Anim() {
+  const [th, setTh] = useState(60);
+  const tq = 0.3 * 50 * Math.sin(rad(th));
+  const note =
+    th === 90
+      ? "θ = 90°: সবচেয়ে বেশি ঘোরানোর ক্ষমতা, 15 N·m।"
+      : th === 0 || th === 180
+        ? "θ = 0° বা 180°: হাতল বরাবর টানা, নাট একটুও ঘোরে না।"
+        : "θ 90° থেকে যত দূরে, ঘোরানোর ক্ষমতা তত কম।";
+
+  return (
+    <GuidedLesson
+      meta={meta}
+      build={(g): Built => ({
+        concept: [
+          {
+            title: "রেঞ্চ দিয়ে নাট খোলা",
+            text: "রেঞ্চের হাতল 0.3 m লম্বা। তুমি হাতলের মাথায় 50 N বলে ঠেলছ। হাতলের সাথে বলের কোণ কত হলে নাট সবচেয়ে বেশি ঘোরে?",
+            locked: g.picks[0] === undefined,
+            prompt: <Choices options={["0° (হাতল বরাবর)", "90° (হাতলের লম্বে)", "180° (হাতল বরাবর উল্টো)"]} answer={1} picked={g.picks[0]} onPick={g.pick(0)} explain="হাতল বরাবর টানলে নাট ঘোরে না। লম্বে ঠেললে সবচেয়ে বেশি ঘোরে। ঘোরানোর ক্ষমতা sinθ-এর সমানুপাতিক।" />,
+            figure: () => <Wrench th={90} note={g.picks[0] !== undefined ? "লম্বে ঠেলা: সবচেয়ে বেশি ঘোরে" : "এভাবে ঠেললে কেমন?"} />,
+          },
+          {
+            title: "কোণ বদলে দেখো",
+            text: (
+              <>
+                <b>θ</b> বদলাও। ঘোরানোর ক্ষমতা = হাতলের দৈর্ঘ্য × বল × sinθ।
+              </>
+            ),
+            prompt: (
+              <Play
+                label="θ"
+                value={th}
+                min={0}
+                max={180}
+                suffix="°"
+                onChange={setTh}
+                chips={[0, 30, 90, 150, 180]}
+                read={
+                  <span>
+                    ক্ষমতা = <C k="r">{tq.toFixed(1)} N·m</C>
+                  </span>
+                }
+                note={note}
+              />
+            ),
+            figure: () => <Wrench th={th} note="নীল অংশটাই ঘোরায়, F sinθ" />,
+          },
+          {
+            title: "সামান্তরিকের ক্ষেত্রফল",
+            text: (
+              <>
+                <C k="p">A</C> আর <C k="q">B</C>-কে দুই বাহু ধরে সামান্তরিক আঁকো। তার ক্ষেত্রফল আর ক্রস গুণনের মান একই: ভূমি × উচ্চতা = A × B sinθ।
+              </>
+            ),
+            tex: ["|\\vec A\\times\\vec B|=AB\\sin\\theta", "=5\\times4\\times\\sin55^\\circ=16.4"],
+            replay: true,
+            figure: (phase) => <Para on={phase === 1} />,
+          },
+          {
+            title: "ফলের দিক কোনটা?",
+            text: "ক্রস গুণনের ফল একটা ভেক্টর, তার দিক সামান্তরিকের তলের লম্ব। ডান হাতের চার আঙুল A থেকে B-র দিকে ঘোরাও (এখানে উল্টো ঘড়ির দিকে)। বুড়ো আঙুল কোন দিকে?",
+            locked: g.picks[3] === undefined,
+            prompt: <Choices options={["কাগজ থেকে বেরিয়ে আসছে (⊙)", "কাগজের ভেতরে ঢুকছে (⊗)", "ডান দিকে"]} answer={0} picked={g.picks[3]} onPick={g.pick(3)} explain="উল্টো ঘড়ির দিকে ঘোরালে বুড়ো আঙুল কাগজ থেকে বেরিয়ে আসে। এই চিহ্নটা ⊙।" />,
+            figure: () => <Dir out={g.picks[3] !== undefined} />,
+          },
+          {
+            title: "ক্রম উল্টালে",
+            text: "B × A করলে B থেকে A-তে ঘুরতে হয়, মানে ঘড়ির কাঁটার দিকে। তাই বুড়ো আঙুল কাগজের ভেতরে ঢোকে। মান একই, দিক উল্টো।",
+            tex: ["\\vec A\\times\\vec B=-\\vec B\\times\\vec A"],
+            replay: true,
+            figure: (phase) => <Dir out={phase !== 1} />,
+          },
+          {
+            title: "একক ভেক্টরের চক্র",
+            text: "î, ĵ, k̂ একটা চক্রে সাজানো। চক্র বরাবর গুণ করলে পরের ভেক্টর পাই। উল্টো দিকে গেলে চিহ্ন বদলায়। ĵ × î কত?",
+            locked: g.picks[5] === undefined,
+            prompt: <Choices options={["k̂", "−k̂", "শূন্য ভেক্টর"]} answer={1} picked={g.picks[5]} onPick={g.pick(5)} explain="î থেকে ĵ চক্র বরাবর, তাই î × ĵ = k̂। ĵ থেকে î উল্টো দিকে, তাই ĵ × î = −k̂।" />,
+            figure: () => {
+              const i = pt(110, 200);
+              const j = pt(330, 200);
+              const k = pt(220, 70);
+              return (
+                <Stage w={440} h={260} label="î, ĵ, k̂ এর চক্র">
+                  <Vec a={pt(i.x + 24, i.y)} b={pt(j.x - 24, j.y)} c="r" w={3} />
+                  <Vec a={pt(j.x - 10, j.y - 20)} b={pt(k.x + 14, k.y + 24)} c="r" w={3} />
+                  <Vec a={pt(k.x - 14, k.y + 24)} b={pt(i.x + 10, i.y - 20)} c="r" w={3} />
+                  {[i, j, k].map((p, n) => (
+                    <circle key={n} cx={p.x} cy={p.y} r={22} strokeWidth={3} style={{ fill: "var(--surface)", stroke: col.p }} />
+                  ))}
+                  <Lab p={pt(i.x, i.y + 6)}>î</Lab>
+                  <Lab p={pt(j.x, j.y + 6)}>ĵ</Lab>
+                  <Lab p={pt(k.x, k.y + 6)}>k̂</Lab>
+                  <Lab p={pt(220, 240)} c="m">চক্র বরাবর: ধনাত্মক</Lab>
+                </Stage>
+              );
+            },
+          },
+        ],
+        summary: [
+          {
+            title: "মান আর দিক",
+            text: "মান সামান্তরিকের ক্ষেত্রফল। দিক ডান হাতের নিয়মে। ক্রম উল্টালে দিক উল্টে যায়।",
+            tex: ["|\\vec A\\times\\vec B|=AB\\sin\\theta", "\\vec A\\times\\vec B=-\\vec B\\times\\vec A"],
+          },
+          {
+            title: "চক্র আর ডিটারমিন্যান্ট",
+            text: "সমান্তরাল ভেক্টরের ক্রস গুণন শূন্য ভেক্টর। উপাংশ থাকলে ডিটারমিন্যান্ট।",
+            tex: ["\\hat\\imath\\times\\hat\\jmath=\\hat k,\\ \\hat\\jmath\\times\\hat k=\\hat\\imath,\\ \\hat k\\times\\hat\\imath=\\hat\\jmath", "\\vec A\\times\\vec B=\\begin{vmatrix}\\hat\\imath&\\hat\\jmath&\\hat k\\\\A_x&A_y&A_z\\\\B_x&B_y&B_z\\end{vmatrix}"],
+          },
+        ],
+      })}
+    />
+  );
 }
