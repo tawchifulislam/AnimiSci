@@ -141,6 +141,10 @@ const claims = [
   ["addition", "guided R 6,4,90", R(6, 4, 90), 2, "7.21", "7.21"],
   ["addition", "guided same direction", 6 + 4, 0, "10", "10 N"],
   ["addition", "guided opposite", 6 - 4, 0, "2", "2 N"],
+  ["subtraction", "guided subtraction 5,3,90", Math.sqrt(34), 2, "5.83", "5.83"],
+  ["subtraction", "guided same direction", 5 - 3, 0, "2", "5 \u2212 3 = 2"],
+  ["subtraction", "guided opposite direction", 5 + 3, 0, "8", "5 + 3 = 8"],
+  ["subtraction", "guided walk back", 5 - 2, 0, "3", "5 \u2212 2 = 3"],
 ];
 
 const lessonFile = (lesson) => {
