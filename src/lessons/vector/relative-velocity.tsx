@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Slider } from "@/components/ui/Slider";
-import { Arc, Lab, Seg, SliderCard, Stage, Vec, col, pol, type Pt } from "@/components/anim/kit";
+import { C, Choices, GuidedLesson, pt, type Built } from "@/components/lesson/guide-kit";
+import { Arc, Dot, Lab, Seg, Stage, Vec, add, col, mid, pol } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
-import { deg, f1 } from "@/lib/vec";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "আপেক্ষিক বেগ বের করার নিয়ম শিখবে, বৃষ্টিতে ছাতা কোন দিকে কত কোণে হেলাতে হয় তা হিসাব করতে পারবে এবং চলন্ত গাড়ির কোন কাচ ভিজবে তা বলতে পারবে।",
   hook: "ট্রেনে বসে পাশের লাইনের ধীরে চলা আরেকটা ট্রেনের দিকে তাকালে মনে হয় সেটা পেছনে সরে যাচ্ছে। আবার খাড়া বৃষ্টিতে দৌড়ালে বৃষ্টি যেন সামনে থেকে তেড়ে আসে। দুটোর কারণ এক: আমরা সব বেগ মাপি নিজের চোখ থেকে, নিজের বেগটা বিয়োগ করে।",
   look: "ট্রেনের ছবিতে কোন ট্রেনকে পেছনে সরতে দেখা যায়, আর বৃষ্টির ছবিতে মানুষ হাঁটলে বৃষ্টির তীর কেন হেলে যায়, তা খেয়াল করো।",
@@ -104,206 +101,189 @@ export const meta: LessonMeta = {
   ],
 };
 
-const KP = 12;
-const P = (x: number, y: number): Pt => ({ x, y });
-
-function Man({ at }: { at: Pt }) {
+function Train({ y, k, speed, dir, name }: { y: number; k: "p" | "q"; speed: number; dir: 1 | -1; name: string }) {
+  const x = 220;
+  const a = pt(x + dir * 50, y);
   return (
-    <g style={{ stroke: col.f }} strokeWidth={3} strokeLinecap="round" fill="none">
-      <circle cx={at.x} cy={at.y - 42} r={7} style={{ fill: col.f }} />
-      <line x1={at.x} y1={at.y - 35} x2={at.x} y2={at.y - 12} />
-      <line x1={at.x} y1={at.y - 12} x2={at.x - 8} y2={at.y} />
-      <line x1={at.x} y1={at.y - 12} x2={at.x + 8} y2={at.y} />
-      <line x1={at.x} y1={at.y - 28} x2={at.x - 9} y2={at.y - 18} />
-      <line x1={at.x} y1={at.y - 28} x2={at.x + 9} y2={at.y - 18} />
+    <>
+      <rect x={x - 50} y={y - 16} width={100} height={32} rx={8} style={{ fill: col[k] }} />
+      <Vec a={a} b={pt(a.x + dir * speed * 1.4, y)} c={k} w={4} />
+      <Lab p={pt(x - 62, y + 5)} anchor="end" c={k}>{name}</Lab>
+    </>
+  );
+}
+
+function Rain({ x, y, slant, len = 40 }: { x: number; y: number; slant: boolean; len?: number }) {
+  const b = pt(x, y + len);
+  const a = slant ? pt(x + len * 0.75, y) : pt(x, y);
+  return <Vec a={a} b={b} c="u" w={2.5} />;
+}
+
+function Person({ x, y }: { x: number; y: number }) {
+  return (
+    <g strokeWidth={3} strokeLinecap="round" style={{ stroke: col.f, fill: "none" }}>
+      <circle cx={x} cy={y - 14} r={7} style={{ fill: col.f }} />
+      <line x1={x} y1={y - 7} x2={x} y2={y + 16} />
+      <line x1={x} y1={y + 16} x2={x - 7} y2={y + 32} />
+      <line x1={x} y1={y + 16} x2={x + 7} y2={y + 32} />
     </g>
   );
 }
 
 export default function Anim() {
-  const [vm, setVm] = useState(3);
-  const [vr, setVr] = useState(4);
-  const [w, setW] = useState(0);
-
-  const vrmMan = Math.hypot(vr, vm);
-  const thetaMan = deg(Math.atan2(vm, vr));
-  const vrmBus = Math.hypot(w - vm, vr);
-
-  const steps: LessonStep[] = [
-    {
-      title: "পাশের ট্রেন",
-      text: "তুমি 60 km/h বেগের ট্রেন A-তে বসে আছো। পাশের লাইনে একই দিকে 40 km/h বেগে চলছে ট্রেন B। A-এর জানালা দিয়ে B-কে কেমন চলতে দেখাবে?",
-      note: "দ্রুত ট্রেন থেকে ধীর ট্রেনকে মনে হবে পেছনে সরে যাচ্ছে।",
-    },
-    {
-      title: "বিয়োগের নিয়ম",
-      text: "A-এর চোখে B-এর বেগ বের করতে B-এর বেগ থেকে A-এর বেগ বিয়োগ করি। যার চোখে দেখছি, তার বেগটাই বিয়োগ হয়। ফল ঋণাত্মক, মানে B পেছনে সরছে।",
-      tex: ["\\vec v_{BA}=\\vec v_B-\\vec v_A", "v_{BA}=40-60=-20\\ \\text{km/h}"],
-      note: "উল্টো দিকে চললে বিয়োগের ফলে মান যোগ হয়ে যায়। যেমন 60 আর 40 হলে 100 km/h।",
-    },
-    {
-      title: "স্থির মানুষ",
-      text: "এবার বৃষ্টি। বাঁ ছবিতে মাটি থেকে দেখো, বৃষ্টি খাড়া নিচে পড়ছে। মানুষ দাঁড়িয়ে আছে, তাই ডান ছবিতেও তার চোখে বৃষ্টি খাড়া। ছাতা খাড়া ধরলেই চলে।",
-    },
-    {
-      title: "হাঁটলে কী হয়",
-      text: "মানুষ ডান দিকে v_m বেগে হাঁটছে। তার চোখে বৃষ্টির বেগ হলো বৃষ্টির বেগ থেকে মানুষের বেগ বিয়োগ। তাই বৃষ্টি সামনে থেকে তির্যকভাবে আসছে মনে হয়।",
-      tex: ["\\vec v_{rm}=\\vec v_r-\\vec v_m"],
-    },
-    {
-      title: "কোণ আর মান",
-      text: "v_r নিচে আর v_m পাশে, দুটো লম্ব। তাই মানের জন্য পিথাগোরাস, কোণের জন্য tan।",
-      tex: [`v_{rm}=\\sqrt{v_r^2+v_m^2}=\\sqrt{${vr}^2+${vm}^2}=${f1(vrmMan)}`, `\\tan\\theta=\\frac{v_m}{v_r}=\\frac{${vm}}{${vr}}\\Rightarrow\\theta=${f1(thetaMan)}^\\circ`],
-    },
-    {
-      title: "ছাতা কোন দিকে",
-      text: "ছাতা ধরতে হয় বৃষ্টি যেদিক থেকে আসছে সেদিকে মুখ করে। তাই ছাতা হাঁটার দিকে খাড়া থেকে θ কোণে হেলাতে হবে।",
-      note: "দ্রুত হাঁটলে θ বাড়ে, ছাতা আরও বেশি হেলাতে হয়।",
-    },
-    {
-      title: "গাড়ির কাচ",
-      text: "একটা বাস সামনে এগোচ্ছে, বৃষ্টি খাড়া। বাসের চোখে বৃষ্টি সামনে থেকে তির্যকভাবে আসছে। তাই ছাদের সাথে সামনের কাচ ভিজবে। পেছনের কাচ শুকনো থাকবে।",
-    },
-    {
-      title: "বাতাস থাকলে",
-      text: "বাতাস বাসের দিকেই বইলে বৃষ্টির অনুভূমিক বেগ w। তখন বাসের সাপেক্ষে অনুভূমিক বেগ w − v_c। v_c > w হলে সামনের কাচ ভেজে। v_c < w হলে বৃষ্টি পেছন থেকে ধরে ফেলে, পেছনের কাচ ভেজে।",
-      tex: ["v_x=w-v_c"],
-    },
-    {
-      title: "নিজে করো",
-      text: "বাসের বেগ, বৃষ্টির বেগ আর বাতাস বদলাও। দেখো কখন কোন কাচ ভেজে এবং বাসের চোখে বৃষ্টির বেগ কত হয়।",
-      tex: [`v_{rel}=\\sqrt{(w-v_c)^2+v_r^2}=${f1(vrmBus)}\\ \\text{m/s}`],
-    },
-  ];
-
-  const trains = (s: number) => (
-    <Stage w={440} h={290} label="দুটি ট্রেনের আপেক্ষিক বেগ">
-      {s === 0 ? (
-        <>
-          <line x1={20} y1={110} x2={420} y2={110} strokeWidth={2} strokeDasharray="6 6" style={{ stroke: col.l }} />
-          <line x1={20} y1={190} x2={420} y2={190} strokeWidth={2} strokeDasharray="6 6" style={{ stroke: col.l }} />
-          <motion.g animate={{ x: [0, 150] }} transition={{ duration: 3.5, ease: "linear", repeat: Infinity, repeatDelay: 0.6 }}>
-            <rect x={30} y={78} width={100} height={32} rx={8} style={{ fill: col.p }} />
-            <text x={80} y={99} textAnchor="middle" fontSize={13} fontWeight={700} style={{ fill: "#fff" }}>A  60 km/h</text>
-          </motion.g>
-          <motion.g animate={{ x: [0, 100] }} transition={{ duration: 3.5, ease: "linear", repeat: Infinity, repeatDelay: 0.6 }}>
-            <rect x={150} y={158} width={100} height={32} rx={8} style={{ fill: col.q }} />
-            <text x={200} y={179} textAnchor="middle" fontSize={13} fontWeight={700} style={{ fill: "#fff" }}>B  40 km/h</text>
-          </motion.g>
-          <Lab p={P(220, 40)} c="m">দুটি ট্রেন একই দিকে চলছে</Lab>
-        </>
-      ) : (
-        <>
-          <line x1={200} y1={95} x2={200} y2={235} strokeWidth={1.5} strokeDasharray="4 4" style={{ stroke: col.l }} />
-          <Vec a={P(200, 120)} b={P(296, 120)} c="q" w={4} />
-          <Lab p={P(248, 108)} c="q">v_B = 40</Lab>
-          <Seg a={P(296, 120)} b={P(296, 160)} dash c="m" w={1.5} />
-          <Vec a={P(296, 160)} b={P(152, 160)} c="p" w={4} dash />
-          <Lab p={P(224, 182)} c="p">−v_A = −60</Lab>
-          <Vec a={P(200, 215)} b={P(152, 215)} c="r" w={4.5} />
-          <Lab p={P(176, 238)} c="r">v_BA = −20</Lab>
-          <Lab p={P(220, 40)} c="m">সব বেগ km/h এ</Lab>
-        </>
-      )}
-    </Stage>
+  return (
+    <GuidedLesson
+      meta={meta}
+      build={(g): Built => ({
+        concept: [
+          {
+            title: "পাশের ট্রেন",
+            text: (
+              <>
+                তুমি <C k="p">60 km/h</C> বেগের ট্রেন A-তে বসে আছো। পাশের লাইনে একই দিকে <C k="q">40 km/h</C> বেগে চলছে ট্রেন B। A-এর জানালা দিয়ে B-কে কেমন চলতে দেখাবে?
+              </>
+            ),
+            locked: g.picks[0] === undefined,
+            prompt: <Choices options={["সামনে এগোচ্ছে, 100 km/h", "পেছনে সরছে, 20 km/h", "স্থির"]} answer={1} picked={g.picks[0]} onPick={g.pick(0)} explain="দ্রুত ট্রেন থেকে ধীর ট্রেনকে মনে হয় পেছনে সরে যাচ্ছে। আপেক্ষিক বেগ = 40 − 60 = −20 km/h।" />,
+            figure: () => {
+              const done = g.picks[0] !== undefined;
+              return (
+                <Stage w={440} h={260} label="একই দিকে চলা দুটি ট্রেন">
+                  <Train y={70} k="p" speed={60} dir={1} name="A" />
+                  <Train y={140} k="q" speed={40} dir={1} name="B" />
+                  <Vec a={pt(220, 210)} b={done ? pt(192, 210) : pt(220, 210)} c="r" w={5} show={done} />
+                  <Lab p={pt(180, 236)} c="r" anchor="end" show={done}>A-এর চোখে B: −20 km/h</Lab>
+                </Stage>
+              );
+            },
+          },
+          {
+            title: "উল্টো দিকে চললে",
+            text: (
+              <>
+                এবার B উল্টো দিকে, 40 km/h বেগে চলছে। A-এর চোখে B কত দ্রুত চলছে মনে হবে?
+              </>
+            ),
+            locked: g.picks[1] === undefined,
+            prompt: <Choices options={["20 km/h", "100 km/h", "40 km/h"]} answer={1} picked={g.picks[1]} onPick={g.pick(1)} explain="উল্টো দিকে চললে বেগ বিয়োগের ফলে যোগ হয়ে যায়: (−40) − (+60) = −100, মান 100 km/h।" />,
+            figure: () => {
+              const done = g.picks[1] !== undefined;
+              return (
+                <Stage w={440} h={260} label="বিপরীত দিকে চলা দুটি ট্রেন">
+                  <Train y={70} k="p" speed={60} dir={1} name="A" />
+                  <Train y={140} k="q" speed={40} dir={-1} name="B" />
+                  <Vec a={pt(300, 210)} b={done ? pt(160, 210) : pt(300, 210)} c="r" w={5} show={done} />
+                  <Lab p={pt(230, 236)} c="r" show={done}>A-এর চোখে B: 100 km/h</Lab>
+                </Stage>
+              );
+            },
+          },
+          {
+            title: "দাঁড়িয়ে থাকলে বৃষ্টি",
+            text: "মানুষটা দাঁড়িয়ে আছে, বৃষ্টি খাড়া নিচে পড়ছে। তার চোখেও বৃষ্টি খাড়া। ছাতা খাড়া ধরলেই চলে।",
+            replay: true,
+            figure: (phase) => (
+              <Stage w={440} h={260} label="স্থির মানুষের ছাতা খাড়া">
+                {[90, 150, 220, 290, 350].map((x) => (
+                  <Rain key={x} x={x} y={phase === 1 ? 20 : 10} slant={false} len={phase === 1 ? 70 : 20} />
+                ))}
+                <Seg a={pt(180, 110)} b={pt(260, 110)} c="f" w={6} />
+                <Seg a={pt(220, 110)} b={pt(220, 160)} c="f" w={3} />
+                <Person x={220} y={178} />
+              </Stage>
+            ),
+          },
+          {
+            title: "হাঁটলে বৃষ্টি কোন দিক থেকে?",
+            text: "মানুষটা এবার পূর্ব দিকে 3 m/s বেগে হাঁটছে। বৃষ্টি 4 m/s বেগে খাড়া পড়ছে। তার চোখে বৃষ্টি কোন দিক থেকে আসছে মনে হবে?",
+            tex: ["\\vec v_{rm}=\\vec v_r-\\vec v_m"],
+            locked: g.picks[3] === undefined,
+            prompt: <Choices options={["ঠিক ওপর থেকে", "সামনে থেকে হেলে", "পেছন থেকে হেলে"]} answer={1} picked={g.picks[3]} onPick={g.pick(3)} explain="মানুষ সামনে এগোচ্ছে বলে বৃষ্টিকে মনে হয় সামনের দিক থেকে হেলে আসছে। তার বেগ বিয়োগ করলে এটাই পাই।" />,
+            figure: () => {
+              const done = g.picks[3] !== undefined;
+              return (
+                <Stage w={440} h={260} label="হাঁটা মানুষের চোখে বৃষ্টি হেলে আসে">
+                  {[60, 120, 190, 260, 330].map((x) => (
+                    <Rain key={x} x={x} y={30} slant={done} len={80} />
+                  ))}
+                  <Person x={200} y={175} />
+                  <Vec a={pt(230, 200)} b={pt(290, 200)} c="p" w={4} />
+                  <Lab p={pt(260, 222)} c="p">3 m/s</Lab>
+                </Stage>
+              );
+            },
+          },
+          {
+            title: "ছাতা কত কোণে?",
+            text: (
+              <>
+                বৃষ্টি 4 m/s, মানুষ 3 m/s। সামনের দিক থেকে হেলে আসা বৃষ্টি আটকাতে ছাতা সামনের দিকে হেলাতে হয়। কত কোণে?
+              </>
+            ),
+            tex: ["v_{rm}=\\sqrt{4^2+3^2}=5\\ \\text{m/s}", "\\tan\\theta=\\dfrac{3}{4}\\Rightarrow\\theta=36.9^\\circ"],
+            replay: true,
+            figure: (phase) => {
+              const on = phase === 1;
+              const hand = pt(200, 150);
+              const top = pt(hand.x + 36, hand.y - 48);
+              return (
+                <Stage w={440} h={260} label="ছাতা 36.9° কোণে সামনে হেলানো">
+                  {[0, 1, 2, 3].map((i) => {
+                    const p = pt(top.x + (i - 1.5) * 20 * 0.8, top.y + (i - 1.5) * 20 * 0.6);
+                    return <Vec key={i} a={pt(p.x + 0.6 * 80, p.y - 0.8 * 80)} b={on ? p : pt(p.x + 0.6 * 80, p.y - 0.8 * 80)} c="u" w={2.5} show={on} />;
+                  })}
+                  <Seg a={hand} b={top} c="f" w={3} />
+                  <Seg a={pt(top.x - 29, top.y - 22)} b={pt(top.x + 29, top.y + 22)} c="v" w={7} />
+                  <Seg a={hand} b={pt(hand.x, hand.y - 70)} dash c="m" w={1.5} />
+                  <Arc o={hand} r={34} from={53.1} to={90} c="f" w={1.5} />
+                  <Lab p={pol(hand, 71.5, 52)}>θ = 36.9°</Lab>
+                  <Person x={200} y={178} />
+                </Stage>
+              );
+            },
+          },
+          {
+            title: "বাসের কোন কাচ ভিজবে?",
+            text: "একটা বাস সামনের দিকে চলছে, আর বৃষ্টি খাড়া পড়ছে। বাসের চোখে বৃষ্টি সামনের দিক থেকে হেলে আসে। কোন কাচ ভিজবে?",
+            locked: g.picks[5] === undefined,
+            prompt: <Choices options={["সামনের কাচ", "পেছনের কাচ", "দুটোই সমান"]} answer={0} picked={g.picks[5]} onPick={g.pick(5)} explain="বৃষ্টি সামনের দিক থেকে হেলে আসে, তাই সামনের কাচে লাগে। পেছনের কাচ প্রায় শুকনো থাকে।" />,
+            figure: () => {
+              const done = g.picks[5] !== undefined;
+              return (
+                <Stage w={440} h={260} label="চলন্ত বাসের কাচে বৃষ্টি">
+                  {[110, 160, 210, 260, 310].map((x) => (
+                    <Vec key={x} a={pt(x + 45, 70)} b={pt(x, 130)} c="u" w={2.5} />
+                  ))}
+                  <rect x={140} y={150} width={160} height={52} rx={8} strokeWidth={3} style={{ fill: "var(--surface)", stroke: "var(--edge)" }} />
+                  {[160, 200, 240].map((x) => (
+                    <rect key={x} x={x} y={160} width={28} height={22} rx={4} style={{ fill: "var(--surface-2)" }} />
+                  ))}
+                  <Seg a={pt(300, 154)} b={pt(300, 198)} c={done ? "r" : "m"} w={7} />
+                  <Seg a={pt(140, 154)} b={pt(140, 198)} c="m" w={7} />
+                  <circle cx={176} cy={204} r={11} style={{ fill: col.f }} />
+                  <circle cx={264} cy={204} r={11} style={{ fill: col.f }} />
+                  <Vec a={pt(310, 176)} b={pt(370, 176)} c="p" w={4} />
+                  <Lab p={pt(340, 160)} c="p">বাসের গতি</Lab>
+                  <Lab p={pt(300, 232)} c={done ? "r" : "m"}>সামনের কাচ</Lab>
+                  <Lab p={pt(140, 232)} c="m">পেছনের কাচ</Lab>
+                </Stage>
+              );
+            },
+          },
+        ],
+        summary: [
+          {
+            title: "আপেক্ষিক বেগ",
+            text: "যার চোখে দেখছি, তার বেগ বিয়োগ করো। একই দিকে চললে মান বিয়োগ হয়, উল্টো দিকে চললে যোগ হয়।",
+            tex: ["\\vec v_{AB}=\\vec v_A-\\vec v_B"],
+          },
+          {
+            title: "বৃষ্টি আর ছাতা",
+            text: "মানুষের সাপেক্ষে বৃষ্টির বেগ আর ছাতা হেলানোর কোণ।",
+            tex: ["\\vec v_{rm}=\\vec v_r-\\vec v_m", "\\tan\\theta=\\dfrac{v_m}{v_r}"],
+          },
+        ],
+      })}
+    />
   );
-
-  const panels = (s: number) => {
-    const vmE = s === 2 ? 0 : vm;
-    const relx = -vmE * KP;
-    const rely = vr * KP;
-    const len = Math.hypot(relx, rely);
-    const dir = P(-relx / len, -rely / len);
-    const L = P(110, 222);
-    const R = P(330, 222);
-    const headR = P(R.x, R.y - 56);
-    const hand = P(R.x, R.y - 30);
-    const cen = P(hand.x + dir.x * 64, hand.y + dir.y * 64);
-    const perp = P(-dir.y * 34, dir.x * 34);
-    const phi = deg(Math.atan2(vr, vmE));
-    const theta = deg(Math.atan2(vmE, vr));
-    const vrm = Math.hypot(vr, vmE);
-    return (
-      <Stage w={440} h={290} label="মাটি থেকে ও মানুষের চোখে বৃষ্টির বেগ">
-        <line x1={220} y1={20} x2={220} y2={262} strokeWidth={1.5} strokeDasharray="5 5" style={{ stroke: col.l }} />
-        <line x1={30} y1={L.y} x2={200} y2={L.y} strokeWidth={3} strokeLinecap="round" style={{ stroke: col.m }} />
-        <line x1={240} y1={R.y} x2={420} y2={R.y} strokeWidth={3} strokeLinecap="round" style={{ stroke: col.m }} />
-        <Lab p={P(110, 24)} c="m">মাটি থেকে দেখলে</Lab>
-        <Lab p={P(330, 24)} c="m">মানুষের চোখে</Lab>
-        <Man at={L} />
-        <Man at={R} />
-
-        {[-36, 0, 36].map((dx) => (
-          <Seg key={`l${dx}`} a={P(L.x + dx, L.y - 56 - vr * KP)} b={P(L.x + dx, L.y - 56)} c="t" head w={2.5} />
-        ))}
-        <Lab p={P(L.x + 46, L.y - 56 - (vr * KP) / 2)} c="t" anchor="start">v_r</Lab>
-        <Vec a={P(L.x, L.y + 26)} b={P(L.x + vmE * KP, L.y + 26)} c="p" w={3.5} show={s >= 3 && vmE > 0} />
-        <Lab p={P(L.x + (vmE * KP) / 2, L.y + 46)} c="p" show={s >= 3 && vmE > 0}>v_m</Lab>
-
-        {[-36, 0, 36].map((dx) => {
-          const e = P(R.x + dx, R.y - 56);
-          return <Vec key={`r${dx}`} a={P(e.x - relx, e.y - rely)} b={e} c="r" w={2.5} />;
-        })}
-        <Lab p={P(R.x - relx / 2 + 14, R.y - 56 - rely / 2)} c="r" anchor="start" show={s >= 3}>v_rm</Lab>
-
-        <Seg a={headR} b={P(headR.x, headR.y - 70)} dash c="m" w={1.5} show={s >= 4} />
-        <Arc o={headR} r={38} from={Math.min(phi, 90)} to={Math.max(phi, 90)} c="f" w={1.5} show={s >= 4} />
-        <Lab p={pol(headR, (phi + 90) / 2, 54)} show={s >= 4}>θ</Lab>
-
-        <Seg a={hand} b={cen} c="f" w={3} show={s >= 5} />
-        <Seg a={P(cen.x - perp.x, cen.y - perp.y)} b={P(cen.x + perp.x, cen.y + perp.y)} c="v" w={7} show={s >= 5} />
-
-        <Lab p={P(220, 276)} show={s >= 4} c="r">v_rm = {f1(vrm)} m/s,  θ = {f1(theta)}°</Lab>
-      </Stage>
-    );
-  };
-
-  const bus = (s: number) => {
-    const wE = s >= 7 ? w : 0;
-    const relx = (wE - vm) * KP;
-    const rely = vr * KP;
-    const front = relx < -0.5;
-    const rear = relx > 0.5;
-    const ends = [P(170, 146), P(220, 146), P(270, 146), P(294, 184), P(294, 162), P(146, 184), P(146, 162)];
-    return (
-      <Stage w={440} h={290} label="চলন্ত বাসের কোন কাচ ভেজে">
-        <line x1={20} y1={219} x2={420} y2={219} strokeWidth={3} strokeLinecap="round" style={{ stroke: col.m }} />
-        {ends.map((e, i) => (
-          <Vec key={i} a={P(e.x - relx, e.y - rely)} b={e} c="t" w={2.5} />
-        ))}
-        <rect x={150} y={150} width={140} height={56} rx={8} strokeWidth={3} style={{ fill: "var(--surface)", stroke: "var(--edge)" }} />
-        {[168, 208, 248].map((x) => (
-          <rect key={x} x={x} y={162} width={28} height={22} rx={4} style={{ fill: "var(--surface-2)" }} />
-        ))}
-        <line x1={152} y1={150} x2={288} y2={150} strokeWidth={6} strokeLinecap="round" style={{ stroke: col.t }} />
-        <line x1={290} y1={158} x2={290} y2={198} strokeWidth={7} strokeLinecap="round" style={{ stroke: front ? col.p : col.m }} />
-        <line x1={150} y1={158} x2={150} y2={198} strokeWidth={7} strokeLinecap="round" style={{ stroke: rear ? col.p : col.m }} />
-        <circle cx={185} cy={208} r={11} style={{ fill: col.f }} />
-        <circle cx={255} cy={208} r={11} style={{ fill: col.f }} />
-
-        <Lab p={P(220, 24)} c="m">বাসের চোখে বৃষ্টি</Lab>
-        <Vec a={P(190, 236)} b={P(190 + vm * KP, 236)} c="v" w={3.5} show={vm > 0} />
-        <Lab p={P(180, 240)} c="v" anchor="end">বাসের বেগ</Lab>
-        <Lab p={P(290, 262)} c={front ? "p" : "m"}>সামনের কাচ</Lab>
-        <Lab p={P(150, 262)} c={rear ? "p" : "m"}>পেছনের কাচ</Lab>
-        <Lab p={P(220, 282)} c="r">{front ? "সামনের কাচ ভিজছে" : rear ? "পেছনের কাচ ভিজছে" : "শুধু ছাদ ভিজছে"}</Lab>
-      </Stage>
-    );
-  };
-
-  const figure = (s: number) => {
-    if (s <= 1) return trains(s);
-    if (s <= 5) return panels(s);
-    return bus(s);
-  };
-
-  const extra = (
-    <SliderCard>
-      <Slider label="মানুষ বা বাসের বেগ (m/s)" value={vm} min={0} max={7} onChange={setVm} />
-      <Slider label="বৃষ্টির বেগ v_r (m/s)" value={vr} min={1} max={8} onChange={setVr} />
-      <Slider label="বাতাসের বেগ w (m/s, সামনের দিকে ধনাত্মক)" value={w} min={-3} max={3} onChange={setW} />
-    </SliderCard>
-  );
-
-  return <Lesson steps={steps} figure={figure} extra={extra} />;
 }

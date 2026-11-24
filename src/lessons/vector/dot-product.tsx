@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Slider } from "@/components/ui/Slider";
-import { Chips } from "@/components/anim/controls";
-import { Arc, Dot, Lab, Seg, SliderCard, Square, Stage, Vec, add, mid, mk, pol } from "@/components/anim/kit";
+import { C, Choices, GuidedLesson, Play, pt, type Built } from "@/components/lesson/guide-kit";
+import { Arc, Dot, Lab, Seg, Stage, Vec, add, col, mid, pol } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
-import { f1, rad } from "@/lib/vec";
+import { rad } from "@/lib/vec";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "ডট গুণন যে একটা ছায়া আর দৈর্ঘ্যের গুণফল এবং ফল যে স্কেলার, তা বুঝবে। cosθ-এর সূত্র ও উপাংশের সূত্র দুটোই ব্যবহার করে ডট গুণন ও দুই ভেক্টরের মাঝের কোণ বের করতে পারবে।",
   hook: "একজন দড়ি দিয়ে একটা ঠেলাগাড়ি টানছে, দড়িটা একটু ওপর দিকে বাঁকা। দড়ির পুরো টানের কতটুকু গাড়িকে সামনে এগিয়ে নিচ্ছে? যতটুকু সামনে এগোচ্ছে, সেটাই টানের সামনের দিকের ছায়া। এই ছায়াকে সরণ দিয়ে গুণ করলে কাজ পাওয়া যায়। এই গুণটাই ডট গুণন।",
   look: "B-এর ছায়া A-এর রেখায় কতটা পড়ছে আর কোণ বাড়লে সেই ছায়া কীভাবে ছোট হয়ে শূন্য হয়, তারপর উল্টো দিকে চলে যায়, তা খেয়াল করো।",
@@ -108,91 +107,157 @@ export const meta: LessonMeta = {
   ],
 };
 
-export default function Anim() {
-  const [a, setA] = useState(6);
-  const [b, setB] = useState(5);
-  const [th, setTh] = useState(50);
-
-  const S = 22;
-  const m = mk(200, 190, S);
-  const o = m(0, 0);
-  const c = Math.cos(rad(th));
-  const sn = Math.sin(rad(th));
-  const aE = m(a, 0);
-  const bE = m(b * c, b * sn);
-  const foot = m(b * c, 0);
-  const sh = b * c;
-  const dp = a * b * c;
-  const dir = foot.x > o.x ? -1 : 1;
-
-  const steps: LessonStep[] = [
-    {
-      title: "ছায়ার গল্প",
-      text: "ছবিতে নীল A আর সবুজ B একই বিন্দু থেকে আঁকা, মাঝের কোণ θ। A-এর রেখার ওপর দিক থেকে আলো ফেললে B-এর একটা ছায়া সেই রেখায় পড়ে।",
-    },
-    {
-      title: "ছায়া আঁকো",
-      text: "B-এর মাথা থেকে A-এর রেখায় লম্ব নামাই। শুরু থেকে লম্বের পা পর্যন্ত হলুদ অংশটাই ছায়া। ছায়ার দৈর্ঘ্য B cosθ।",
-      tex: ["s=B\\cos\\theta", `s=${b}\\cos${th}^\\circ=${f1(sh)}`],
-    },
-    {
-      title: "ছায়া × A",
-      text: "A-এর দৈর্ঘ্যকে B-এর ছায়া দিয়ে গুণ করলে ডট গুণন পাই।",
-      tex: ["\\vec A\\cdot\\vec B=A\\times(B\\cos\\theta)", "\\vec A\\cdot\\vec B=AB\\cos\\theta", `\\vec A\\cdot\\vec B=${a}\\times${f1(sh)}=${f1(dp)}`],
-    },
-    {
-      title: "তিন বিশেষ কোণ",
-      text: "θ = 0° হলে ছায়া পুরো B, তাই AB। θ = 90° হলে ছায়া শূন্য, তাই 0। θ = 180° হলে ছায়া উল্টো দিকে, তাই −AB। নিচের বোতামে চাপো।",
-      tex: ["\\theta=0^\\circ:\\ AB", "\\theta=90^\\circ:\\ 0", "\\theta=180^\\circ:\\ -AB"],
-    },
-    {
-      title: "ফল স্কেলার",
-      text: "ফলটা একটা সংখ্যা, কোনো দিক নেই। ক্রম বদলালেও একই: A-কে B-এর ছায়া দিয়ে গুণ করো বা B-কে A-এর ছায়া দিয়ে, ফল সমান।",
-      tex: ["\\vec A\\cdot\\vec B=\\vec B\\cdot\\vec A"],
-    },
-    {
-      title: "উপাংশ দিয়ে",
-      text: "ছবি না থাকলে উপাংশ দিয়ে করো। একই দিকের সংখ্যা গুণ করো, তারপর যোগ করো। কারণ î·î = 1 এবং î·ĵ = 0।",
-      tex: ["\\vec A\\cdot\\vec B=A_xB_x+A_yB_y+A_zB_z", "\\hat\\imath\\cdot\\hat\\imath=1,\\quad\\hat\\imath\\cdot\\hat\\jmath=0"],
-    },
-    {
-      title: "কোণ বের করা",
-      text: "ডট গুণন আর দুই মান জানলে মাঝের কোণ বের হয়। ফল শূন্য হলে কোণ 90°।",
-      tex: ["\\cos\\theta=\\frac{\\vec A\\cdot\\vec B}{AB}", `\\cos\\theta=\\frac{${f1(dp)}}{${a}\\times${b}}=${f1(c)}`],
-    },
-  ];
-
-  const figure = (s: number) => (
-    <Stage w={440} h={290} label="ডট গুণন ও ছায়ার দৈর্ঘ্য">
-      <line x1={20} y1={o.y} x2={420} y2={o.y} strokeWidth={1.5} strokeDasharray="5 5" style={{ stroke: "var(--line-2)" }} />
-      <g opacity={0.5}>
-        <Seg a={o} b={foot} show={s >= 1} c="u" w={11} />
-      </g>
-      <Seg a={bE} b={foot} show={s >= 1} dash c="m" w={1.5} />
-      <Square at={foot} d1={{ x: dir, y: 0 }} d2={{ x: 0, y: -1 }} show={s >= 1 && Math.abs(sh) > 0.3} />
-      <Arc o={o} r={32} from={0} to={th} c="f" w={1.5} />
-      <Vec a={o} b={aE} c="p" w={4} />
-      <Vec a={o} b={bE} c="q" w={4} />
-      <Dot p={o} />
-
-      <Lab p={add(aE, 10, 20)} c="p" anchor="start">A = {a}</Lab>
-      <Lab p={add(bE, 8, -8)} c="q" anchor="start">B = {b}</Lab>
-      <Lab p={pol(o, th / 2, 52)}>θ</Lab>
-      <Lab p={add(mid(o, foot), 0, 28)} show={s >= 1} c="u">B cosθ = {f1(sh)}</Lab>
-      <Lab p={{ x: 20, y: 28 }} anchor="start" show={s >= 2} c="r">A·B = {f1(dp)}</Lab>
+function Cart({ done }: { done: boolean }) {
+  const h = pt(170, 190);
+  const tip = pt(240, 69);
+  return (
+    <Stage w={440} h={260} label="দড়ি দিয়ে গাড়ি টানা">
+      <Seg a={pt(30, 215)} b={pt(410, 215)} c="m" w={3} />
+      <rect x={90} y={180} width={80} height={32} rx={6} strokeWidth={2.5} style={{ fill: "#d9a35f", stroke: "#171a2c" }} />
+      <circle cx={110} cy={212} r={8} style={{ fill: col.f }} />
+      <circle cx={150} cy={212} r={8} style={{ fill: col.f }} />
+      <Vec a={h} b={tip} c="r" w={4} />
+      <Seg a={h} b={pt(240, 190)} dash c="p" w={5} show={done} />
+      <Seg a={tip} b={pt(240, 190)} dash c="m" w={1.5} show={done} />
+      <Lab p={pt(256, 90)} c="r" anchor="start">দড়ির টান 40 N</Lab>
+      <Lab p={pt(205, 172)} c="p" show={done}>20 N</Lab>
+      <Vec a={pt(90, 240)} b={pt(250, 240)} c="q" w={3} />
+      <Lab p={pt(170, 256)} c="q">সরণ 20 m</Lab>
     </Stage>
   );
+}
 
-  const extra = (
-    <div className="grid gap-3">
-      <SliderCard>
-        <Slider label="A-এর মান" value={a} min={2} max={7} onChange={setA} />
-        <Slider label="B-এর মান" value={b} min={1} max={7} onChange={setB} />
-        <Slider label="মাঝের কোণ θ" value={th} min={0} max={180} suffix="°" onChange={setTh} />
-      </SliderCard>
-      <Chips label="দ্রুত কোণ" value={th} options={[0, 30, 60, 90, 120, 180].map((k) => ({ key: k, name: `${k}°` }))} onChange={setTh} />
-    </div>
+function Shadow({ th, on }: { th: number; on: boolean }) {
+  const O = pt(80, 200);
+  const aTip = pt(O.x + 6 * 28, O.y);
+  const bTip = pt(O.x + 5 * 28 * Math.cos(rad(th)), O.y - 5 * 28 * Math.sin(rad(th)));
+  const foot = pt(bTip.x, O.y);
+  return (
+    <Stage w={440} h={260} label="B-এর ছায়া A-এর রেখায়">
+      <Seg a={pt(30, O.y)} b={pt(410, O.y)} dash c="m" w={1} />
+      <Seg a={O} b={foot} c="u" w={9} show={on} />
+      <Seg a={bTip} b={foot} dash c="m" w={1.5} show={on} />
+      <Vec a={O} b={aTip} c="p" w={4} />
+      <Vec a={O} b={bTip} c="q" w={4} />
+      <Arc o={O} r={30} from={0} to={th} c="f" w={1.5} />
+      <Lab p={pol(O, th / 2, 48)}>θ</Lab>
+      <Dot p={O} c="f" r={5} />
+      <Lab p={pt(aTip.x - 10, O.y + 22)} c="p" anchor="end">A = 6</Lab>
+      <Lab p={add(bTip, -8, -8)} c="q" anchor="end">B = 5</Lab>
+      <Lab p={add(mid(O, foot), 0, 38)} c="u" show={on}>ছায়া = B cosθ</Lab>
+    </Stage>
   );
+}
 
-  return <Lesson steps={steps} figure={figure} extra={extra} />;
+export default function Anim() {
+  const [th, setTh] = useState(50);
+  const dp = 30 * Math.cos(rad(th));
+  const note =
+    th === 0
+      ? "θ = 0°: ছায়া পুরো B, তাই A·B = 30, সবচেয়ে বড়।"
+      : th === 90
+        ? "θ = 90°: ছায়া শূন্য, তাই A·B = 0। লম্ব ভেক্টরের ডট গুণন শূন্য।"
+        : th === 180
+          ? "θ = 180°: ছায়া উল্টো দিকে, তাই A·B = −30, ঋণাত্মক।"
+          : "কোণ বাড়লে ছায়া ছোট হয়, আর 90° পেরোলে উল্টো দিকে যায়।";
+
+  return (
+    <GuidedLesson
+      meta={meta}
+      build={(g): Built => ({
+        concept: [
+          {
+            title: "দড়ি দিয়ে গাড়ি টানা",
+            text: (
+              <>
+                তুমি 40 N বলে দড়ি টানছ, দড়ি মাটির সাথে 60° কোণে ওপরে হেলানো। 40 N-এর কতটুকু গাড়িকে সামনে এগোচ্ছে?
+              </>
+            ),
+            locked: g.picks[0] === undefined,
+            prompt: <Choices options={["40 N", "20 N", "0"]} answer={1} picked={g.picks[0]} onPick={g.pick(0)} explain="বলের সামনের দিকের ছায়া 40 cos60° = 20 N। বাকিটা ওপরে টানছে, গাড়িকে এগোচ্ছে না।" />,
+            figure: () => <Cart done={g.picks[0] !== undefined} />,
+          },
+          {
+            title: "এক ভেক্টরের ছায়া আরেকটায়",
+            text: (
+              <>
+                <C k="p">A</C> আর <C k="q">B</C> একই বিন্দু থেকে আঁকা। ওপর থেকে আলো ফেললে B-এর ছায়া A-এর রেখায় পড়ে। ছায়ার দৈর্ঘ্য B cosθ।
+              </>
+            ),
+            tex: ["s=B\\cos\\theta"],
+            replay: true,
+            figure: (phase) => <Shadow th={50} on={phase === 1} />,
+          },
+          {
+            title: "ডট গুণন: ছায়া × A",
+            text: (
+              <>
+                A-এর দৈর্ঘ্যকে B-এর ছায়ার দৈর্ঘ্য দিয়ে গুণ করলেই <b>ডট গুণন</b>। <b>θ</b> বদলাও, ফল কীভাবে বদলায় দেখো।
+              </>
+            ),
+            prompt: (
+              <Play
+                label="θ"
+                value={th}
+                min={0}
+                max={180}
+                suffix="°"
+                onChange={setTh}
+                chips={[0, 60, 90, 120, 180]}
+                read={
+                  <span>
+                    A·B = <C k="r">{dp.toFixed(1)}</C>
+                  </span>
+                }
+                note={note}
+              />
+            ),
+            figure: () => <Shadow th={th} on />,
+          },
+          {
+            title: "কাজ কত?",
+            text: "40 N বলে দড়ি টেনে গাড়িকে 20 m সরানো হলো, দড়ি 60° কোণে। বল যতটুকু এগোনোর কাজে লাগল, সেটা আর সরণ গুণ করলে কাজ পাই। কাজ কত?",
+            locked: g.picks[3] === undefined,
+            prompt: <Choices options={["800 J", "400 J", "200 J"]} answer={1} picked={g.picks[3]} onPick={g.pick(3)} explain="কাজ = F·s = 40 × 20 × cos60° = 400 J। অর্থাৎ বলের এগোনো অংশ (20 N) × সরণ (20 m)। কাজ একটা স্কেলার।" />,
+            figure: () => <Cart done />,
+          },
+          {
+            title: "উপাংশ থেকে ডট গুণন",
+            text: "A = 3î + 4ĵ আর B = 4î + 3ĵ হলে A·B কত? একই দিকের সংখ্যা গুণ করে যোগ করো।",
+            locked: g.picks[4] === undefined,
+            prompt: <Choices options={["7", "12", "24"]} answer={2} picked={g.picks[4]} onPick={g.pick(4)} explain="3 × 4 + 4 × 3 = 24। কোণ বের করতে cosθ = 24 ÷ (5 × 5) = 0.96, তাই θ = 16.3°।" />,
+            figure: () => {
+              const done = g.picks[4] !== undefined;
+              const O = pt(80, 220);
+              const a = pt(O.x + 120, O.y - 160);
+              const b = pt(O.x + 160, O.y - 120);
+              return (
+                <Stage w={440} h={260} label="A = 3î + 4ĵ আর B = 4î + 3ĵ">
+                  <Vec a={O} b={a} c="p" w={4} />
+                  <Vec a={O} b={b} c="q" w={4} />
+                  <Arc o={O} r={70} from={36.87} to={53.13} c="f" w={1.5} show={done} />
+                  <Dot p={O} c="f" r={5} />
+                  <Lab p={add(a, -8, -4)} c="p" anchor="end">A</Lab>
+                  <Lab p={add(b, 10, 4)} c="q" anchor="start">B</Lab>
+                  <Lab p={pt(250, 60)} c="r" show={done}>θ = 16.3°</Lab>
+                </Stage>
+              );
+            },
+          },
+        ],
+        summary: [
+          {
+            title: "ডট গুণনের দুই রূপ",
+            text: "ছায়ার সূত্র আর উপাংশের সূত্র, ফল একই। ফল একটা সংখ্যা, ভেক্টর নয়।",
+            tex: ["\\vec A\\cdot\\vec B=AB\\cos\\theta", "\\vec A\\cdot\\vec B=A_xB_x+A_yB_y+A_zB_z"],
+          },
+          {
+            title: "কোণ আর লম্ব",
+            text: "ডট গুণন শূন্য মানে ভেক্টর দুটি পরস্পর লম্ব। কোণ বের করতে cosθ-এর সূত্র।",
+            tex: ["\\theta=0^\\circ,\\ 90^\\circ,\\ 180^\\circ:\\ AB,\\ 0,\\ -AB", "\\cos\\theta=\\dfrac{\\vec A\\cdot\\vec B}{AB}"],
+          },
+        ],
+      })}
+    />
+  );
 }

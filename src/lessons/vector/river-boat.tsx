@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Lesson, type LessonStep } from "@/components/ui/Lesson";
-import { Slider } from "@/components/ui/Slider";
-import { Arc, Dot, Lab, Seg, SliderCard, Stage, Vec, add, col, mid, pol, type Pt } from "@/components/anim/kit";
+import { C, Choices, GuidedLesson, Play, pt, type Built } from "@/components/lesson/guide-kit";
+import { Dot, Lab, Seg, Stage, Vec, add, col, mid } from "@/components/anim/kit";
 import type { LessonMeta } from "@/lessons/types";
-import { deg, f1, rad } from "@/lib/vec";
+import { rad } from "@/lib/vec";
 
 export const meta: LessonMeta = {
+  guided: true,
   goal: "স্রোতের নদীতে নৌকার মোট বেগ বের করতে পারবে, সবচেয়ে কম সময়ে এবং সোজা ওপারে পৌঁছানোর শর্ত দুটি আলাদা করে বলতে পারবে।",
   hook: "নদীর এপারে তুমি, ঠিক সামনে ওপারে তোমার বন্ধু। নৌকা সোজা বন্ধুর দিকে মুখ করে চালালে কি বন্ধুর কাছে পৌঁছাবে? না। স্রোত তোমাকে নিচে ভাসিয়ে নেবে। তাহলে মুখ কোন দিকে রাখলে সোজা ওপারে নামা যায়? আর কোন দিকে রাখলে সবচেয়ে তাড়াতাড়ি পৌঁছানো যায়? দুটো প্রশ্নের উত্তর আলাদা।",
   look: "নৌকার মুখ বদলালে পার হওয়ার সময় আর ভেসে যাওয়ার দূরত্ব, এই দুটোর কোনটা স্রোতের ওপর নির্ভর করে, তা খেয়াল করো।",
@@ -108,181 +107,203 @@ export const meta: LessonMeta = {
   ],
 };
 
-const D = 120;
-const X0 = 50;
-const YB = 225;
-const YT = 75;
-const PXM = (YB - YT) / D;
-const KV = 12;
-const P = (x: number, y: number): Pt => ({ x, y });
+const TOP = 60;
+const BOT = 210;
+const K = 1.25;
+const S0 = pt(120, BOT);
 
-function River() {
+function River({ u }: { u: number }) {
   return (
     <>
-      <rect x={20} y={YT} width={400} height={YB - YT} style={{ fill: col.t, opacity: 0.12 }} />
-      <line x1={20} y1={YT} x2={420} y2={YT} strokeWidth={4} strokeLinecap="round" style={{ stroke: col.m }} />
-      <line x1={20} y1={YB} x2={420} y2={YB} strokeWidth={4} strokeLinecap="round" style={{ stroke: col.m }} />
-      <Lab p={P(24, YT - 10)} anchor="start" c="m">ওপার</Lab>
-      <Lab p={P(24, YB + 22)} anchor="start" c="m">এপার</Lab>
-    </>
-  );
-}
-
-function Stream({ u }: { u: number }) {
-  return (
-    <>
-      {[110, 230, 350].map((x) => (
-        <line key={x} x1={x} y1={150} x2={x + 46} y2={150} strokeWidth={3} strokeLinecap="round" markerEnd="url(#ah-t)" style={{ stroke: col.t, opacity: 0.85 }} />
+      <rect x={20} y={TOP} width={400} height={BOT - TOP} style={{ fill: col.t, opacity: 0.12 }} />
+      <Seg a={pt(20, TOP)} b={pt(420, TOP)} c="m" w={4} />
+      <Seg a={pt(20, BOT)} b={pt(420, BOT)} c="m" w={4} />
+      {[70, 190, 310].map((x) => (
+        <Vec key={x} a={pt(x, 135)} b={pt(x + u * 13, 135)} c="u" w={2.5} />
       ))}
-      <Lab p={P(285, 172)} c="t">স্রোত u = {u}</Lab>
+      <Lab p={pt(24, TOP - 10)} anchor="start" c="m">ওপার</Lab>
+      <Lab p={pt(24, BOT + 24)} anchor="start" c="m">এপার</Lab>
+      <Lab p={pt(400, 158)} anchor="end" c="u">স্রোত</Lab>
     </>
   );
 }
 
 export default function Anim() {
-  const [v, setV] = useState(5);
-  const [u, setU] = useState(3);
-  const [al, setAl] = useState(110);
+  const [al, setAl] = useState(90);
+  const sa = Math.sin(rad(al));
+  const ca = Math.cos(rad(al));
+  const t = 120 / (5 * sa);
+  const drift = (3 + 5 * ca) * t;
+  const end = pt(Math.max(24, Math.min(416, S0.x + drift * K)), TOP);
+  const note =
+    al === 90
+      ? "α = 90°: সবচেয়ে কম সময়, কিন্তু অনেকটা নিচে নামতে হয়।"
+      : al >= 125 && al <= 129
+        ? "প্রায় সোজা ওপারে নামা গেল, কিন্তু সময় বেশি লাগল।"
+        : "α বদলালে সময় আর নামার জায়গা দুটোই বদলায়।";
 
-  const can = v > u;
-  const aStraight = can ? 180 - deg(Math.acos(u / v)) : 90;
-  const tAl = D / (v * Math.sin(rad(al)));
-  const phi = can ? deg(Math.acos(u / v)) : 0;
-  const tStraight = can ? D / Math.sqrt(v * v - u * u) : 0;
-
-  const steps: LessonStep[] = [
-    {
-      title: "নদীর ওপারে",
-      text: "এপারের বিন্দু A থেকে ঠিক সামনের ওপারের বিন্দু B-তে যেতে চাই। স্রোত ডান দিকে বইছে। নৌকা সোজা B-র দিকে চালালে কি B-তে পৌঁছাব?",
-    },
-    {
-      title: "দুই বেগ",
-      text: "নৌকার নিজের বেগ v আর স্রোতের বেগ u। ঘাটের মানুষ দেখে এই দুটোর ভেক্টর যোগফল, লাল তীর g।",
-      tex: ["\\vec g=\\vec v+\\vec u"],
-    },
-    {
-      title: "দুই উপাংশ",
-      text: "নৌকার মুখ স্রোতের দিকের সাথে α কোণে। ওপারের দিকে বেগ v sinα। স্রোত বরাবর বেগ u + v cosα।",
-      tex: ["v_{\\perp}=v\\sin\\alpha", "v_{\\parallel}=u+v\\cos\\alpha"],
-    },
-    {
-      title: "পার হতে সময়",
-      text: "নদীর প্রস্থ d। ওপারের দিকে শুধু v sinα কাজ করে। স্রোত এখানে কিছুই করে না।",
-      tex: ["t=\\frac{d}{v\\sin\\alpha}", `t=\\frac{${D}}{${v}\\sin${al}^\\circ}=${f1(tAl)}\\ \\text{s}`],
-      note: "স্রোত পার হওয়ার সময় বদলায় না। বদলায় শুধু কোথায় নামবে।",
-    },
-    {
-      title: "সবচেয়ে কম সময়",
-      text: "sinα সবচেয়ে বড় হয় α = 90° এ। তাই নৌকার মুখ তীরের লম্বে রাখলে সময় সবচেয়ে কম। কিন্তু স্রোত তোমাকে নিচে ভাসিয়ে নেবে।",
-      tex: [`t_{\\min}=\\frac{d}{v}=\\frac{${D}}{${v}}=${f1(D / v)}\\ \\text{s}`, `x=u\\,t_{\\min}=${u}\\times${f1(D / v)}=${f1((u * D) / v)}\\ \\text{m}`],
-    },
-    {
-      title: "সোজা ওপারে",
-      text: can
-        ? `ঠিক B-তে নামতে স্রোত বরাবর মোট বেগ শূন্য করতে হবে। তাই নৌকার মুখ স্রোতের উল্টো দিকে φ = ${f1(phi)}° কোণে হেলাতে হয়।`
-        : "ঠিক B-তে নামতে স্রোত বরাবর মোট বেগ শূন্য করতে হবে। কিন্তু এখন v ≤ u, তাই এই বেগে তা সম্ভব নয়। v বাড়িয়ে দেখো।",
-      tex: can
-        ? ["u+v\\cos\\alpha=0", "\\cos\\varphi=\\frac{u}{v}", `t=\\frac{d}{\\sqrt{v^2-u^2}}=\\frac{${D}}{\\sqrt{${v}^2-${u}^2}}=${f1(tStraight)}\\ \\text{s}`]
-        : ["u+v\\cos\\alpha=0", "\\cos\\varphi=\\frac{u}{v}\\ge1"],
-      note: "φ মাপা হয় স্রোতের উল্টো দিক থেকে। সোজা পথে সময় সবচেয়ে কম সময়ের চেয়ে বেশি।",
-    },
-    {
-      title: "যখন সম্ভব নয়",
-      text: "v ≤ u হলে cosφ = u/v ≥ 1, এমন φ হয় না। স্রোত নৌকার চেয়ে জোরালো। মুখ যেদিকেই রাখো, মোট বেগ স্রোতের দিকেই থাকে।",
-      tex: ["v\\le u\\Rightarrow\\cos\\varphi\\ge1"],
-    },
-    {
-      title: "নিজে করো",
-      text: "v, u আর α বদলাও। দেখো কখন সময় কমে, কখন নৌকা কতটা ভেসে যায়। তারপর α-কে 90° এ নিয়ে সবচেয়ে কম সময় যাচাই করো।",
-      tex: [`t=${f1(tAl)}\\ \\text{s}`],
-    },
-  ];
-
-  const stuck = () => {
-    const S = P(X0 + 140, YB);
-    return (
-      <Stage w={440} h={290} label="নৌকার বেগ স্রোতের কম হলে সোজা পার হওয়া যায় না">
-        <River />
-        <Vec a={P(S.x, S.y - 20)} b={P(S.x + 5 * KV, S.y - 20)} c="q" w={4} />
-        <Lab p={P(S.x + 5 * KV + 8, S.y - 16)} c="q" anchor="start">u = 5</Lab>
-        <Vec a={P(S.x, S.y - 50)} b={P(S.x - 3 * KV, S.y - 50)} c="p" w={4} />
-        <Lab p={P(S.x - 3 * KV - 8, S.y - 46)} c="p" anchor="end">v = 3</Lab>
-        <Vec a={P(S.x, S.y - 80)} b={P(S.x + 2 * KV, S.y - 80)} c="r" w={4} />
-        <Lab p={P(S.x + 2 * KV + 8, S.y - 76)} c="r" anchor="start">মোট বেগ = 2</Lab>
-        <Lab p={P(220, 118)} c="r">v &lt; u, তাই মোট বেগ সব সময় স্রোতের দিকে</Lab>
-        <Dot p={S} />
-      </Stage>
-    );
-  };
-
-  const figure = (s: number) => {
-    if (s === 6) return stuck();
-    const a = s === 4 ? 90 : s === 5 ? aStraight : al;
-    const sa = Math.sin(rad(a));
-    const ca = Math.cos(rad(a));
-    const t = D / (v * sa);
-    const gx = u + v * ca;
-    const drift = gx * t;
-    const S = P(X0, YB);
-    const B = P(X0, YT);
-    const end = P(Math.min(X0 + drift * PXM, 425), YT);
-    const vv = P(S.x + v * ca * KV, S.y - v * sa * KV);
-    const gg = P(S.x + gx * KV, S.y - v * sa * KV);
-
-    return (
-      <Stage w={440} h={290} label="নদী পার হওয়া নৌকার পথ ও বেগ">
-        <River />
-        <Stream u={u} />
-        <Dot p={B} c="f" r={5} />
-        <Lab p={add(B, -10, -4)} anchor="end">B</Lab>
-
-        <Seg a={S} b={end} show={s >= 3} dash c="r" w={2} />
-        <Seg a={B} b={end} show={s >= 4 && drift > 1} c="u" w={5} />
-        <Lab p={add(mid(B, end), 0, -14)} show={s >= 4 && drift > 1} c="u">ভেসে যাওয়া = {f1(drift)} m</Lab>
-
-        <Seg a={S} b={P(gg.x, S.y)} show={s === 2 || s === 3} dash c="u" w={2} />
-        <Seg a={P(gg.x, S.y)} b={gg} show={s === 2 || s === 3} dash c="u" w={2} />
-        <Lab p={P((S.x + gg.x) / 2, S.y + 18)} show={s === 2 || s === 3} c="u">u + v cosα</Lab>
-        <Lab p={P(gg.x + 8, (S.y + gg.y) / 2)} show={s === 2 || s === 3} c="u" anchor="start">v sinα</Lab>
-
-        <Vec a={S} b={vv} c="p" w={3.5} show={s >= 1} />
-        <Vec a={vv} b={gg} c="q" w={3} show={s >= 1} />
-        <Vec a={S} b={gg} c="r" w={4} show={s >= 1} />
-        <Lab p={add(mid(S, vv), -8, -2)} show={s >= 1} c="p" anchor="end">v</Lab>
-        <Lab p={add(mid(vv, gg), 0, -8)} show={s >= 1} c="q">u</Lab>
-        <Lab p={add(mid(S, gg), 12, 14)} show={s >= 1} c="r" anchor="start">g</Lab>
-
-        <Arc o={S} r={30} from={0} to={a} c="f" w={1.5} show={s >= 2 && s !== 5} />
-        <Lab p={pol(S, a / 2, 46)} show={s >= 2 && s !== 5}>α</Lab>
-        <Arc o={S} r={30} from={a} to={180} c="f" w={1.5} show={s === 5} />
-        <Lab p={pol(S, (a + 180) / 2, 46)} show={s === 5}>φ</Lab>
-
-        {s >= 3 ? (
-          <motion.circle
-            key={`${s}-${a}-${v}-${u}`}
-            r={7}
-            style={{ fill: col.r }}
-            animate={{ cx: [S.x, end.x], cy: [S.y, end.y] }}
-            transition={{ duration: 3, ease: "linear", repeat: Infinity, repeatDelay: 0.5 }}
-          />
-        ) : null}
-        <Dot p={S} />
-        <Lab p={add(S, -10, 20)} anchor="end">A</Lab>
-
-        <Lab p={P(418, 36)} anchor="end" show={s >= 3}>সময় t = {f1(t)} s</Lab>
-        <Lab p={P(418, 56)} anchor="end" c="m" show={s >= 2}>নদীর প্রস্থ d = {D} m</Lab>
-        <Lab p={P(220, 112)} c="r" show={s === 5 && !can}>v ≤ u, তাই সোজা পার হওয়া যায় না</Lab>
-      </Stage>
-    );
-  };
-
-  const extra = (
-    <SliderCard>
-      <Slider label="নৌকার বেগ v (m/s)" value={v} min={3} max={8} onChange={setV} />
-      <Slider label="স্রোতের বেগ u (m/s)" value={u} min={1} max={6} onChange={setU} />
-      <Slider label="নৌকার মুখ ও স্রোতের মাঝের কোণ α" value={al} min={50} max={150} step={5} suffix="°" onChange={setAl} />
-    </SliderCard>
+  return (
+    <GuidedLesson
+      meta={meta}
+      build={(g): Built => ({
+        concept: [
+          {
+            title: "সোজা মুখ করে চালালে",
+            text: (
+              <>
+                নদী 120 m চওড়া। নৌকা <C k="p">ঠিক ওপারের ঘাটের দিকে</C> মুখ করে 5 m/s-এ চলছে, কিন্তু <C k="q">স্রোত 3 m/s</C> পাশ দিয়ে বইছে। নৌকা কোথায় নামবে?
+              </>
+            ),
+            locked: g.picks[0] === undefined,
+            prompt: <Choices options={["ঠিক সামনের ঘাটে", "ঘাটের নিচের দিকে", "ঘাটের ওপরের দিকে"]} answer={1} picked={g.picks[0]} onPick={g.pick(0)} explain="স্রোত নৌকাকে পাশে ঠেলে নেয়। 24 সেকেন্ডে পার হয়ে নৌকা 72 m নিচে নামবে।" />,
+            figure: () => {
+              const done = g.picks[0] !== undefined;
+              const e = pt(S0.x + 72 * K, TOP);
+              return (
+                <Stage w={440} h={260} label="সোজা মুখ করে নদী পার হওয়া">
+                  <River u={3} />
+                  <Dot p={pt(S0.x, TOP)} c="r" r={7} />
+                  <Lab p={pt(S0.x - 12, TOP + 20)} anchor="end" c="r">ঘাট</Lab>
+                  <Vec a={S0} b={pt(S0.x, 130)} c="p" w={3} dash />
+                  <Vec a={S0} b={done ? e : S0} c="r" w={5} show={done} />
+                  <Dot p={S0} c="f" r={6} />
+                  <Lab p={add(e, 10, 18)} c="r" anchor="start" show={done}>72 m ভেসে গেল</Lab>
+                </Stage>
+              );
+            },
+          },
+          {
+            title: "দুই বেগ জোড়া",
+            text: (
+              <>
+                নৌকার নিজের বেগ <C k="p">v</C> ওপারের দিকে, স্রোতের বেগ <C k="q">u</C> পাশে। ঘাটের মানুষ দেখে দুটোর ভেক্টর যোগফল <C k="r">g</C>।
+              </>
+            ),
+            tex: ["\\vec g=\\vec v+\\vec u"],
+            replay: true,
+            figure: (phase) => {
+              const on = phase === 1;
+              const vt = pt(S0.x, S0.y - 100);
+              const gt = pt(S0.x + 60, S0.y - 100);
+              return (
+                <Stage w={440} h={260} label="নৌকার বেগ আর স্রোতের বেগ যোগ">
+                  <Vec a={S0} b={vt} c="p" w={4} />
+                  <Vec a={on ? vt : S0} b={on ? gt : pt(S0.x + 60, S0.y)} c="q" w={4} />
+                  <Vec a={S0} b={on ? gt : S0} c="r" w={5} show={on} />
+                  <Dot p={S0} c="f" r={5} />
+                  <Lab p={add(mid(S0, vt), -12, 0)} c="p" anchor="end">v = 5</Lab>
+                  <Lab p={add(mid(vt, gt), 0, -12)} c="q" show={on}>u = 3</Lab>
+                  <Lab p={add(mid(S0, gt), 14, 8)} c="r" anchor="start" show={on}>g</Lab>
+                </Stage>
+              );
+            },
+          },
+          {
+            title: "স্রোত বাড়লে সময়?",
+            text: "নৌকা সোজা ওপারের দিকে মুখ করে চলছে। স্রোত দ্বিগুণ হলে নদী পার হতে সময় কী হবে?",
+            locked: g.picks[2] === undefined,
+            prompt: <Choices options={["বাড়বে", "একই থাকবে", "কমবে"]} answer={1} picked={g.picks[2]} onPick={g.pick(2)} explain="ওপারের দিকে বেগ শুধু নৌকার নিজের 5 m/s। তাই t = 120 ÷ 5 = 24 s। স্রোত শুধু ঠিক করে কোথায় নামবে, সময় নয়।" />,
+            figure: () => {
+              const done = g.picks[2] !== undefined;
+              const e1 = pt(S0.x + 72 * K, TOP);
+              const e2 = pt(S0.x + 144 * K, TOP);
+              return (
+                <Stage w={440} h={260} label="স্রোত বাড়লে সময় একই, নামার জায়গা বদলায়">
+                  <River u={done ? 6 : 3} />
+                  <Vec a={S0} b={pt(S0.x, 130)} c="p" w={3} dash />
+                  <Vec a={S0} b={e1} c="r" w={4} />
+                  <Vec a={S0} b={done ? e2 : S0} c="v" w={4} show={done} />
+                  <Dot p={S0} c="f" r={6} />
+                  <Lab p={add(e1, -6, 18)} c="r" anchor="end">24 s</Lab>
+                  <Lab p={add(e2, 6, 18)} c="v" anchor="start" show={done}>24 s</Lab>
+                </Stage>
+              );
+            },
+          },
+          {
+            title: "সোজা ঘাটে নামতে",
+            text: (
+              <>
+                ঠিক সামনের ঘাটে নামতে হলে নৌকার মুখ <b>স্রোতের উল্টো দিকে</b> হেলাতে হবে, যাতে স্রোতের টান কাটা পড়ে।
+              </>
+            ),
+            tex: ["\\cos\\varphi=\\dfrac{u}{v}=\\dfrac{3}{5}\\Rightarrow\\varphi=53.1^\\circ", "t=\\dfrac{d}{\\sqrt{v^2-u^2}}=\\dfrac{120}{4}=30\\ \\text{s}"],
+            replay: true,
+            figure: (phase) => {
+              const on = phase === 1;
+              const vt = pt(S0.x - 60, S0.y - 80);
+              const gt = pt(S0.x, S0.y - 80);
+              return (
+                <Stage w={440} h={260} label="স্রোতের উল্টো দিকে মুখ করে সোজা পার হওয়া">
+                  <River u={3} />
+                  <Seg a={S0} b={pt(S0.x, TOP)} dash c="m" w={1.5} />
+                  <Vec a={S0} b={vt} c="p" w={4} />
+                  <Vec a={on ? vt : S0} b={on ? gt : pt(S0.x + 60, S0.y)} c="q" w={4} />
+                  <Vec a={S0} b={on ? gt : S0} c="r" w={5} show={on} />
+                  <Dot p={S0} c="f" r={5} />
+                  <Lab p={add(mid(S0, vt), -10, 0)} c="p" anchor="end">v</Lab>
+                  <Lab p={add(mid(vt, gt), 0, -12)} c="q" show={on}>u</Lab>
+                  <Lab p={add(mid(S0, gt), 12, 14)} c="r" anchor="start" show={on}>g (সোজা)</Lab>
+                </Stage>
+              );
+            },
+          },
+          {
+            title: "নিজে দেখো",
+            text: (
+              <>
+                নৌকার মুখের কোণ <b>α</b> বদলাও (স্রোতের দিক থেকে মাপা)। সময় আর নামার জায়গা কীভাবে বদলায়?
+              </>
+            ),
+            prompt: (
+              <Play
+                label="α"
+                value={al}
+                min={60}
+                max={150}
+                suffix="°"
+                onChange={setAl}
+                chips={[60, 90, 127]}
+                read={
+                  <>
+                    <span>
+                      সময় = <C k="p">{t.toFixed(1)} s</C>
+                    </span>
+                    <span>
+                      ভাসা = <C k="q">{drift.toFixed(1)} m</C>
+                    </span>
+                  </>
+                }
+                note={note}
+              />
+            ),
+            figure: () => {
+              const h = pt(S0.x + 80 * ca, S0.y - 80 * sa);
+              return (
+                <Stage w={440} h={260} label="নৌকার মুখের কোণ বদলালে পথ বদলায়">
+                  <River u={3} />
+                  <Vec a={S0} b={h} c="p" w={3} dash />
+                  <Vec a={S0} b={end} c="r" w={5} />
+                  <Dot p={S0} c="f" r={6} />
+                  <Dot p={end} c="r" r={6} />
+                </Stage>
+              );
+            },
+          },
+        ],
+        summary: [
+          {
+            title: "দুটি আলাদা লক্ষ্য",
+            text: "সবচেয়ে কম সময়ে পার হওয়া আর সোজা ঘাটে নামা, দুটোর শর্ত আলাদা।",
+            tex: ["t_{\\min}=\\dfrac{d}{v}\\quad(\\alpha=90^\\circ)", "x=\\dfrac{u\\,d}{v}"],
+          },
+          {
+            title: "সোজা ওপারে নামা",
+            text: "এর জন্য নৌকার বেগ স্রোতের চেয়ে বেশি হতেই হবে (v > u)।",
+            tex: ["\\cos\\varphi=\\dfrac{u}{v}", "t=\\dfrac{d}{\\sqrt{v^2-u^2}}"],
+          },
+        ],
+      })}
+    />
   );
-
-  return <Lesson steps={steps} figure={figure} extra={extra} />;
 }
