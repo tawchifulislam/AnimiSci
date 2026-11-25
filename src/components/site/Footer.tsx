@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { subjects } from "@/data/subjects";
+import Link from 'next/link';
+import { subjects } from '@/data/subjects';
 
 export function Footer() {
   return (
@@ -7,6 +7,8 @@ export function Footer() {
       <div className="shell sx-foot-in">
         <div className="sx-foot-brand">
           <div className="sx-mark sx-mark-sm" aria-label="AnimiSci">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="" className="sx-foot-logo" />
             <span>animi</span>
             <span className="sx-mark-s">sci</span>
           </div>
@@ -16,7 +18,7 @@ export function Footer() {
 
         <div className="sx-foot-col">
           <h4>Subjects</h4>
-          {subjects.map((s) => (
+          {subjects.map(s => (
             <Link key={s.slug} href={`/${s.slug}`} className="sx-foot-link">
               <i style={{ background: s.tint }} />
               {s.en}

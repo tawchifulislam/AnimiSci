@@ -2992,6 +2992,12 @@ html {
   transform: rotate(-4deg);
 }
 
+.sx-foot-logo {
+  width: auto;
+  height: 1.25em;
+  margin-right: 0.1em;
+}
+
 .sx-nav-links {
   display: none;
   align-items: center;
