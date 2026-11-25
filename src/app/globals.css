@@ -5227,3 +5227,19 @@ body {
 .guide-sort-btns .guide-opt {
   text-align: center;
 }
+
+.sx15-marker {
+  margin: 0;
+}
+
+.sx-disc {
+  display: none;
+}
+
+.sx-art img {
+  border: var(--bw) solid #171a2c;
+  border-radius: 1.75rem;
+  background: #fff;
+  box-shadow: 0.35rem 0.35rem 0 #171a2c;
+  object-fit: cover;
+}

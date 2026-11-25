@@ -47,8 +47,7 @@ export default function Home() {
           </div>
 
           <div className="sx-art">
-            <span className="sx-disc" />
-            <img src="/assets/animations/STUDENT.svg" alt="বই পড়ছে এক শিক্ষার্থী, মাথার ওপর বিজ্ঞানের ধারণা" decoding="async" />
+            <img src="/assets/animations/science.svg" alt="বই পড়ছে এক শিক্ষার্থী, মাথার ওপর বিজ্ঞানের ধারণা" decoding="async" />
             <span className="sx-sticker sx-s1">
               <StickerIcon kind="atom" />
             </span>
