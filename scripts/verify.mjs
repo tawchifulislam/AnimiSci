@@ -71,7 +71,7 @@ const claims = [
   ["river-boat", "min time 100,4", 100 / 4, 0, "25", "25"],
   ["relative-velocity", "relative speed", Math.hypot(4, 3), 0, "5", "=5"],
   ["relative-velocity", "umbrella angle", deg(Math.atan(3 / 4)), 1, "36.9", "36.9"],
-  ["relative-velocity", "train relative", 40 - 60, 0, "-20", "-20"],
+  ["relative-velocity", "train relative", 40 - 60, 0, "-20", "\u221220"],
   ["dot-product", "A.B 3,4 and 4,3", 3 * 4 + 4 * 3, 0, "24", "=24"],
   ["dot-product", "cos theta", 24 / 25, 2, "0.96", "0.96"],
   ["dot-product", "theta", deg(Math.acos(0.96)), 1, "16.3", "16.3"],
