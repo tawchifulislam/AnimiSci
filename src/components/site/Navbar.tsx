@@ -1,24 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { LayoutDashboard, LogIn, LogOut, Menu, UserRound, X } from "lucide-react";
-import { AuthControl } from "@/components/auth/AuthControl";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { StickerIcon } from "@/components/site/StickerIcon";
-import { subjects } from "@/data/subjects";
-
-function LogoMark() {
-  return (
-    <svg viewBox="0 0 32 32" className="sx-logo-mark" aria-hidden>
-      <rect width={32} height={32} rx={9} fill="#d93a21" />
-      <path d="M4 18C7 18 7 9 10 9S13 23 16 23S19 14 22 14H26" stroke="#fff" strokeWidth={2.4} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M23 10.6L27 14L23 17.4" stroke="#fff" strokeWidth={2.4} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  Menu,
+  UserRound,
+  X,
+} from 'lucide-react';
+import { AuthControl } from '@/components/auth/AuthControl';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { StickerIcon } from '@/components/site/StickerIcon';
+import { subjects } from '@/data/subjects';
 
 export function Navbar() {
   const path = usePathname();
@@ -47,8 +44,14 @@ export function Navbar() {
     <>
       <header className="sx-nav">
         <div className="shell sx-nav-in">
-          <Link href="/" className="sx-logo" aria-label="AnimiSci home" onClick={() => setOpen(false)}>
-            <LogoMark />
+          <Link
+            href="/"
+            className="sx-logo"
+            aria-label="AnimiSci home"
+            onClick={() => setOpen(false)}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="" className="sx-logo-mark" />
             <span className="sx-logo-t">
               <span>animi</span>
               <span className="sx-logo-s">sci</span>
