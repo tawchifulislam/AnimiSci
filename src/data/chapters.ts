@@ -1,4 +1,5 @@
 import { gasIndex } from "./gas-index";
+import { thermoIndex } from "./thermo-index";
 import { vectorIndex } from "./vector-index";
 
 export type LessonInfo = { slug: string; title: string; short: string; minutes: number };
@@ -31,8 +32,23 @@ const physicsFirst: Chapter[] = [
   { n: 10, slug: "ideal-gas", name: "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব", en: "Ideal Gas & Kinetic Theory", lessons: gasIndex },
 ];
 
+const physicsSecond: Chapter[] = [
+  { n: 1, slug: "thermodynamics", name: "তাপগতিবিদ্যা", en: "Thermodynamics", lessons: thermoIndex },
+  { n: 2, slug: "static-electricity", name: "স্থির তড়িৎ", en: "Static Electricity", lessons: [] },
+  { n: 3, slug: "current-electricity", name: "চল তড়িৎ", en: "Current Electricity", lessons: [] },
+  { n: 4, slug: "magnetic-effect", name: "তড়িৎ প্রবাহের চৌম্বক ক্রিয়া ও চুম্বকত্ব", en: "Magnetic Effects of Current & Magnetism", lessons: [] },
+  { n: 5, slug: "induction", name: "তড়িৎচুম্বকীয় আবেশ ও পরবর্তী প্রবাহ", en: "Electromagnetic Induction & AC", lessons: [] },
+  { n: 6, slug: "geometrical-optics", name: "জ্যামিতিক আলোকবিজ্ঞান", en: "Geometrical Optics", lessons: [] },
+  { n: 7, slug: "physical-optics", name: "ভৌত আলোকবিজ্ঞান", en: "Physical Optics", lessons: [] },
+  { n: 8, slug: "modern-physics", name: "আধুনিক পদার্থবিজ্ঞানের সূচনা", en: "Introduction to Modern Physics", lessons: [] },
+  { n: 9, slug: "atomic-nuclear", name: "পরমাণুর মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান", en: "Atomic Models & Nuclear Physics", lessons: [] },
+  { n: 10, slug: "semiconductor", name: "সেমিকন্ডাক্টর ও ইলেকট্রনিক্স", en: "Semiconductor & Electronics", lessons: [] },
+  { n: 11, slug: "astronomy", name: "জ্যোতির্বিজ্ঞান", en: "Astronomy", lessons: [] },
+];
+
 const catalog: Record<string, Chapter[]> = {
   "physics/first": physicsFirst,
+  "physics/second": physicsSecond,
 };
 
 export const getChapters = (subject: string, paper: string): Chapter[] => catalog[`${subject}/${paper}`] ?? [];

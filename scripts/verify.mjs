@@ -192,6 +192,14 @@ const claims = [
   ["gas-graphs", "graphs P at V 2", 12 * 0.5, 0, "6", "6 atm"],
   ["gas-graphs", "graphs P at V 6", (3 * 4) / 6, 0, "2", "2 atm"],
   ["gas-graphs", "graphs V at 200K", (6 / 300) * 200, 0, "4", "4 L"],
+  ["temperature-measurement", "thermo K from C", 27 + 273, 0, "300", "300 K"],
+  ["temperature-measurement", "thermo F body", (9 / 5) * 37 + 32, 1, "98.6", "98.6°F"],
+  ["temperature-measurement", "thermo F of 50C", (9 / 5) * 50 + 32, 0, "122", "122°F"],
+  ["system-state", "thermo molar volume", 0.0821 * 300, 1, "24.6", "24.6 L"],
+  ["heat-work", "thermo W isobaric", 2e5 * 2e-3, 0, "400", "400 J"],
+  ["heat-work", "thermo W 1200", 3e5 * 4e-3, 0, "1200", "1200 J"],
+  ["first-law", "thermo dU", 500 - 200, 0, "300", "300 J"],
+  ["first-law", "thermo adiabatic", 0 - 150, 0, "-150", "−150 J"],
 ];
 
 const lessonFile = (lesson) => {

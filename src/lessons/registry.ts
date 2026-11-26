@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import type { LessonMeta } from "@/lessons/types";
 import { gasLessons } from "./gas";
+import { thermoLessons } from "./thermo";
 import { vectorLessons } from "./vector";
 
 export type LessonEntry = { meta: LessonMeta; default: ComponentType };
@@ -9,4 +10,5 @@ export type LessonEntry = { meta: LessonMeta; default: ComponentType };
 export const lessonRegistry: Record<string, Record<string, LessonEntry>> = {
   vector: vectorLessons,
   "ideal-gas": gasLessons,
+  thermodynamics: thermoLessons,
 };
