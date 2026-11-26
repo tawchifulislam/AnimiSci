@@ -1,3 +1,4 @@
+import { gasIndex } from "./gas-index";
 import { vectorIndex } from "./vector-index";
 
 export type LessonInfo = { slug: string; title: string; short: string; minutes: number };
@@ -27,7 +28,7 @@ const physicsFirst: Chapter[] = [
   { n: 7, slug: "structural-properties", name: "পদার্থের গাঠনিক ধর্ম", en: "Structural Properties of Matter", lessons: [] },
   { n: 8, slug: "periodic-motion", name: "পর্যাবৃত্ত গতি", en: "Periodic Motion", lessons: [] },
   { n: 9, slug: "waves", name: "তরঙ্গ", en: "Waves", lessons: [] },
-  { n: 10, slug: "ideal-gas", name: "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব", en: "Ideal Gas & Kinetic Theory", lessons: [] },
+  { n: 10, slug: "ideal-gas", name: "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব", en: "Ideal Gas & Kinetic Theory", lessons: gasIndex },
 ];
 
 const catalog: Record<string, Chapter[]> = {

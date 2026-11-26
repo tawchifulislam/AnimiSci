@@ -149,6 +149,16 @@ const claims = [
   ["dot-product", "guided dot work", 40 * 20 * Math.cos(rad(60)), 0, "400", "400 J"],
   ["dot-product", "guided cart share", 40 * Math.cos(rad(60)), 0, "20", "20 N"],
   ["cross-product", "guided wrench torque", 0.3 * 50, 0, "15", "15 N"],
+  ["gas-variables", "gas 27C to K", 27 + 273, 0, "300", "300 K"],
+  ["gas-variables", "gas doubled temp C", 600 - 273, 0, "327", "327"],
+  ["boyle", "boyle P at 4L", 12 / 4, 0, "3", "3 atm"],
+  ["boyle", "boyle P2", (2 * 6) / 3, 0, "4", "4 atm"],
+  ["boyle", "boyle V2", (1 * 10) / 4, 1, "2.5", "2.5 L"],
+  ["boyle", "boyle balloons", (3 * 4 - 4) / 2, 0, "4", "4টি"],
+  ["charles-pressure", "charles V2", (6 / 300) * 450, 0, "9", "9 L"],
+  ["charles-pressure", "pressure law 600K", (2 / 300) * 600, 0, "4", "4 atm"],
+  ["charles-pressure", "pressure law 400K", (2 * 400) / 300, 2, "2.67", "2.67 atm"],
+  ["charles-pressure", "charles T2", (300 * 6) / 5, 0, "360", "360 K"],
 ];
 
 const lessonFile = (lesson) => {
