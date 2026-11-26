@@ -159,6 +159,22 @@ const claims = [
   ["charles-pressure", "pressure law 600K", (2 / 300) * 600, 0, "4", "4 atm"],
   ["charles-pressure", "pressure law 400K", (2 * 400) / 300, 2, "2.67", "2.67 atm"],
   ["charles-pressure", "charles T2", (300 * 6) / 5, 0, "360", "360 K"],
+  ["ideal-gas-eq", "ideal eq 2 mol", (2 * 8.314 * 300) / 0.05, 0, "99768", "99768"],
+  ["ideal-gas-eq", "ideal eq moles", (101325 * 0.005) / (8.314 * 300), 3, "0.203", "0.203"],
+  ["ideal-gas-eq", "ideal eq litres", ((0.5 * 8.314 * 400) / 200000) * 1000, 3, "8.314", "8.314 L"],
+  ["ideal-gas-eq", "ideal eq STP", ((8.314 * 273) / 101325) * 1000, 1, "22.4", "22.4 L"],
+  ["real-gas", "real ideal pressure", 0.0821 * 300, 1, "24.6", "24.6 atm"],
+  ["real-gas", "real vdw pressure", (0.0821 * 300) / (1 - 0.0427) - 3.64, 1, "22.1", "22.1 atm"],
+  ["real-gas", "real percent", ((0.0821 * 300 - ((0.0821 * 300) / (1 - 0.0427) - 3.64)) / ((0.0821 * 300) / (1 - 0.0427) - 3.64)) * 100, 1, "11.5", "11.5%"],
+  ["real-gas", "real Z 300K 100atm", 1 + (0.0427 - 3.64 / (0.0821 * 300)) * (100 / (0.0821 * 300)), 2, "0.57", "0.57"],
+  ["kinetic-pressure", "kinetic P 1.2", (1 / 3) * 1.2 * 250000, 0, "100000", "100000 Pa"],
+  ["kinetic-pressure", "kinetic P 1.29", (1 / 3) * 1.29 * 250000, 0, "107500", "107500 Pa"],
+  ["kinetic-pressure", "kinetic hydrogen crms", Math.sqrt((3 * 101000) / 0.09), 0, "1835", "1835 m/s"],
+  ["kinetic-pressure", "kinetic fourfold", 4 * 100000, 0, "400000", "400000 Pa"],
+  ["kinetic-temperature", "kinetic KE", (1.5 * 1.38 * 300) / 100, 2, "6.21", "6.21"],
+  ["kinetic-temperature", "kinetic O2 crms", Math.sqrt((3 * 8.314 * 300) / 0.032), 0, "484", "484 m/s"],
+  ["kinetic-temperature", "kinetic N2 crms", Math.sqrt((3 * 8.314 * 300) / 0.028), 0, "517", "517 m/s"],
+  ["kinetic-temperature", "kinetic N2 1200K", Math.sqrt((3 * 8.314 * 1200) / 0.028), 0, "1034", "1034 m/s"],
 ];
 
 const lessonFile = (lesson) => {
