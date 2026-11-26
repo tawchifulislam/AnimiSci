@@ -8,6 +8,7 @@ export const gasIndex = [
   { slug: "kinetic-temperature", title: "অণুর গতিশক্তি ও তাপমাত্রা", short: "তাপমাত্রা আসলে কী মাপে?", minutes: 10 },
   { slug: "equipartition", title: "স্বাধীনতার মাত্রা ও সমবিভাজন", short: "এক, দ্বি ও ত্রি-পরমাণুক অণুর শক্তি", minutes: 10 },
   { slug: "humidity", title: "আর্দ্রতা", short: "ঠান্ডা গ্লাসে ফোঁটা জমে কেন?", minutes: 9 },
+  { slug: "gas-graphs", title: "গ্যাসের গ্রাফ চিনে নাও", short: "কোন রেখা কী বলে?", minutes: 10 },
   { slug: "gas-practice", title: "অনুশীলন", short: "সূত্র, সৃজনশীল প্রশ্ন ও MCQ", minutes: 15 },
 ] as const;
 

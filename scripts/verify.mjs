@@ -187,6 +187,11 @@ const claims = [
   ["gas-practice", "practice heated pressure", ((2 * 8.314 * 300) / 0.005) * (400 / 300), 0, "1330240", "1330240 Pa"],
   ["gas-practice", "practice vapour pressure", 0.6 * 4.24, 2, "2.54", "2.54 kPa"],
   ["gas-practice", "practice dew point", 20 + ((2.544 - 2.34) / (3.17 - 2.34)) * 5, 0, "21", "21°C"],
+  ["gas-graphs", "graphs P at V 4", 12 / 4, 0, "3", "3 atm"],
+  ["gas-graphs", "graphs slope", 3 / 0.25, 0, "12", "12 atm"],
+  ["gas-graphs", "graphs P at V 2", 12 * 0.5, 0, "6", "6 atm"],
+  ["gas-graphs", "graphs P at V 6", (3 * 4) / 6, 0, "2", "2 atm"],
+  ["gas-graphs", "graphs V at 200K", (6 / 300) * 200, 0, "4", "4 L"],
 ];
 
 const lessonFile = (lesson) => {

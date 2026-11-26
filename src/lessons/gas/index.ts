@@ -9,6 +9,7 @@ import * as kineticPressure from "./kinetic-pressure";
 import * as kineticTemperature from "./kinetic-temperature";
 import * as equipartition from "./equipartition";
 import * as humidity from "./humidity";
+import * as gasGraphs from "./gas-graphs";
 import * as gasPractice from "./gas-practice";
 
 type Entry = { meta: LessonMeta; default: ComponentType };
@@ -23,5 +24,6 @@ export const gasLessons: Record<string, Entry> = {
   "kinetic-temperature": kineticTemperature,
   equipartition,
   humidity,
+  "gas-graphs": gasGraphs,
   "gas-practice": gasPractice,
 };
