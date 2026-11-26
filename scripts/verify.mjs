@@ -175,6 +175,18 @@ const claims = [
   ["kinetic-temperature", "kinetic O2 crms", Math.sqrt((3 * 8.314 * 300) / 0.032), 0, "484", "484 m/s"],
   ["kinetic-temperature", "kinetic N2 crms", Math.sqrt((3 * 8.314 * 300) / 0.028), 0, "517", "517 m/s"],
   ["kinetic-temperature", "kinetic N2 1200K", Math.sqrt((3 * 8.314 * 1200) / 0.028), 0, "1034", "1034 m/s"],
+  ["equipartition", "equipartition He 2 mol", 1.5 * 2 * 8.314 * 300, 0, "7483", "7483 J"],
+  ["equipartition", "equipartition He 400K", 1.5 * 8.314 * 400, 0, "4988", "4988 J"],
+  ["equipartition", "equipartition N2 400K", 2.5 * 8.314 * 400, 0, "8314", "8314 J"],
+  ["equipartition", "equipartition H2O 2 mol", 3 * 2 * 8.314 * 400, 0, "19954", "19954 J"],
+  ["humidity", "humidity RH", (1.71 / 2.34) * 100, 0, "73", "73%"],
+  ["humidity", "humidity vapour pressure", 0.5 * 4.24, 2, "2.12", "2.12 kPa"],
+  ["humidity", "humidity dew point", 15 + ((2.12 - 1.71) / (2.34 - 1.71)) * 5, 0, "18", "18°C"],
+  ["humidity", "humidity glass", 0.4 * 4.24, 2, "1.70", "1.70 kPa"],
+  ["gas-practice", "practice pressure", (2 * 8.314 * 300) / 0.005, 0, "997680", "997680 Pa"],
+  ["gas-practice", "practice heated pressure", ((2 * 8.314 * 300) / 0.005) * (400 / 300), 0, "1330240", "1330240 Pa"],
+  ["gas-practice", "practice vapour pressure", 0.6 * 4.24, 2, "2.54", "2.54 kPa"],
+  ["gas-practice", "practice dew point", 20 + ((2.544 - 2.34) / (3.17 - 2.34)) * 5, 0, "21", "21°C"],
 ];
 
 const lessonFile = (lesson) => {
