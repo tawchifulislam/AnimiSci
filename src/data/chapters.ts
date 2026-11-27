@@ -1,4 +1,5 @@
 import { gasIndex } from "./gas-index";
+import { atomIndex } from "./atom-index";
 import { energyIndex } from "./energy-index";
 import { matterIndex } from "./matter-index";
 import { thermoIndex } from "./thermo-index";
@@ -43,7 +44,7 @@ const physicsSecond: Chapter[] = [
   { n: 6, slug: "geometrical-optics", name: "জ্যামিতিক আলোকবিজ্ঞান", en: "Geometrical Optics", lessons: [] },
   { n: 7, slug: "physical-optics", name: "ভৌত আলোকবিজ্ঞান", en: "Physical Optics", lessons: [] },
   { n: 8, slug: "modern-physics", name: "আধুনিক পদার্থবিজ্ঞানের সূচনা", en: "Introduction to Modern Physics", lessons: [] },
-  { n: 9, slug: "atomic-nuclear", name: "পরমাণুর মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান", en: "Atomic Models & Nuclear Physics", lessons: [] },
+  { n: 9, slug: "atomic-nuclear", name: "পরমাণুর মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান", en: "Atomic Models & Nuclear Physics", lessons: atomIndex },
   { n: 10, slug: "semiconductor", name: "সেমিকন্ডাক্টর ও ইলেকট্রনিক্স", en: "Semiconductor & Electronics", lessons: [] },
   { n: 11, slug: "astronomy", name: "জ্যোতির্বিজ্ঞান", en: "Astronomy", lessons: [] },
 ];
