@@ -1,6 +1,7 @@
 import { gasIndex } from "./gas-index";
 import { atomIndex } from "./atom-index";
 import { modernIndex } from "./modern-index";
+import { physoptIndex } from "./physopt-index";
 import { energyIndex } from "./energy-index";
 import { matterIndex } from "./matter-index";
 import { thermoIndex } from "./thermo-index";
@@ -43,7 +44,7 @@ const physicsSecond: Chapter[] = [
   { n: 4, slug: "magnetic-effect", name: "তড়িৎ প্রবাহের চৌম্বক ক্রিয়া ও চুম্বকত্ব", en: "Magnetic Effects of Current & Magnetism", lessons: [] },
   { n: 5, slug: "induction", name: "তড়িৎচুম্বকীয় আবেশ ও পরবর্তী প্রবাহ", en: "Electromagnetic Induction & AC", lessons: [] },
   { n: 6, slug: "geometrical-optics", name: "জ্যামিতিক আলোকবিজ্ঞান", en: "Geometrical Optics", lessons: [] },
-  { n: 7, slug: "physical-optics", name: "ভৌত আলোকবিজ্ঞান", en: "Physical Optics", lessons: [] },
+  { n: 7, slug: "physical-optics", name: "ভৌত আলোকবিজ্ঞান", en: "Physical Optics", lessons: physoptIndex },
   { n: 8, slug: "modern-physics", name: "আধুনিক পদার্থবিজ্ঞানের সূচনা", en: "Introduction to Modern Physics", lessons: modernIndex },
   { n: 9, slug: "atomic-nuclear", name: "পরমাণুর মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান", en: "Atomic Models & Nuclear Physics", lessons: atomIndex },
   { n: 10, slug: "semiconductor", name: "সেমিকন্ডাক্টর ও ইলেকট্রনিক্স", en: "Semiconductor & Electronics", lessons: [] },

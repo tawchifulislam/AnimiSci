@@ -412,6 +412,21 @@ const claims = [
   ["modern-practice", "modern2 gamma", 1 / Math.sqrt(1 - 0.64), 2, "1.67", "γ = 1.67"],
   ["modern-practice", "modern2 earth", 4 / 0.8, 0, "5", "5 বছর"],
   ["modern-practice", "modern2 traveller", 5 / 1.67, 0, "3", "3 বছর"],
+  ["wave-huygens", "physopt v glass", 3 / 1.5, 0, "2", "2 × 10^8 m/s"],
+  ["wave-huygens", "physopt lambda glass", 600 / 1.5, 0, "400", "400 nm"],
+  ["wave-huygens", "physopt lambda water", 600 / 1.33, 0, "451", "451 nm"],
+  ["wave-huygens", "physopt v water", 3 / 1.33, 2, "2.26", "2.26 × 10^8 m/s"],
+  ["interference-basics", "physopt ratio1", 1.2 / 0.6, 0, "2", "Δ/λ = 2"],
+  ["interference-basics", "physopt ratio2", 0.9 / 0.6, 1, "1.5", "1.5, অন্ধকার"],
+  ["interference-basics", "physopt phase", 360 * (0.15 / 0.6), 0, "90", "90°"],
+  ["interference-basics", "physopt Imax", Math.pow((3 + 1) / (3 - 1), 2), 0, "4", "উত্তর: 4।"],
+  ["young-slit", "physopt beta", ((600e-9 * 1) / 1e-3) * 1e3, 1, "0.6", "0.6 mm"],
+  ["young-slit", "physopt y3", 3 * 0.6, 1, "1.8", "1.8 mm"],
+  ["young-slit", "physopt beta2", ((5e-7 * 2) / 5e-4) * 1e3, 0, "2", "2 mm"],
+  ["young-slit", "physopt water", 0.6 / 1.33, 2, "0.45", "0.45 mm"],
+  ["thin-film", "physopt 2nt", 2 * 1.33 * 100, 0, "266", "266 nm"],
+  ["thin-film", "physopt green", 4 * 1.33 * 100, 0, "532", "532 nm"],
+  ["thin-film", "physopt coat", 550 / (4 * 1.38), 1, "99.6", "99.6 nm"],
 ];
 
 const lessonFile = (lesson) => {
