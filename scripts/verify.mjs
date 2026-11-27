@@ -447,6 +447,20 @@ const claims = [
   ["physopt-practice", "physopt2 th1", (Math.asin(0.26) * 180) / Math.PI, 1, "15.1", "15.1°"],
   ["physopt-practice", "physopt2 th2", (Math.asin(0.52) * 180) / Math.PI, 1, "31.3", "31.3°"],
   ["physopt-practice", "physopt2 max", Math.floor(2.5 / 0.65), 0, "3", "সর্বোচ্চ ক্রম 3"],
+  ["band-theory", "semi Si lambda", 1240 / 1.1, 0, "1127", "1127 nm"],
+  ["band-theory", "semi Ge lambda", 1240 / 0.67, 0, "1851", "1851 nm"],
+  ["band-theory", "semi 1.8 lambda", 1240 / 1.8, 0, "689", "689 nm"],
+  ["doping", "semi n", 5e28 / 1e7 / 1e21, 0, "5", "5 × 10^21 m^-3"],
+  ["doping", "semi p", (1.5e16 * 1.5e16) / 5e21 / 1e10, 1, "4.5", "4.5 × 10^10 m^-3"],
+  ["doping", "semi ratio", 5e21 / 4.5e10 / 1e11, 2, "1.11", "1.11 × 10^11"],
+  ["pn-junction", "semi I1", ((5 - 0.7) / 1000) * 1e3, 1, "4.3", "4.3 mA"],
+  ["pn-junction", "semi I2", ((3 - 0.7) / 100) * 1e3, 0, "23", "23 mA"],
+  ["pn-junction", "semi field", 0.7 / 1e-6 / 1e5, 0, "7", "7 × 10^5 V/m"],
+  ["rectifier", "semi half", 10 / Math.PI, 2, "3.18", "3.18 V"],
+  ["rectifier", "semi full", (2 * 10) / Math.PI, 2, "6.37", "6.37 V"],
+  ["rectifier", "semi Vm", 12 * Math.SQRT2, 2, "16.97", "16.97 V"],
+  ["rectifier", "semi Vdc", (2 * 12 * Math.SQRT2) / Math.PI, 2, "10.80", "10.80 V"],
+  ["rectifier", "semi zener", ((10 - 6.2) / 380) * 1e3, 0, "10", "10 mA"],
 ];
 
 const lessonFile = (lesson) => {
