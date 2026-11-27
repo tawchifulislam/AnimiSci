@@ -227,6 +227,22 @@ const claims = [
   ["thermo-practice", "thermo practice W", 0.4 * 1000, 0, "400", "400 J"],
   ["thermo-practice", "thermo practice cop", 270 / 30, 0, "9", "COP = 9"],
   ["thermo-practice", "thermo practice Q1", 9 * 200 + 200, 0, "2000", "2000 J"],
+  ["stress-strain", "matter stress", 100 / 1e-6, 0, "100000000", "10^8 Pa"],
+  ["stress-strain", "matter strain", 1e8 / 2e11, 4, "0.0005", "0.0005"],
+  ["stress-strain", "matter dl", 0.0005 * 2 * 1000, 0, "1", "1 mm"],
+  ["stress-strain", "matter dl thick", (0.0005 * 2 * 1000) / 2, 1, "0.5", "0.5 mm"],
+  ["stress-strain", "matter stress 2", 300 / 1.5e-6, 0, "200000000", "2 × 10^8 Pa"],
+  ["stress-strain", "matter dl hard", (400 / 2e-6 / 2e11) * 3 * 1000, 0, "3", "3 mm"],
+  ["hooke-graph", "matter spring F", 500 * 0.04, 0, "20", "20 N"],
+  ["hooke-graph", "matter spring k", 30 / 0.06, 0, "500", "500 N/m"],
+  ["elastic-moduli", "matter bulk strain", (1.1e7 / 2.2e9) * 100, 1, "0.5", "0.5%"],
+  ["elastic-moduli", "matter bulk dV", 0.005 * 2 * 1000, 0, "10", "10 mL"],
+  ["elastic-moduli", "matter shear", 500 / 0.01 / 0.001, 0, "50000000", "5 × 10^7 Pa"],
+  ["elastic-moduli", "matter poisson", 0.0006 / 0.002, 1, "0.3", "0.3"],
+  ["elastic-energy", "matter U wire", 0.5 * 100 * 0.001, 2, "0.05", "0.05 J"],
+  ["elastic-energy", "matter U spring", 0.5 * 500 * 0.04 * 0.04, 1, "0.4", "0.4 J"],
+  ["elastic-energy", "matter U spring 2", 0.5 * 500 * 0.08 * 0.08, 1, "1.6", "1.6 J"],
+  ["elastic-energy", "matter density", 0.5 * 1e8 * 0.0005, 0, "25000", "2.5 × 10^4 J/m³"],
 ];
 
 const lessonFile = (lesson) => {

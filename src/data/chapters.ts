@@ -1,4 +1,5 @@
 import { gasIndex } from "./gas-index";
+import { matterIndex } from "./matter-index";
 import { thermoIndex } from "./thermo-index";
 import { vectorIndex } from "./vector-index";
 
@@ -26,7 +27,7 @@ const physicsFirst: Chapter[] = [
   { n: 4, slug: "newtonian-mechanics", name: "নিউটনীয় বলবিদ্যা", en: "Newtonian Mechanics", lessons: [] },
   { n: 5, slug: "work-energy-power", name: "কাজ, শক্তি ও ক্ষমতা", en: "Work, Energy & Power", lessons: [] },
   { n: 6, slug: "gravitation", name: "মহাকর্ষ ও অভিকর্ষ", en: "Gravitation", lessons: [] },
-  { n: 7, slug: "structural-properties", name: "পদার্থের গাঠনিক ধর্ম", en: "Structural Properties of Matter", lessons: [] },
+  { n: 7, slug: "structural-properties", name: "পদার্থের গাঠনিক ধর্ম", en: "Structural Properties of Matter", lessons: matterIndex },
   { n: 8, slug: "periodic-motion", name: "পর্যাবৃত্ত গতি", en: "Periodic Motion", lessons: [] },
   { n: 9, slug: "waves", name: "তরঙ্গ", en: "Waves", lessons: [] },
   { n: 10, slug: "ideal-gas", name: "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব", en: "Ideal Gas & Kinetic Theory", lessons: gasIndex },

@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import type { LessonMeta } from "@/lessons/types";
 import { gasLessons } from "./gas";
+import { matterLessons } from "./matter";
 import { thermoLessons } from "./thermo";
 import { vectorLessons } from "./vector";
 
@@ -11,4 +12,5 @@ export const lessonRegistry: Record<string, Record<string, LessonEntry>> = {
   vector: vectorLessons,
   "ideal-gas": gasLessons,
   thermodynamics: thermoLessons,
+  "structural-properties": matterLessons,
 };

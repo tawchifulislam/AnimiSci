@@ -105,7 +105,7 @@ export default function Anim() {
                 xmax={6}
                 ymax={6}
                 curves={[{ pts: iso(8), c: "q" }, { pts: adi(4 * Math.pow(2, 1.4)), c: "r" }]}
-                marks={[{ x: 2, y: 4, label: "A", c: "m" }, ...(g.picks[0] !== undefined ? [{ x: 4, y: 2, label: "2", c: "q", dy: -12 }, { x: 4, y: 1.52, label: "1.52", c: "r", dy: 18 }] : [])]}
+                marks={[{ x: 2, y: 4, label: "A", c: "m" }, ...(g.picks[0] !== undefined ? [{ x: 4, y: 2, label: "2", c: "q" as const, dy: -12 }, { x: 4, y: 1.52, label: "1.52", c: "r" as const, dy: 18 }] : [])]}
               />
             ),
           },
