@@ -129,18 +129,6 @@ export default function Home() {
 
       <RememberSection />
 
-      <section className="sx-final">
-        <div className="shell sx-final-inner">
-          <div className="sx-mark" aria-label="AnimiSci">
-            <span>animi</span>
-            <span className="sx-mark-s">sci</span>
-          </div>
-          <Link href="/physics/first/vector/addition" className="btn btn-primary">
-            Start with Vectors
-            <ArrowRight size={16} aria-hidden />
-          </Link>
-        </div>
-      </section>
     </>
   );
 }
