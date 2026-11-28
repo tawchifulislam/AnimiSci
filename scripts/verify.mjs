@@ -461,6 +461,20 @@ const claims = [
   ["rectifier", "semi Vm", 12 * Math.SQRT2, 2, "16.97", "16.97 V"],
   ["rectifier", "semi Vdc", (2 * 12 * Math.SQRT2) / Math.PI, 2, "10.80", "10.80 V"],
   ["rectifier", "semi zener", ((10 - 6.2) / 380) * 1e3, 0, "10", "10 mA"],
+  ["transistor", "semi2 IC", 100 * 0.04, 0, "4", "4 mA"],
+  ["transistor", "semi2 IE", 4 + 0.04, 2, "4.04", "4.04 mA"],
+  ["transistor", "semi2 beta", 0.98 / 0.02, 0, "49", "β = 49"],
+  ["transistor", "semi2 VCE", 12 - 4 * 2, 0, "4", "4 V"],
+  ["logic-gates", "semi2 rows", Math.pow(2, 3), 0, "8", "8টি সারি"],
+  ["opamp", "semi2 vout", -10 * 0.5, 0, "-5", "−5 V"],
+  ["opamp", "semi2 gain", 1 + 90 / 10, 0, "10", "গেইন 10"],
+  ["opamp", "semi2 sat", Math.max(-20 * 1, -12), 0, "-12", "−12 V"],
+  ["semi-practice", "semi2 IE", 4 + 0.05, 2, "4.05", "4.05 mA"],
+  ["semi-practice", "semi2 VCE", 10 - 4 * 1, 0, "6", "V_CE = 6 V"],
+  ["semi-practice", "semi2 alpha", 80 / 81, 3, "0.988", "0.988"],
+  ["semi-practice", "semi2 Vm", 20 * Math.SQRT2, 2, "28.28", "28.28 V"],
+  ["semi-practice", "semi2 half", (20 * Math.SQRT2) / Math.PI, 2, "9.00", "9.00 V"],
+  ["semi-practice", "semi2 full", (2 * 20 * Math.SQRT2) / Math.PI, 2, "18.01", "18.01 V"],
 ];
 
 const lessonFile = (lesson) => {
