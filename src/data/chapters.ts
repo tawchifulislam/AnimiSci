@@ -3,6 +3,7 @@ import { atomIndex } from "./atom-index";
 import { modernIndex } from "./modern-index";
 import { physoptIndex } from "./physopt-index";
 import { semiIndex } from "./semi-index";
+import { gravIndex } from "./grav-index";
 import { energyIndex } from "./energy-index";
 import { matterIndex } from "./matter-index";
 import { thermoIndex } from "./thermo-index";
@@ -31,7 +32,7 @@ const physicsFirst: Chapter[] = [
   { n: 3, slug: "kinematics", name: "গতিবিদ্যা", en: "Kinematics", lessons: [] },
   { n: 4, slug: "newtonian-mechanics", name: "নিউটনীয় বলবিদ্যা", en: "Newtonian Mechanics", lessons: [] },
   { n: 5, slug: "work-energy-power", name: "কাজ, শক্তি ও ক্ষমতা", en: "Work, Energy & Power", lessons: energyIndex },
-  { n: 6, slug: "gravitation", name: "মহাকর্ষ ও অভিকর্ষ", en: "Gravitation", lessons: [] },
+  { n: 6, slug: "gravitation", name: "মহাকর্ষ ও অভিকর্ষ", en: "Gravitation", lessons: gravIndex },
   { n: 7, slug: "structural-properties", name: "পদার্থের গাঠনিক ধর্ম", en: "Structural Properties of Matter", lessons: matterIndex },
   { n: 8, slug: "periodic-motion", name: "পর্যাবৃত্ত গতি", en: "Periodic Motion", lessons: [] },
   { n: 9, slug: "waves", name: "তরঙ্গ", en: "Waves", lessons: [] },

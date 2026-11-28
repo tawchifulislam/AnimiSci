@@ -5,6 +5,7 @@ import { atomLessons } from "./atom";
 import { modernLessons } from "./modern";
 import { physoptLessons } from "./physopt";
 import { semiLessons } from "./semi";
+import { gravLessons } from "./grav";
 import { energyLessons } from "./energy";
 import { matterLessons } from "./matter";
 import { thermoLessons } from "./thermo";
@@ -23,4 +24,5 @@ export const lessonRegistry: Record<string, Record<string, LessonEntry>> = {
   "modern-physics": modernLessons,
   "physical-optics": physoptLessons,
   semiconductor: semiLessons,
+  gravitation: gravLessons,
 };
