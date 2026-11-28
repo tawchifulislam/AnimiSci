@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { ContinueCard } from "@/components/progress/ContinueCard";
 import { LessonPeek } from "@/components/site/LessonPeek";
 import { Marquee } from "@/components/site/Marquee";
+import RememberSection from "@/components/home/RememberSection";
 import { StickerIcon } from "@/components/site/StickerIcon";
 import { isSubjectLive } from "@/data/chapters";
 import { subjects } from "@/data/subjects";
@@ -125,6 +126,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <RememberSection />
 
       <section className="sx-final">
         <div className="shell sx-final-inner">
